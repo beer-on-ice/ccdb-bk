@@ -1,9 +1,9 @@
 <template>
-	<Card class="ueditor">
+	<div class="ueditor">
 		<vue-ueditor-wrap v-model="content"
 			:config="myConfig"></vue-ueditor-wrap>
 		{{ content }}
-	</Card>
+	</div>
 </template>
 
 <script>

@@ -79,7 +79,7 @@
 			</a-row>
 		</a-form>
 		<div class="btnGroups">
-			<a-button type="danger">发布</a-button>
+			<a-button v-auth="'admin'">发布</a-button>
 			<a-button type="primary">保存</a-button>
 			<a-button>预览</a-button>
 			<a-button>返回</a-button>
@@ -90,37 +90,37 @@
 <script>
 import { Ue } from '@/components'
 export default {
-	components: { Ue },
-	data() {
-		return {
-			upImageUrl: '',
-			loading: false,
-			// 编辑参数
-			queryParam: {}
-		}
-	},
-	methods: {
-		handleChange(info) {
-			if (info.file.status === 'uploading') {
-				this.loading = true
-				return
-			}
-			if (info.file.status === 'done') {
-				// Get this url from response in real world.
-				this.getBase64(info.file.originFileObj, imageUrl => {
-					this.upImageUrl = imageUrl
-					this.loading = false
-				})
-			}
-		},
-		// 上传之前，可处理格式等
-		handleBeforeUpload() {},
-		getBase64(img, callback) {
-			const reader = new FileReader()
-			reader.addEventListener('load', () => callback(reader.result))
-			reader.readAsDataURL(img)
-		}
-	}
+  components: { Ue },
+  data () {
+    return {
+      upImageUrl: '',
+      loading: false,
+      // 编辑参数
+      queryParam: {}
+    }
+  },
+  methods: {
+    handleChange (info) {
+      if (info.file.status === 'uploading') {
+        this.loading = true
+        return
+      }
+      if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        this.getBase64(info.file.originFileObj, imageUrl => {
+          this.upImageUrl = imageUrl
+          this.loading = false
+        })
+      }
+    },
+    // 上传之前，可处理格式等
+    handleBeforeUpload () {},
+    getBase64 (img, callback) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => callback(reader.result))
+      reader.readAsDataURL(img)
+    }
+  }
 }
 </script>
 

@@ -7,8 +7,10 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
+const isDev = process.env.NODE_ENV === 'development'
 // vue.config.js
 module.exports = {
+  // publicPath: isDev ? '/' : './',
   configureWebpack: {
     plugins: [
       // Ignore all locale files of moment.js
@@ -23,7 +25,10 @@ module.exports = {
           console.log('selector', selector)
           switch (selector) {
             case '.ant-calendar-today .ant-calendar-date':
-              return ':not(.ant-calendar-selected-date):not(.ant-calendar-selected-day)' + selector
+              return (
+                ':not(.ant-calendar-selected-date):not(.ant-calendar-selected-day)' +
+                selector
+              )
             case '.ant-btn:focus,.ant-btn:hover':
               return '.ant-btn:focus:not(.ant-btn-primary),.ant-btn:hover:not(.ant-btn-primary)'
             case '.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon':
@@ -33,7 +38,7 @@ module.exports = {
             case '.ant-menu-horizontal>.ant-menu-item-active,.ant-menu-horizontal>.ant-menu-item-open,.ant-menu-horizontal>.ant-menu-item-selected,.ant-menu-horizontal>.ant-menu-item:hover,.ant-menu-horizontal>.ant-menu-submenu-active,.ant-menu-horizontal>.ant-menu-submenu-open,.ant-menu-horizontal>.ant-menu-submenu-selected,.ant-menu-horizontal>.ant-menu-submenu:hover':
             case '.ant-menu-horizontal > .ant-menu-item-active,.ant-menu-horizontal > .ant-menu-item-open,.ant-menu-horizontal > .ant-menu-item-selected,.ant-menu-horizontal > .ant-menu-item:hover,.ant-menu-horizontal > .ant-menu-submenu-active,.ant-menu-horizontal > .ant-menu-submenu-open,.ant-menu-horizontal > .ant-menu-submenu-selected,.ant-menu-horizontal > .ant-menu-submenu:hover':
               return '.ant-menu-horizontal > .ant-menu-item-active,.ant-menu-horizontal > .ant-menu-item-open,.ant-menu-horizontal > .ant-menu-item-selected,.ant-menu-horizontal > .ant-menu-item:hover,.ant-menu-horizontal > .ant-menu-submenu-active,.ant-menu-horizontal > .ant-menu-submenu-open,.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu-selected,.ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu:hover'
-            default :
+            default:
               return selector
           }
         }
@@ -41,9 +46,8 @@ module.exports = {
     ]
   },
 
-  chainWebpack: (config) => {
-    config.resolve.alias
-      .set('@$', resolve('src'))
+  chainWebpack: config => {
+    config.resolve.alias.set('@$', resolve('src'))
 
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()
@@ -80,7 +84,6 @@ module.exports = {
       less: {
         modifyVars: {
           /* less 变量覆盖，用于自定义 ant design 主题 */
-
           /*
           'primary-color': '#F5222D',
           'link-color': '#F5222D',
@@ -93,16 +96,17 @@ module.exports = {
   },
 
   devServer: {
-    // development server port 8000
-    port: 8000
-    // proxy: {
-    //   '/api': {
-    //     // target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-    //     target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-    //     ws: false,
-    //     changeOrigin: true
-    //   }
-    // }
+    port: 8000,
+    proxy: {
+      '/api': {
+        target: 'https://testapp.aifound.cn/backend',
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   },
 
   // disable source map in production

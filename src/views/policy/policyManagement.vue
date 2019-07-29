@@ -74,10 +74,14 @@
 								<a-form layout="inline">
 									<div class="searchBtnWrapper">
 										<a-form-item label="服务类别：">
-											<a-button>全部</a-button>
-											<a-button>保单服务</a-button>
-											<a-button>理赔服务</a-button>
-											<a-button>信息更改</a-button>
+											<a-button type="primary"
+												:ghost="false">全部</a-button>
+											<a-button type="primary"
+												ghost>保单服务</a-button>
+											<a-button type="primary"
+												ghost>理赔服务</a-button>
+											<a-button type="primary"
+												ghost>信息更改</a-button>
 										</a-form-item>
 									</div>
 									<div>

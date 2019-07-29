@@ -32,7 +32,6 @@ import ArticleListContent from '@/components/ArticleListContent'
 // self components
 import Ue from '@/components/Ue' // 富文本编辑
 import WarrantyEdit from '@/components/WarrantyEdit' // 保单编辑
-console.log(Ue)
 
 export {
   AvatarList,

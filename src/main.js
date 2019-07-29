@@ -12,8 +12,9 @@ import './mock'
 
 import bootstrap from './core/bootstrap'
 import './core/use'
-import './permission' // permission control
+import './permission' // 生成权限路由
 import './utils/filter' // global filter
+import './auth.js' // 自定义指令控制权限
 
 Vue.config.productionTip = false
 

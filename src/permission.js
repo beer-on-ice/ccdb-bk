@@ -14,11 +14,13 @@ const whiteList = ['login', 'register', 'registerResult'] // no redirect whiteli
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
+  to.meta &&
+    (typeof to.meta.title !== 'undefined' &&
+      setDocumentTitle(`${to.meta.title} - ${domTitle}`))
   if (Vue.ls.get(ACCESS_TOKEN)) {
     /* has token */
     if (to.path === '/user/login') {
-      next({ path: '/dashboard/workplace' })
+      next({ path: '/policy/management' })
       NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {
@@ -30,7 +32,10 @@ router.beforeEach((to, from, next) => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
               router.addRoutes(store.getters.addRouters)
-              const redirect = decodeURIComponent(from.query.redirect || to.path)
+              const redirect = decodeURIComponent(
+                from.query.redirect || to.path
+              )
+
               if (to.path === redirect) {
                 // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
                 next({ ...to, replace: true })
@@ -59,7 +64,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next({ path: '/user/login', query: { redirect: to.fullPath } })
-      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
+      NProgress.done()
     }
   }
 })
