@@ -12,6 +12,7 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
+// 登录
 export function login (parameter) {
   return axios({
     url: api.Login,
@@ -20,9 +21,10 @@ export function login (parameter) {
   })
 }
 
-export function getInfo () {
+// 获取菜单
+export function getMenus () {
   return axios({
-    url: api.UserInfo,
+    url: api.GetMenus,
     method: 'get',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'

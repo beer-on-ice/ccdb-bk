@@ -1,13 +1,11 @@
 import Vue from 'vue'
-import { login, getInfo, logout } from '@/api/login'
+import { login, getMenus, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { welcome } from '@/utils/util'
 
 const user = {
   state: {
     token: '',
     name: '',
-    welcome: '',
     avatar: '',
     roles: [],
     info: {}
@@ -17,9 +15,8 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, { name, welcome }) => {
+    SET_NAME: (state, name) => {
       state.name = name
-      state.welcome = welcome
     },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
@@ -39,8 +36,19 @@ const user = {
         login(userInfo)
           .then(response => {
             const result = response.data
+
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_TOKEN', result.token)
+            commit('SET_TOKEN', result.token) // 设置token
+
+            commit(
+              'SET_AVATAR',
+              result.avatar ||
+                'http://cdn.duitang.com/uploads/item/201407/24/20140724190906_MCkXs.thumb.700_0.jpeg'
+            ) // 设置头像
+
+            commit('SET_NAME', result.username) // 设置昵称
+            commit('SET_INFO', result) // 设置用户信息
+
             resolve()
           })
           .catch(error => {
@@ -50,36 +58,30 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo ({ commit }) {
+    GetMenus ({ commit }) {
       return new Promise((resolve, reject) => {
-        getInfo()
+        getMenus()
           .then(response => {
             const result = response.result
-            if (result.role && result.role.permissions.length > 0) {
-              const role = result.role
-              role.permissions = result.role.permissions
+            if (result && result.data.length > 0) {
+              const role = result
+              role.permissions = result.data
               role.permissions.map(per => {
-                if (
-                  per.actionEntitySet != null &&
-                  per.actionEntitySet.length > 0
-                ) {
-                  const action = per.actionEntitySet.map(action => {
-                    return action.action
+                if (per.actions != null && per.actions.length > 0) {
+                  const action = per.actions.map(action => {
+                    return action
                   })
                   per.actionList = action
                 }
               })
               role.permissionList = role.permissions.map(permission => {
-                return permission.permissionId
+                return permission.id
               })
-              commit('SET_ROLES', result.role)
-              commit('SET_INFO', result)
-            } else {
-              reject(new Error('getInfo: roles must be a non-null array !'))
-            }
 
-            commit('SET_NAME', { name: result.name, welcome: welcome() })
-            commit('SET_AVATAR', result.avatar)
+              commit('SET_ROLES', result)
+            } else {
+              reject(new Error('getMenus: roles must be a non-null array !'))
+            }
 
             resolve(response)
           })

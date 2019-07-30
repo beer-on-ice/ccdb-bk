@@ -17,17 +17,17 @@ router.beforeEach((to, from, next) => {
   to.meta &&
     (typeof to.meta.title !== 'undefined' &&
       setDocumentTitle(`${to.meta.title} - ${domTitle}`))
+
   if (Vue.ls.get(ACCESS_TOKEN)) {
-    /* has token */
     if (to.path === '/user/login') {
       next({ path: '/policy/management' })
       NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {
         store
-          .dispatch('GetInfo')
+          .dispatch('GetMenus')
           .then(res => {
-            const roles = res.result && res.result.role
+            const roles = res.result
             store.dispatch('GenerateRoutes', { roles }).then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表

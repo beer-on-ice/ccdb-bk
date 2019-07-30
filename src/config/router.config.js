@@ -20,7 +20,7 @@ export const asyncRouterMap = [
           title: '内容管理',
           keepAlive: true,
           icon: bxAnaalyse,
-          permission: ['policy']
+          permission: ['marketing']
         },
         children: [
           {
@@ -30,7 +30,7 @@ export const asyncRouterMap = [
             meta: {
               title: '保单内容编辑',
               keepAlive: false,
-              permission: ['policy']
+              permission: ['marketing']
             }
           },
           {
@@ -41,7 +41,7 @@ export const asyncRouterMap = [
             meta: {
               title: '保单管理-政策编辑',
               keepAlive: false,
-              permission: ['policy']
+              permission: ['marketing']
             }
           }
         ]

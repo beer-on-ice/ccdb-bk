@@ -101,7 +101,6 @@ export default {
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
           const loginParams = { ...values }
-
           Login(qs.stringify(loginParams))
             .then(res => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))

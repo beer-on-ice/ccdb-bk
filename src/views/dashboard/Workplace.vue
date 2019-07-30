@@ -2,7 +2,7 @@
 <template>
   <page-view :avatar="avatar" :title="false">
     <div slot="headerContent">
-      <div class="title">{{ timeFix }}，{{ user.name }}<span class="welcome-text">，{{ welcome() }}</span></div>
+      <div class="title">{{ timeFix }}，{{ user.name }}<span class="welcome-text"></span></div>
       <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
     </div>
     <div slot="extra">
@@ -204,7 +204,7 @@ export default {
     this.initRadar()
   },
   methods: {
-    ...mapGetters(['nickname', 'welcome']),
+    ...mapGetters(['nickname']),
     getProjects () {
       this.$http.get('/list/search/projects')
         .then(res => {
