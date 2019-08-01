@@ -11,7 +11,7 @@ const service = axios.create({
   timeout: 6000 // 请求超时时间
 })
 
-const err = (error) => {
+const err = error => {
   if (error.response) {
     const data = error.response.data
     const token = Vue.ls.get(ACCESS_TOKEN)
@@ -21,7 +21,10 @@ const err = (error) => {
         description: data.message
       })
     }
-    if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
+    if (
+      error.response.status === 401 &&
+      !(data.result && data.result.isLogin)
+    ) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -42,13 +45,13 @@ const err = (error) => {
 service.interceptors.request.use(config => {
   const token = Vue.ls.get(ACCESS_TOKEN)
   if (token) {
-    config.headers['Access-Token'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
+    config.headers['Authorization'] = token // 让每个请求携带自定义 token 请根据实际情况自行修改
   }
   return config
 }, err)
 
 // response interceptor
-service.interceptors.response.use((response) => {
+service.interceptors.response.use(response => {
   return response.data
 }, err)
 
@@ -59,7 +62,4 @@ const installer = {
   }
 }
 
-export {
-  installer as VueAxios,
-  service as axios
-}
+export { installer as VueAxios, service as axios }

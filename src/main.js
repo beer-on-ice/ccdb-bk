@@ -14,7 +14,18 @@ import bootstrap from './core/bootstrap'
 import './core/use'
 import './permission' // 生成权限路由
 import './utils/filter' // global filter
-import './auth.js' // 自定义指令控制权限
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import preview from 'vue-photo-preview'
+import 'vue-photo-preview/dist/skin.css'
+import './auth'
+
+let options = {
+  fullscreenEl: false,
+  zoomEl: false
+}
+Vue.use(ElementUI)
+Vue.use(preview, options)
 
 Vue.config.productionTip = false
 

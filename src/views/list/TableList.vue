@@ -292,7 +292,7 @@ export default {
     },
 
     handleEdit (record) {
-      console.log(record)
+      console.log('record',record)
       this.$refs.modal.edit(record)
     },
     handleSub (record) {

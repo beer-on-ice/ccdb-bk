@@ -46,10 +46,6 @@
 					:disabled="state.loginBtn">登录</a-button>
 			</a-form-item>
 
-			<a-form-item>
-				<a-checkbox v-decorator="['rememberMe']"
-					style="color:#fff;">下次自动登录</a-checkbox>
-			</a-form-item>
 		</a-form>
 	</div>
 </template>

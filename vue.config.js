@@ -99,7 +99,7 @@ module.exports = {
     port: 8000,
     proxy: {
       '/api': {
-        target: 'https://testapp.aifound.cn/backend',
+        target: 'https://testapp.aifound.cn',
         ws: false,
         changeOrigin: true,
         pathRewrite: {

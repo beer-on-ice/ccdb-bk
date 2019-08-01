@@ -25,12 +25,13 @@ router.beforeEach((to, from, next) => {
     } else {
       if (store.getters.roles.length === 0) {
         store
-          .dispatch('GetMenus')
+          .dispatch('GetBackMenus')
           .then(res => {
-            const roles = res.result
+            console.log('premissions', res)
+
+            const roles = res.data
             store.dispatch('GenerateRoutes', { roles }).then(() => {
-              // 根据roles权限生成可访问的路由表
-              // 动态添加可访问路由表
+              // 根据roles权限生成可访问的路由表,动态添加
               router.addRoutes(store.getters.addRouters)
               const redirect = decodeURIComponent(
                 from.query.redirect || to.path

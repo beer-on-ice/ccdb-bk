@@ -1,5 +1,10 @@
-import api from './index'
 import { axios } from '@/utils/request'
+
+const api = {
+  Login: '/api/backend/employeeLogin/login',
+  GetBackMenus: '/api/backend/employeeLogin/permissionList',
+  LogOff: '/api/backend/employee/logOff'
+}
 
 /**
  * login func
@@ -22,22 +27,17 @@ export function login (parameter) {
 }
 
 // 获取菜单
-export function getMenus () {
+export function getBackMenus () {
   return axios({
-    url: api.GetMenus,
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    url: api.GetBackMenus,
+    method: 'get'
   })
 }
 
-export function logout () {
+// 登出
+export function logOff () {
   return axios({
-    url: api.Logout,
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    url: api.LogOff,
+    method: 'post'
   })
 }

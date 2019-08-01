@@ -48,7 +48,7 @@
 									<p>
 										<span>{{index+1}}.</span>
 										<span>{{item.title}}</span>
-										<span>{{item.time}}</span>
+										<span>{{item.releaseDate}}</span>
 										<a-button class="btn"
 											type='danger'>删除</a-button>
 										<a-button class="btn"
@@ -62,7 +62,8 @@
 									:sm="12"
 									:xs="12"
 									class="policyItem">
-									<a-button style="float:right;margin-right:8px;">新增</a-button>
+									<a-button style="float:right;margin-right:8px;"
+										@click="$router.push({ path: '/policy/newpolicyadd' })">新增</a-button>
 								</a-col>
 							</a-row>
 						</div>
@@ -174,7 +175,7 @@
 
 <script>
 import { STable, WarrantyEdit } from '@/components'
-import { getServiceList } from '@/api/manage'
+import { getServiceList, getListPolicy } from '@/api/policy'
 
 export default {
   components: {
@@ -245,26 +246,19 @@ export default {
         )
       },
       // 政策
-      newPolicy: [
-        {
-          id: 1,
-          title: '最新优惠政策',
-          time: '2019-01-02'
-        },
-        {
-          id: 2,
-          title: '缴费优惠政策',
-          time: '2019-01-02'
-        },
-        {
-          id: 3,
-          title: '企业优惠政策',
-          time: '2019-01-02'
-        }
-      ]
+      newPolicy: []
     }
   },
+  created () {
+    this.getNewestPolicy()
+  },
   methods: {
+    // 获取政策列表
+    getNewestPolicy () {
+      getListPolicy().then(res => {
+        this.newPolicy = res.data
+      })
+    },
     // 政策编辑
     handleNewPolicyEdit (id) {
       this.$router.push({ path: '/policy/newpolicyedit', query: { id } })

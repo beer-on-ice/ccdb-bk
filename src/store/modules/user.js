@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { login, getMenus, logout } from '@/api/login'
+import { login, getBackMenus, logOff } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
@@ -58,23 +58,15 @@ const user = {
     },
 
     // 获取用户信息
-    GetMenus ({ commit }) {
+    GetBackMenus ({ commit }) {
       return new Promise((resolve, reject) => {
-        getMenus()
+        getBackMenus()
           .then(response => {
-            const result = response.result
-            if (result && result.data.length > 0) {
+            const result = response.data
+            console.log('user:', result)
+            if (result && result.resourceItems.length > 0) {
               const role = result
-              role.permissions = result.data
-              role.permissions.map(per => {
-                if (per.actions != null && per.actions.length > 0) {
-                  const action = per.actions.map(action => {
-                    return action
-                  })
-                  per.actionList = action
-                }
-              })
-              role.permissionList = role.permissions.map(permission => {
+              role.permissionList = role.resourceItems.map(permission => {
                 return permission.id
               })
 
@@ -82,7 +74,6 @@ const user = {
             } else {
               reject(new Error('getMenus: roles must be a non-null array !'))
             }
-
             resolve(response)
           })
           .catch(error => {
@@ -92,13 +83,13 @@ const user = {
     },
 
     // 登出
-    Logout ({ commit, state }) {
+    LogOff ({ commit, state }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         Vue.ls.remove(ACCESS_TOKEN)
 
-        logout(state.token)
+        logOff(state.token)
           .then(() => {
             resolve()
           })

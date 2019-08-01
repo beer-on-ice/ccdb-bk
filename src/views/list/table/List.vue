@@ -4,7 +4,7 @@
       <a-form layout="inline">
         <a-row :gutter="48">
           <a-col :md="8" :sm="24">
-            <a-form-item label="规则编号">
+            <a-form-item label="用户id">
               <a-input v-model="queryParam.id" placeholder=""/>
             </a-form-item>
           </a-col>
@@ -17,7 +17,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
+          <template v-if="advanced"> 
             <a-col :md="8" :sm="24">
               <a-form-item label="调用次数">
                 <a-input-number v-model="queryParam.callNo" style="width: 100%"/>
