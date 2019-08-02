@@ -105,7 +105,7 @@
 			</div>
 			<div class="block">
 				<a-form-item label="上传封面图片：">
-					<a-upload v-if="queryParam.covePicturePath == ''"
+					<a-upload v-if="covePicturePath == ''"
 						listType="picture-card"
 						:headers='myHeaders'
 						action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
@@ -120,10 +120,10 @@
 						</div>
 					</a-upload>
 					<div v-else>
-						<img :src="queryParam.covePicturePath"
+						<img :src="covePicturePath"
 							style="width:100px;margin-right:20px;">
 						<a-button type="danger"
-							@click="deleteImg">删除图片</a-button>
+							@click="handleRemoveUpload">删除图片</a-button>
 					</div>
 				</a-form-item>
 			</div>
@@ -171,6 +171,7 @@ export default {
       myHeaders: { Authorization: Vue.ls.get(ACCESS_TOKEN) }, // 上传图片用到
       form: this.$form.createForm(this),
       plainOptions: ['热门', '置顶', '启用', '生成快报'], // 多选项
+      covePicturePath: '',
       queryParam: {
         id: '',
         title: '',
@@ -187,8 +188,7 @@ export default {
         topics: '',
         type1: [],
         content: '',
-        imgName: '',
-        covePicturePath: ''
+        imgName: ''
       }, // 最终添加的参数
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
@@ -212,8 +212,6 @@ export default {
     getCurrentPageInfo () {
       getCurrentInfo({ id: this.id }).then(res => {
         const data = res.data
-        console.log('data', data)
-
         this.bannerFlag = data.bannerFlag
         // 回绑
         this.handleCoverImg(data)
@@ -239,16 +237,23 @@ export default {
     },
     // 反向回绑图片
     handleCoverImg (data) {
-      this.queryParam.covePicturePath = data.covePicturePath
-      this.queryParam.imgName = data.covePicturePath
+      let str = data.covePicturePath
+      this.covePicturePath = str
+      this.fileName = str.substring(str.lastIndexOf('/') + 1)
     },
     // 反向回绑多选
     handleBackCheckbox (data) {
       // 处理多选
       let arr = []
-      data && data.isHot ? arr.push('热门') : ''
-      data && data.isTop ? arr.push('置顶') : ''
-      data && Number(data.state) ? arr.push('启用') : ''
+      if (data && data.isHot) {
+        arr.push('热门')
+      }
+      if (data && data.isTop) {
+        arr.push('置顶')
+      }
+      if (data && Number(data.state)) {
+        arr.push('启用')
+      }
       if (this.bannerFlag === '1') {
         this.queryParam.type1.push('生成快报')
         arr.push('生成快报')
@@ -314,17 +319,9 @@ export default {
       getRemoveUpload({
         fileName: this.fileName
       }).then(res => {
-        if (res.code === 200) this.fileName = ''
-      })
-    },
-    // 删除已存在图片
-    deleteImg () {
-      getRemoveUpload({
-        fileName: this.queryParam.covePicturePath
-      }).then(res => {
         if (res.code === 200) {
-          this.queryParam.covePicturePath = ''
-          this.queryParam.imgName = ''
+          this.fileName = ''
+          this.covePicturePath = ''
         }
       })
     },
@@ -347,7 +344,7 @@ export default {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
         })
-        return false
+        return
       }
 
       this.form.validateFields(err => {
@@ -391,6 +388,7 @@ export default {
                 console.log('快报生成/删除成功')
               })
             }
+            this.$router.push({ path: '/news/newsManagement' })
           })
         }
       })

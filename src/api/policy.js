@@ -1,7 +1,8 @@
 import { axios } from '@/utils/request'
 
 const api = {
-  service: '/service', // 待删
+  // 待修改
+  warrantyList: '/api/backend/infoMgmt/warrantyList',
   addPolicy: '/api/backend/infoMgmt/addPolicy',
   update: '/api/backend/infoMgmt/update',
   getById: '/api/backend/infoMgmt/getById',
@@ -14,12 +15,13 @@ const api = {
   contentImgUpload: '/api/backend/infoMgmt/contentImgUpload',
   removeContentImg: '/api/backend/infoMgmt/removeContentImg',
   getInfomationQrCode: '/api/backend/infoMgmt/getInfomationQrCode',
-  listPolicy: '/api/backend/infoMgmt/listPolicy'
+  listPolicy: '/api/backend/infoMgmt/listPolicy',
+  removeInfo: '/api/backend/infoMgmt/removeInfo'
 }
-// 待删
-export function getServiceList (parameter) {
+// 待修改
+export function getWarrantyList (parameter) {
   return axios({
-    url: api.service,
+    url: api.warrantyList,
     method: 'get',
     params: parameter
   })
@@ -39,14 +41,14 @@ export function getUpdate (parameter) {
   return axios({
     url: api.update,
     method: 'post',
-    params: parameter
+    data: parameter
   })
 }
 
 //  根据id查询咨询
 export function getById (parameter) {
   return axios({
-    url: api.update,
+    url: api.getById,
     method: 'get',
     params: parameter
   })
@@ -138,6 +140,14 @@ export function getListPolicy (parameter) {
   return axios({
     url: api.listPolicy,
     method: 'get',
+    params: parameter
+  })
+}
+
+export function getRemoveInfo (parameter) {
+  return axios({
+    url: api.removeInfo,
+    method: 'post',
     params: parameter
   })
 }

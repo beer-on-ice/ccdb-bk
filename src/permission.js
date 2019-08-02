@@ -27,8 +27,6 @@ router.beforeEach((to, from, next) => {
         store
           .dispatch('GetBackMenus')
           .then(res => {
-            console.log('premissions', res)
-
             const roles = res.data
             store.dispatch('GenerateRoutes', { roles }).then(() => {
               // 根据roles权限生成可访问的路由表,动态添加

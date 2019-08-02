@@ -1,14 +1,14 @@
 import Vue from 'vue'
-import { login, getBackMenus, logOff } from '@/api/login'
+import { login, getBackMenus, getAuth, logOff } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 const user = {
   state: {
     token: '',
     name: '',
-    avatar: '',
     roles: [],
-    info: {}
+    info: {},
+    auth: {}
   },
 
   mutations: {
@@ -18,14 +18,14 @@ const user = {
     SET_NAME: (state, name) => {
       state.name = name
     },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
-    },
     SET_ROLES: (state, roles) => {
       state.roles = roles
     },
     SET_INFO: (state, info) => {
       state.info = info
+    },
+    SET_AUTH: (state, auth) => {
+      state.auth = auth
     }
   },
 
@@ -40,13 +40,13 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token) // 设置token
 
-            commit(
-              'SET_AVATAR',
-              result.avatar ||
-                'http://cdn.duitang.com/uploads/item/201407/24/20140724190906_MCkXs.thumb.700_0.jpeg'
-            ) // 设置头像
-
             commit('SET_NAME', result.username) // 设置昵称
+
+            let userInfo = {
+              username: result.username
+            }
+            Vue.ls.set('USERINFO', JSON.stringify(userInfo))
+
             commit('SET_INFO', result) // 设置用户信息
 
             resolve()
@@ -63,7 +63,6 @@ const user = {
         getBackMenus()
           .then(response => {
             const result = response.data
-            console.log('user:', result)
             if (result && result.resourceItems.length > 0) {
               const role = result
               role.permissionList = role.resourceItems.map(permission => {
@@ -79,6 +78,18 @@ const user = {
           .catch(error => {
             reject(error)
           })
+        getAuth().then(res => {
+          // 生成权限数组
+          let resourceItems = res.data.resourceItems
+          let arr = []
+          resourceItems.forEach(item => {
+            arr.push({
+              dutyName: item.url,
+              duty: item.duty
+            })
+          })
+          commit('SET_AUTH', arr)
+        })
       })
     },
 
@@ -87,7 +98,9 @@ const user = {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
+        commit('SET_INFO', {})
         Vue.ls.remove(ACCESS_TOKEN)
+        Vue.ls.remove('USERINFO')
 
         logOff(state.token)
           .then(() => {

@@ -3,7 +3,8 @@ import { axios } from '@/utils/request'
 const api = {
   Login: '/api/backend/employeeLogin/login',
   GetBackMenus: '/api/backend/employeeLogin/permissionList',
-  LogOff: '/api/backend/employee/logOff'
+  LogOff: '/api/backend/employee/logOff',
+  auth: '/api/backend/employeeLogin/answer'
 }
 
 /**
@@ -30,6 +31,13 @@ export function login (parameter) {
 export function getBackMenus () {
   return axios({
     url: api.GetBackMenus,
+    method: 'get'
+  })
+}
+
+export function getAuth () {
+  return axios({
+    url: api.auth,
     method: 'get'
   })
 }

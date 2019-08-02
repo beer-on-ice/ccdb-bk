@@ -1,5 +1,5 @@
 import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
-import { UserLayout, BasicLayout, RouteView } from '@/layouts'
+import { BasicLayout, RouteView } from '@/layouts'
 
 /**
  * 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
@@ -66,6 +66,7 @@ function generateAllRoutes (roles) {
     item.name = item.url
     item.meta = {}
     item.meta.title = item.nodeName
+    item.meta.dutyName = item.url
     item.path = `/${item.url}`
   })
 
@@ -90,7 +91,7 @@ function generateAllRoutes (roles) {
   return resultArr
 }
 
-// 2维化，构建路由信息
+// 二维化，构建路由信息
 const unFlatten = arr => {
   // 拷贝一下原有数组，防止后续修改会影响原数组
   const flattenedArr = JSON.parse(JSON.stringify(arr))
@@ -129,6 +130,7 @@ const unFlatten = arr => {
 
     item.component = () => import(`@/views/${cache[parentId].url}/${item.url}`)
     item.path = `/${cache[parentId].url}/${item.url}`
+
     if (cache[parentId].node === 0) {
       cache[parentId].component = RouteView
       cache[parentId].redirect = `/${cache[parentId].url}/${item.url}`
@@ -144,10 +146,12 @@ const unFlatten = arr => {
       delete item.children
     }
   })
+  console.log('实际生成的路由：', unflattenedArr)
 
   return unflattenedArr
 }
 
+// 一维化
 const flatten = arr =>
   [].concat(...arr.map(item => [].concat(item, ...flatten(item.sonItem || []))))
 
@@ -169,7 +173,6 @@ const permission = {
         // const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
 
         const accessedRouters = generateAllRoutes(roles.resourceItems)
-        console.log(accessedRouters)
 
         commit('SET_ROUTERS', accessedRouters)
         resolve()

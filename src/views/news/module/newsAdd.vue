@@ -247,7 +247,7 @@ export default {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
         })
-        return false
+        return
       }
       this.form.validateFields(err => {
         if (!err) {

@@ -10,10 +10,10 @@
 			<notice-icon class="action" />
 			<a-dropdown>
 				<span class="action ant-dropdown-link user-dropdown-menu">
-					<a-avatar class="avatar"
+					<!-- <a-avatar class="avatar"
 						size="small"
-						:src="avatar()" />
-					<span>{{ nickname() }}</span>
+						:src="userInfo.avatar" /> -->
+					<span>{{ userInfo.username }}</span>
 				</span>
 				<a-menu slot="overlay"
 					class="user-dropdown-menu-wrapper">
@@ -28,11 +28,6 @@
 							<a-icon type="setting" />
 							<span>账户设置</span>
 						</router-link>
-					</a-menu-item>
-					<a-menu-item key="2"
-						disabled>
-						<a-icon type="setting" />
-						<span>测试</span>
 					</a-menu-item>
 					<a-menu-divider />
 					<a-menu-item key="3">
@@ -55,6 +50,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import NoticeIcon from '@/components/NoticeIcon'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -65,12 +61,16 @@ export default {
   },
   data () {
     return {
-      visible: false
+      visible: false,
+      userInfo: {}
     }
+  },
+  created () {
+    this.userInfo = JSON.parse(Vue.ls.get('USERINFO'))
   },
   methods: {
     ...mapActions(['LogOff']),
-    ...mapGetters(['nickname', 'avatar']),
+    ...mapGetters(['username']),
     handleOk () {
       this.LogOff({})
         .then(() => {

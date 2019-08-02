@@ -9,13 +9,13 @@
 					:sm="5"
 					:xs="5">
 					<div class="newPolicyEditLeft">
-						<a-upload listType="picture-card"
+						<a-upload v-if="covePicturePath == ''"
+							listType="picture-card"
 							class="avatar-uploader"
 							:headers='myHeaders'
 							action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
 							:fileList="fileList"
 							@change="handleUploadChange"
-							:beforeUpload="handleBeforeUpload"
 							:remove="handleRemoveUpload"
 							name="multipartFile">
 							<div v-if="fileList.length<1">
@@ -23,6 +23,12 @@
 								<div className="ant-upload-text">选择封面</div>
 							</div>
 						</a-upload>
+						<div v-else>
+							<img :src="covePicturePath"
+								style="width:100px;margin-right:20px;">
+							<a-button type="danger"
+								@click="handleRemoveUpload">删除图片</a-button>
+						</div>
 					</div>
 					<div style="clear:both;display:block;height:0;" />
 					<a-form-item label="标签"
@@ -34,7 +40,7 @@
 					<div style="clear:both;display:block;height:0;" />
 					<div class="keywordWrapper">
 						<h3>关键字:</h3>
-						<a-textarea v-decorator="['topics']" />
+						<a-textarea v-model="queryParam.topics" />
 						<p>多个关键字之间用半角“,”表示</p>
 					</div>
 				</a-col>
@@ -72,12 +78,6 @@
 										format="YYYY-MM-DD HH:mm:ss"
 										placeholder="选择时间" />
 								</a-form-item>
-								<a-form-item label="是否启用">
-									<a-switch defaultChecked
-										checkedChildren="已启用"
-										unCheckedChildren="已禁用"
-										v-model="state" />
-								</a-form-item>
 							</a-col>
 						</a-row>
 						<div>
@@ -89,22 +89,36 @@
 			</a-row>
 		</a-form>
 		<div class="btnGroups">
-			<a-button v-auth="'admin'"
-				@click="handlePublish">发布</a-button>
+			<a-button @click="handlePublish"
+				v-auth="$route.meta.dutyName">发布</a-button>
 			<a-button type="primary"
 				@click="handleSave">保存</a-button>
-			<a-button @click="handlePreview">预览</a-button>
+			<a-button @click="handlePreview"
+				style="background:red;color:white;">预览</a-button>
 			<a-button @click="handleBack">返回</a-button>
 		</div>
+		<a-modal title="扫码预览"
+			:visible="previewVisible"
+			:footer="null"
+			class="previewModal"
+			@cancel="handlePreviewCancel">
+			<img :src="qrCode">
+		</a-modal>
 	</div>
 </template>
 
 <script>
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { getAddPolicy, getRemoveUpload } from '@/api/policy'
+import {
+  getRemoveUpload,
+  getById,
+  getUpdate,
+  getInfomationQrCode
+} from '@/api/policy'
 import { Ue } from '@/components'
 import moment from 'moment'
+import { setTimeout } from 'timers'
 
 export default {
   components: { Ue },
@@ -114,25 +128,62 @@ export default {
       form: this.$form.createForm(this),
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
-      loading: false,
-      state: true,
+      covePicturePath: '', // 预览
+      id: '', // 当前的政策id
+      state: 0,
+      qrCode: '',
+      previewVisible: false,
       // 编辑参数
       queryParam: {
+        id: '',
         title: '',
         releaseDate: '',
         editor: '',
         tags: '',
         topics: '',
         content: '',
+        state: 0,
         imgName: ''
       }
     }
   },
+  created () {
+    this.id = this.$route.query.id
+    this.getInfo()
+  },
   methods: {
-    // 上传图片
+    async getInfo () {
+      const { data } = await getById({
+        id: this.id
+      })
+
+      this.handleCoverImg(data)
+      this.handleBackUe(data)
+      this.handleBackTopics(data)
+
+      this.form.setFieldsValue({
+        title: data.title,
+        editor: data.editor,
+        tags: data.tags,
+        pTime: moment(data.releaseDate)
+      })
+    },
+    /// // 反向回绑 /////
+    handleBackTopics (data) {
+      this.queryParam.topics = data.topics
+    },
+    handleBackUe (data) {
+      this.$refs.ue.content = data.content
+    },
+    handleCoverImg (data) {
+      let str = data.covePicturePath
+      this.covePicturePath = str
+      this.fileName = str.substring(str.lastIndexOf('/') + 1)
+    },
+
+    /// // 上传图片 //////
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
-
       if (
         fileList[0] &&
 				fileList[0].response &&
@@ -146,27 +197,29 @@ export default {
       getRemoveUpload({
         fileName: this.fileName
       }).then(res => {
-        if (res.code === 200) this.fileName = ''
+        if (res.code === 200) {
+          this.fileName = ''
+          this.covePicturePath = ''
+        }
       })
     },
-    // 上传之前，可处理格式等
-    handleBeforeUpload () {},
-    // 发布
-    handlePublish () {},
     // 处理时间
     handlePtime (value) {
       if (!value) return
       return moment(value).format('YYYY-MM-DD HH:mm:ss')
+    },
+    // 发布
+    handlePublish () {
+      this.state = 1
+      this.handleSave()
     },
     // 保存
     handleSave () {
       let formObj = this.form.getFieldsValue([
         'title',
         'tags',
-        'topics',
         'editor',
-        'pTime',
-        'state'
+        'pTime'
       ])
       if (this.$refs.ue.content === '') {
         this.$notification.warning({
@@ -183,20 +236,20 @@ export default {
       this.form.validateFields(err => {
         if (!err) {
           let pTime = this.handlePtime(formObj.pTime)
+          this.queryParam.id = this.id
           this.queryParam.title = formObj.title || ''
           this.queryParam.tags = formObj.tags || ''
-          this.queryParam.topics = formObj.topics || ''
           this.queryParam.editor = formObj.editor || ''
           this.queryParam.releaseDate = pTime || ''
+          this.queryParam.state = this.state
           this.queryParam.content = this.$refs.ue.content || ''
           this.queryParam.imgName = this.fileName || ''
-          this.queryParam.state = this.state ? 1 : 0
-          console.log(this.queryParam)
+          console.log('newPolicyEdit', this.queryParam)
 
-          getAddPolicy(this.queryParam).then(res => {
+          getUpdate(this.queryParam).then(res => {
             if (res.code === 200) {
               this.$notification.success({
-                message: '保存成功！'
+                message: '更新成功！'
               })
               this.$router.push({ path: '/policy/policyManagement' })
             }
@@ -204,8 +257,26 @@ export default {
         }
       })
     },
-    // 发布
-    handlePreview () {},
+    // 预览
+    handlePreview () {
+      // 生成快报二维码
+      getInfomationQrCode({
+        url: 'https://testinfo.aifound.cn/newDetail.html?id=' + this.id,
+        id: this.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.qrCode = res.data
+          this.previewVisible = true
+        } else {
+          this.$notification.error({
+            message: '生成二维码失败，请重试！'
+          })
+        }
+      })
+    },
+    handlePreviewCancel () {
+      this.previewVisible = false
+    },
     // 返回
     handleBack () {
       this.$router.push({ path: '/policy/policyManagement' })
@@ -238,6 +309,11 @@ export default {
 		.tip {
 			margin: 0;
 			color: red;
+		}
+	}
+	.previewModal {
+		.ant-modal-body {
+			text-align: center;
 		}
 	}
 	.btnGroups {

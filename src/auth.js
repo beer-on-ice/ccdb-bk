@@ -12,12 +12,10 @@ const directive = Vue.directive('auth', {
 // 权限检查方法
 Vue.prototype.$_has = function (value) {
   let isExist = false
-  let role = store.getters.roles.id
-
-  if (role !== value) {
-    return false
-  } else {
-    isExist = true
+  let authList = store.getters.auth
+  if (authList) {
+    let duty = authList.filter(item => item.dutyName === value)
+    if (duty.length) return !duty[0].duty // 0:有权限 1：无权限
   }
   return isExist
 }

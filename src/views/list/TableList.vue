@@ -224,10 +224,12 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        console.log('loadData.parameter', parameter)
-        return getServiceList(Object.assign(parameter, this.queryParam)).then(res => {
-          return res.result
-        })
+        // console.log('loadData.parameter', parameter)
+        return getServiceList(Object.assign(parameter, this.queryParam)).then(
+          res => {
+            return res.result
+          }
+        )
       },
       selectedRowKeys: [],
       selectedRows: [],
@@ -292,7 +294,7 @@ export default {
     },
 
     handleEdit (record) {
-      console.log('record',record)
+      console.log('record', record)
       this.$refs.modal.edit(record)
     },
     handleSub (record) {

@@ -42,7 +42,8 @@
 							<a-button style="margin-left: 8px"
 								@click="resetSearchForm">重置</a-button>
 							<a-button style="margin-left: 8px"
-								@click="handleAddNew">新增</a-button>
+								@click="handleAddNew"
+								v-auth="$route.meta.dutyName">新增</a-button>
 						</span>
 					</a-col>
 				</a-row>
@@ -76,7 +77,8 @@
 				{{text == 0?'否':'是'}}
 			</span>
 			<span slot="action"
-				slot-scope="text, record">
+				slot-scope="text, record"
+				v-auth="$route.meta.dutyName">
 				<template>
 					<a-popconfirm :title="`是否确定要${Number(record.isTop)?'取消置顶':'置顶'}？`"
 						@confirm="confirmTop(record)"

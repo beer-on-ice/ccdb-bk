@@ -50,7 +50,8 @@
 										<span>{{item.title}}</span>
 										<span>{{item.releaseDate}}</span>
 										<a-button class="btn"
-											type='danger'>删除</a-button>
+											type='danger'
+											@click="handleDelPolicy(item.id)">删除</a-button>
 										<a-button class="btn"
 											type='primary'
 											@click="handleNewPolicyEdit(item.id)">编辑</a-button>
@@ -131,7 +132,7 @@
 												class="searchBtnWrapper">
 												<a-button>查询</a-button>
 												<a-button>重置</a-button>
-												<a-button>新增</a-button>
+												<a-button v-auth="$route.meta.dutyName">新增</a-button>
 											</a-col>
 										</a-row>
 									</div>
@@ -175,7 +176,7 @@
 
 <script>
 import { STable, WarrantyEdit } from '@/components'
-import { getServiceList, getListPolicy } from '@/api/policy'
+import { getWarrantyList, getListPolicy, getRemoveInfo } from '@/api/policy'
 
 export default {
   components: {
@@ -239,11 +240,9 @@ export default {
       warrantyEditVisible: false,
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        return getServiceList(Object.assign(parameter, this.queryParam)).then(
-          res => {
-            return res.result
-          }
-        )
+        return getWarrantyList().then(res => {
+          return res.result
+        })
       },
       // 政策
       newPolicy: []
@@ -262,6 +261,21 @@ export default {
     // 政策编辑
     handleNewPolicyEdit (id) {
       this.$router.push({ path: '/policy/newpolicyedit', query: { id } })
+    },
+    // 删除政策
+    handleDelPolicy (id) {
+      getRemoveInfo({ informationId: id }).then(res => {
+        if (res.code === 200) {
+          this.$notification.success({
+            message: '删除成功！'
+          })
+          this.getNewestPolicy()
+        } else {
+          this.$notification.success({
+            message: '删除失败，稍后重试！'
+          })
+        }
+      })
     },
     // 保单编辑
     handleWarrantyEdit (id) {

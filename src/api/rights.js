@@ -13,8 +13,8 @@ const api = {
   getAllUser: '/api/backend/employee/getAllUser',
   insertUser: '/api/backend/employee/insertUser',
   modifyPassword: '/api/backend/employee/modifyPassword',
-  getUser: 'backend/employee/getUser',
-  userRoleMap: 'backend/employee/userRoleMap'
+  getUser: '/api/backend/employee/getUser',
+  userRoleMap: '/api/backend/employee/userRoleMap'
 }
 
 export function getShowResource () {
@@ -112,7 +112,7 @@ export function getUser (parameter) {
 export function getUserRoleMap (parameter) {
   return axios({
     url: api.userRoleMap,
-    method: 'get',
+    method: 'post',
     params: parameter
   })
 }
