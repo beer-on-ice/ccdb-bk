@@ -7,10 +7,10 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'production'
 // vue.config.js
 module.exports = {
-  // publicPath: isDev ? '/' : './',
+  publicPath: !isDev ? '/' : './',
   configureWebpack: {
     plugins: [
       // Ignore all locale files of moment.js
@@ -96,17 +96,17 @@ module.exports = {
   },
 
   devServer: {
-    port: 8000,
-    proxy: {
-      '/api': {
-        target: 'https://testapp.aifound.cn',
-        ws: false,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': ''
-        }
-      }
-    }
+    port: 8000
+    // proxy: {
+    // '/api': {
+    //   target: 'https://testapp.aifound.cn',
+    //   ws: false,
+    //   changeOrigin: true,
+    //   pathRewrite: {
+    //     '^/api': ''
+    //   }
+    // }
+    // }
   },
 
   // disable source map in production

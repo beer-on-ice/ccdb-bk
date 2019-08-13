@@ -1,135 +1,146 @@
 <template>
 	<div class="newsEditWrapper">
-		<a-form layout="inline"
+		<a-form layout="horizontal"
 			:form="form">
-			<div class="block">
-				<a-form-item label="标题：">
-					<a-input style="min-width:250px;"
-						placeholder="请输入"
-						v-decorator="[
+			<a-row>
+				<a-col :span="6">
+					<a-form-item>
+						<a-upload class="uploadWrapper"
+							v-if="covePicturePath == ''"
+							listType="picture-card"
+							:headers='myHeaders'
+							:action="uploadUrl"
+							:fileList="fileList"
+							@preview="handlePreviewImg"
+							@change="handleUploadChange"
+							:remove="handleRemoveUpload"
+							name="multipartFile">
+							<div v-if="fileList.length<1">
+								<a-icon type="plus"></a-icon>
+								<div className="ant-upload-text">选择封面</div>
+							</div>
+						</a-upload>
+						<div v-else>
+							<img :src="covePicturePath"
+								style="width:100px;margin-right:20px;">
+							<a-button type="danger"
+								@click="handleRemoveUpload">删除图片</a-button>
+						</div>
+					</a-form-item>
+				</a-col>
+				<a-col :span="18">
+					<a-form-item label="标题："
+						:label-col="{span:1}">
+						<a-input style="max-width:450px;"
+							placeholder="请输入"
+							v-decorator="[
           'title',
           {rules: [{ required: true, message: '请输入标题！', trigger: 'change' }]}
         ]" />
-				</a-form-item>
-				<a-form-item label="作者："
-					style="margin-left:50px;">
-					<a-input style="min-width:250px;"
-						placeholder="请输入"
-						v-decorator="['editor']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="咨询类型：">
-					<a-select style="min-width:250px;"
-						placeholder="请选择"
-						v-decorator="[
+					</a-form-item>
+					<a-form-item label="作者："
+						:label-col="{span:1}">
+						<a-input style="max-width:250px;"
+							placeholder="请输入"
+							v-decorator="['editor']" />
+					</a-form-item>
+					<a-row>
+						<a-col :span="8">
+							<a-form-item label="发布时间："
+								:label-col="{span:5}">
+								<a-date-picker showTime
+									format="YYYY-MM-DD HH:mm:ss"
+									placeholder="选择时间"
+									v-decorator="['pTime']" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="操作："
+								:label-col="{span:2}">
+								<a-checkbox-group :options="plainOptions"
+									v-decorator="['checkedList']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-col>
+			</a-row>
+			<a-row style="margin:50px;">
+				<a-col :span="6">
+					<a-form-item label="资讯类型："
+						:label-col="{span:5}">
+						<a-select style="max-width:200px;"
+							placeholder="请选择"
+							v-decorator="[
           'inforDomain',
-          {rules: [{ required: true, message: '请选择咨询类型！', trigger: 'change' }]}
+          {rules: [{ required: true, message: '请选择资讯类型！', trigger: 'change' }]}
         ]">
-						<a-select-option value="1">信托</a-select-option>
-						<a-select-option value="2">房产</a-select-option>
-						<a-select-option value="3">私募基金</a-select-option>
-						<a-select-option value="4">保险</a-select-option>
-						<a-select-option value="5">理财</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item label="内容分类："
-					style="margin-left:50px;">
-					<a-select placeholder="请选择"
-						style="min-width:250px;"
-						v-decorator="[
+							<a-select-option value="1">信托</a-select-option>
+							<a-select-option value="2">房产</a-select-option>
+							<a-select-option value="3">私募基金</a-select-option>
+							<a-select-option value="4">保险</a-select-option>
+							<a-select-option value="5">理财</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="内容分类："
+						:label-col="{span:5}">
+						<a-select placeholder="请选择"
+							style="max-width:250px;"
+							v-decorator="[
           'category',
           {rules: [{ required: true, message: '请选择内容分类！', trigger: 'change' }]}
         ]">
-						<a-select-option value="110">监管类</a-select-option>
-						<a-select-option value="111">信批类</a-select-option>
-					</a-select>
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="咨询性质：">
-					<a-select style="min-width:250px;"
-						placeholder="请选择"
-						v-decorator="[
+							<a-select-option value="110">监管类</a-select-option>
+							<a-select-option value="111">信批类</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="资讯性质："
+						:label-col="{span:5}">
+						<a-select style="max-width:250px;"
+							placeholder="请选择"
+							v-decorator="[
           'categoryType',
-          {rules: [{ required: true, message: '请选择咨询性质！', trigger: 'change' }]}
+          {rules: [{ required: true, message: '请选择资讯性质！', trigger: 'change' }]}
         ]">
-						<a-select-option value="2126">正面</a-select-option>
-						<a-select-option value="2127">负面</a-select-option>
-						<a-select-option value="2128">中性</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item label="发布时间："
-					style="margin-left:50px;">
-					<a-date-picker showTime
-						format="YYYY-MM-DD HH:mm:ss"
-						placeholder="选择时间"
-						v-decorator="['pTime']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="风险分类：">
-					<a-cascader :options="dangerList"
-						:displayRender="displayRender"
-						expandTrigger="hover"
-						placeholder="请选择"
-						style="min-width:250px;"
-						v-decorator="['danger']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="来源网站：">
-					<a-input placeholder="请输入"
-						style="min-width:250px;"
-						v-decorator="[
+							<a-select-option value="2126">正面</a-select-option>
+							<a-select-option value="2127">负面</a-select-option>
+							<a-select-option value="2128">中性</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="风险分类："
+						:label-col="{span:5}">
+						<a-cascader :options="dangerList"
+							:displayRender="displayRender"
+							expandTrigger="hover"
+							placeholder="请选择"
+							style="max-width:250px;"
+							v-decorator="['danger']" />
+					</a-form-item>
+					<a-form-item label="来源网站："
+						:label-col="{span:5}">
+						<a-input placeholder="请输入"
+							style="max-width:250px;"
+							v-decorator="[
           'sourceform',
           {rules: [{ required: true, message: '请输入来源网站！', trigger: 'change' }]}
         ]" />
-				</a-form-item>
-				<a-form-item label="关键字：">
-					<a-input placeholder="多个关键字之间用英文逗号隔开"
-						style="min-width:250px;"
-						v-decorator="['topics']" />
-				</a-form-item>
-				<a-form-item label="标签：">
-					<a-input placeholder="多个标签之间用英文逗号隔开"
-						style="min-width:250px;"
-						v-decorator="['tags']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="操作：">
-					<a-checkbox-group :options="plainOptions"
-						v-decorator="['checkedList']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="上传封面图片：">
-					<a-upload v-if="covePicturePath == ''"
-						listType="picture-card"
-						:headers='myHeaders'
-						action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
-						:fileList="fileList"
-						:beforeUpload="handleBeforeUpload"
-						@change="handleUploadChange"
-						:remove="handleRemoveUpload"
-						name="multipartFile">
-						<div v-if="fileList.length<1">
-							<a-icon type="plus"></a-icon>
-							<div className="ant-upload-text">选择封面</div>
-						</div>
-					</a-upload>
-					<div v-else>
-						<img :src="covePicturePath"
-							style="width:100px;margin-right:20px;">
-						<a-button type="danger"
-							@click="handleRemoveUpload">删除图片</a-button>
-					</div>
-				</a-form-item>
-			</div>
-			<div class="block">
-				<Ue ref="ue" />
-			</div>
+					</a-form-item>
+					<a-form-item label="关键字："
+						:label-col="{span:5}">
+						<a-input placeholder="多个关键字之间用英文逗号隔开"
+							style="max-width:230px;"
+							v-decorator="['topics']" />
+					</a-form-item>
+					<a-form-item label="标签："
+						:label-col="{span:5}">
+						<a-input placeholder="多个标签之间用英文逗号隔开"
+							style="max-width:230px;"
+							v-decorator="['tags']" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="18">
+					<Ue ref="ue" />
+				</a-col>
+			</a-row>
 			<div class="block">
 				<a-form-item>
 					<a-button type="primary"
@@ -146,7 +157,15 @@
 		</a-form>
 		<div class="qrcode">
 			<img :src="qrCode">
+			<p>预览扫一扫</p>
 		</div>
+		<a-modal title="查看大图"
+			:visible="previewVisible"
+			:footer="null"
+			@cancel="handlePreviewCancel">
+			<img :src="imgUrl"
+				style="width:100%;">
+		</a-modal>
 	</div>
 </template>
 
@@ -161,7 +180,8 @@ import {
   getNewsAddBanner,
   getFastCode,
   getCurrentInfo,
-  getUpdate
+  getUpdate,
+  specialUrl
 } from '@/api/newsManage'
 
 export default {
@@ -190,16 +210,20 @@ export default {
         content: '',
         imgName: ''
       }, // 最终添加的参数
+      uploadUrl: '',
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
       dangerList: [], // 级联列表-风险
       isBanner: '', // 是否生成查到快报
+      previewVisible: false,
       id: '',
       bannerFlag: '',
-      qrCode: ''
+      qrCode: '',
+      imgUrl: ''
     }
   },
   created () {
+    this.uploadUrl = specialUrl.upload
     this.id = this.$route.query.id
     this.bannerFlag = this.$route.query.isBanner
 
@@ -243,12 +267,13 @@ export default {
     },
     // 反向回绑多选
     handleBackCheckbox (data) {
-      // 处理多选
+      console.log(data)
+
       let arr = []
-      if (data && data.isHot) {
+      if (data && Number(data.isHot)) {
         arr.push('热门')
       }
-      if (data && data.isTop) {
+      if (data && Number(data.isTop)) {
         arr.push('置顶')
       }
       if (data && Number(data.state)) {
@@ -273,7 +298,7 @@ export default {
     // 生成快报二维码
     generateFastCode () {
       getFastCode({
-        url: 'https://testinfo.aifound.cn/newDetail.html?id=' + this.id,
+        url: specialUrl.code + this.id,
         id: this.id
       }).then(res => {
         this.qrCode = res.data
@@ -300,8 +325,6 @@ export default {
       if (!value) return
       return moment(value).format('YYYY-MM-DD HH:mm:ss')
     },
-    // 上传图片
-    handleBeforeUpload () {},
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
       console.log(fileList)
@@ -381,8 +404,7 @@ export default {
                 bannerFlag: this.isBanner,
                 informationId: this.id,
                 title: this.queryParam.title,
-                infomationUrl:
-									'https://testinfo.aifound.cn/newDetail.html?id=' + this.id
+                infomationUrl: specialUrl.code + this.id
               }
               getNewsAddBanner(params).then(res => {
                 console.log('快报生成/删除成功')
@@ -392,6 +414,15 @@ export default {
           })
         }
       })
+    },
+    // 预览图片
+    handlePreviewImg (file) {
+      this.imgUrl = file.url || file.thumbUrl
+      this.previewVisible = true
+    },
+    handlePreviewCancel () {
+      this.imgUrl = ''
+      this.previewVisible = false
     },
     back () {
       this.$router.push('/news')
@@ -403,13 +434,20 @@ export default {
 <style lang="less" >
 .newsEditWrapper {
 	position: relative;
-	.block {
-		margin-top: 20px;
+	.uploadWrapper {
+		.ant-upload {
+			width: 250px;
+			height: 150px;
+		}
 	}
 	.qrcode {
 		position: absolute;
 		right: 10px;
-		top: 10px;
+		top: 0;
+		text-align: center;
+		img {
+			width: 180px;
+		}
 	}
 }
 </style>

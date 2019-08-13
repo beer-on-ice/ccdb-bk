@@ -239,7 +239,7 @@ export default {
     name: 'ls',
     storage: 'local',
   }
-}`
+}`  
       this.$copyText(text).then(message => {
         console.log('copy', message)
         this.$message.success('复制完毕')

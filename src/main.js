@@ -19,6 +19,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
 import './auth'
+export const Bus = new Vue()
 
 let options = {
   fullscreenEl: false,

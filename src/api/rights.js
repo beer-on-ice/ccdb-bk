@@ -1,20 +1,20 @@
 import { axios } from '@/utils/request'
 
 const api = {
-  showResource: '/api/backend/employee/showResource',
-  insertResource: '/api/backend/employee/insertResource',
-  modifyResource: '/api/backend/employee/modifyResource',
-  getAllRole: '/api/backend/employee/getAllRole',
-  getAllRoles: '/api/backend/employee/getAllRoles',
-  showSingleRole: '/api/backend/employee/showSingleRole',
+  showResource: '/backend/employee/showResource',
+  insertResource: '/backend/employee/insertResource',
+  modifyResource: '/backend/employee/modifyResource',
+  getAllRole: '/backend/employee/getAllRole',
+  getAllRoles: '/backend/employee/getAllRoles',
+  showSingleRole: '/backend/employee/showSingleRole',
   insertRoleAndDistributionResouce:
-    '/api/backend/employee/insertRoleAndDistributionResouce',
-  modifyRole: '/api/backend/employee/modifyRole',
-  getAllUser: '/api/backend/employee/getAllUser',
-  insertUser: '/api/backend/employee/insertUser',
-  modifyPassword: '/api/backend/employee/modifyPassword',
-  getUser: '/api/backend/employee/getUser',
-  userRoleMap: '/api/backend/employee/userRoleMap'
+    '/backend/employee/insertRoleAndDistributionResouce',
+  modifyRole: '/backend/employee/modifyRole',
+  getAllUser: '/backend/employee/getAllUser',
+  insertUser: '/backend/employee/insertUser',
+  modifyPassword: '/backend/employee/modifyPassword',
+  getUser: '/backend/employee/getUser',
+  userRoleMap: '/backend/employee/userRoleMap'
 }
 
 export function getShowResource () {

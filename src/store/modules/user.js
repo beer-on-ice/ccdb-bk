@@ -35,8 +35,8 @@ const user = {
       return new Promise((resolve, reject) => {
         login(userInfo)
           .then(response => {
+            if (response.code !== 200) reject(response)
             const result = response.data
-
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token) // 设置token
 

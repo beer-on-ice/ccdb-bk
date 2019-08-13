@@ -1,10 +1,10 @@
 import { axios } from '@/utils/request'
 
 const api = {
-  Login: '/api/backend/employeeLogin/login',
-  GetBackMenus: '/api/backend/employeeLogin/permissionList',
-  LogOff: '/api/backend/employee/logOff',
-  auth: '/api/backend/employeeLogin/answer'
+  Login: '/backend/employeeLogin/login',
+  GetBackMenus: '/backend/employeeLogin/permissionList',
+  LogOff: '/backend/employee/logOff',
+  auth: '/backend/employeeLogin/answer'
 }
 
 /**

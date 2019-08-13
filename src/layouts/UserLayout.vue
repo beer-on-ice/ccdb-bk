@@ -7,8 +7,8 @@
 					<a-col :xl="12"
 						:lg="12"
 						:md="12"
-						:sm="12"
-						:xs="12"
+						:sm="0"
+						:xs="0"
 						class="loginLeft">
 						<div>
 							<img :src="logoUrl"
@@ -19,8 +19,8 @@
 					<a-col :xl="12"
 						:lg="12"
 						:md="12"
-						:sm="12"
-						:xs="12"
+						:sm="24"
+						:xs="24"
 						class="loginRight">
 						<route-view></route-view>
 					</a-col>
@@ -65,7 +65,7 @@ export default {
 		width: 100%;
 		min-height: 100%;
 		background: #f0f2f5 url('./img/bg.jpeg') no-repeat 50%;
-		background-size: 100%;
+		background-size: cover;
 		position: relative;
 		.containerTop {
 			padding: 290px 400px 144px;

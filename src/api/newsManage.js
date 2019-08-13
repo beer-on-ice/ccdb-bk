@@ -1,20 +1,21 @@
 import { axios } from '@/utils/request'
-
+const isDev = process.env.NODE_ENV === 'production'
 const api = {
-  newslist: '/api/backend/infoMgmt/list',
-  top: '/api/backend/infoMgmt/pushTop',
-  hot: '/api/backend/infoMgmt/pushHot',
-  enable: '/api/backend/infoMgmt/enable',
-  broadcast: '/api/backend/info/broadcast',
-  danger: '/api/upload/getCategoryLevel',
-  add: '/api/backend/infoMgmt/add',
-  remove: '/api/backend/infoMgmt/removeCoverImg',
-  addBannerInfo: '/api/backend/infoMgmt/addBannerInfo',
-  generateCode: '/api/backend/infoMgmt/getInfomationQrCode',
-  currentInfo: '/api/backend/infoMgmt/getById',
-  update: '/api/backend/infoMgmt/update'
+  newslist: '/backend/infoMgmt/list',
+  top: '/backend/infoMgmt/pushTop',
+  hot: '/backend/infoMgmt/pushHot',
+  enable: '/backend/infoMgmt/enable',
+  broadcast: '/backend/info/broadcast',
+  danger: '/upload/getCategoryLevel',
+  add: '/backend/infoMgmt/add',
+  remove: '/backend/infoMgmt/removeCoverImg',
+  addBannerInfo: '/backend/infoMgmt/addBannerInfo',
+  generateCode: '/backend/infoMgmt/getInfomationQrCode',
+  currentInfo: '/backend/infoMgmt/getById',
+  update: '/backend/infoMgmt/update',
+  getUserNameList: '/backend/infoMgmt/getUserNameList',
+  updateScannCount: '/backend/infoMgmt/updateScannCount'
 }
-
 // 获取资讯信息列表
 export function getNewsList (parameter) {
   return axios({
@@ -119,4 +120,30 @@ export function getUpdate (parameter) {
     method: 'post',
     data: parameter
   })
+}
+
+// 具有权限的用户名
+export function getUserNameList () {
+  return axios({
+    url: api.getUserNameList,
+    method: 'get'
+  })
+}
+
+// 编辑浏览量
+export function getUpdateScannCount (parameter) {
+  return axios({
+    url: api.updateScannCount,
+    method: 'post',
+    params: parameter
+  })
+}
+
+export let specialUrl = {
+  code: !isDev
+    ? 'https://testinfo.aifound.cn/newDetail.html?id='
+    : 'https://info.aifound.cn/newDetail.html?id=',
+  upload: !isDev
+    ? 'https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload'
+    : 'https://app.aifound.cn/backend/infoMgmt/coverImgUpload'
 }

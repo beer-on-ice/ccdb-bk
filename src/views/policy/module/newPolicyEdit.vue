@@ -13,9 +13,10 @@
 							listType="picture-card"
 							class="avatar-uploader"
 							:headers='myHeaders'
-							action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
+							:action="uploadUrl"
 							:fileList="fileList"
 							@change="handleUploadChange"
+							@preview="handlePreviewImg"
 							:remove="handleRemoveUpload"
 							name="multipartFile">
 							<div v-if="fileList.length<1">
@@ -34,14 +35,14 @@
 					<a-form-item label="标签"
 						style="margin-top:30px;">
 						<a-input v-decorator="['tags']"
-							placeholder="多个标签请用半角“,”表示"
+							placeholder="多个标签请用英文“,”表示"
 							style="min-width:200px;" />
 					</a-form-item>
 					<div style="clear:both;display:block;height:0;" />
 					<div class="keywordWrapper">
 						<h3>关键字:</h3>
 						<a-textarea v-model="queryParam.topics" />
-						<p>多个关键字之间用半角“,”表示</p>
+						<p>多个关键字之间用英文“,”表示</p>
 					</div>
 				</a-col>
 				<a-col :xl="19"
@@ -97,12 +98,13 @@
 				style="background:red;color:white;">预览</a-button>
 			<a-button @click="handleBack">返回</a-button>
 		</div>
-		<a-modal title="扫码预览"
+		<a-modal :title="modalTitle"
 			:visible="previewVisible"
 			:footer="null"
 			class="previewModal"
 			@cancel="handlePreviewCancel">
-			<img :src="qrCode">
+			<img :src="qrCode"
+				style="width:100%;">
 		</a-modal>
 	</div>
 </template>
@@ -114,7 +116,8 @@ import {
   getRemoveUpload,
   getById,
   getUpdate,
-  getInfomationQrCode
+  getInfomationQrCode,
+  specialUrl
 } from '@/api/policy'
 import { Ue } from '@/components'
 import moment from 'moment'
@@ -129,6 +132,7 @@ export default {
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
       covePicturePath: '', // 预览
+      modalTitle: '',
       id: '', // 当前的政策id
       state: 0,
       qrCode: '',
@@ -148,6 +152,8 @@ export default {
     }
   },
   created () {
+    this.uploadUrl = specialUrl.upload
+
     this.id = this.$route.query.id
     this.getInfo()
   },
@@ -249,23 +255,29 @@ export default {
           getUpdate(this.queryParam).then(res => {
             if (res.code === 200) {
               this.$notification.success({
-                message: '更新成功！'
+                message: this.state === 1 ? '发布成功！' : '更新成功！'
               })
-              this.$router.push({ path: '/policy/policyManagement' })
+              this.$router.go(-1)
             }
           })
         }
       })
     },
-    // 预览
+    // 预览图片
+    handlePreviewImg (file) {
+      this.qrCode = file.url || file.thumbUrl
+      this.modalTitle = '查看大图'
+      this.previewVisible = true
+    },
+    // 预览 // 生成快报二维码
     handlePreview () {
-      // 生成快报二维码
       getInfomationQrCode({
-        url: 'https://testinfo.aifound.cn/newDetail.html?id=' + this.id,
+        url: specialUrl.code + this.id,
         id: this.id
       }).then(res => {
         if (res.code === 200) {
           this.qrCode = res.data
+          this.modalTitle = '扫码预览'
           this.previewVisible = true
         } else {
           this.$notification.error({
@@ -309,11 +321,6 @@ export default {
 		.tip {
 			margin: 0;
 			color: red;
-		}
-	}
-	.previewModal {
-		.ant-modal-body {
-			text-align: center;
 		}
 	}
 	.btnGroups {

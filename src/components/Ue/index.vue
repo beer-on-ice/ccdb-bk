@@ -2,7 +2,6 @@
 	<div class="ueditor">
 		<vue-ueditor-wrap v-model="content"
 			:config="myConfig"></vue-ueditor-wrap>
-		{{ content }}
 	</div>
 </template>
 

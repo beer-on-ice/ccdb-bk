@@ -1,22 +1,39 @@
 import { axios } from '@/utils/request'
+const isDev = process.env.NODE_ENV === 'production'
 
 const api = {
   // 待修改
-  warrantyList: '/api/backend/infoMgmt/warrantyList',
-  addPolicy: '/api/backend/infoMgmt/addPolicy',
-  update: '/api/backend/infoMgmt/update',
-  getById: '/api/backend/infoMgmt/getById',
-  enable: '/api/backend/infoMgmt/enable',
-  pushTop: '/api/backend/infoMgmt/pushTop',
-  pushHot: '/api/backend/infoMgmt/pushHot',
-  getCategoryLevel: '/api/upload/getCategoryLevel',
-  coverImgUpload: '/api/backend/infoMgmt/coverImgUpload',
-  removeCoverImg: '/api/backend/infoMgmt/removeCoverImg',
-  contentImgUpload: '/api/backend/infoMgmt/contentImgUpload',
-  removeContentImg: '/api/backend/infoMgmt/removeContentImg',
-  getInfomationQrCode: '/api/backend/infoMgmt/getInfomationQrCode',
-  listPolicy: '/api/backend/infoMgmt/listPolicy',
-  removeInfo: '/api/backend/infoMgmt/removeInfo'
+  warrantyList: '/backend/infoMgmt/warrantyList',
+  addPolicy: '/backend/infoMgmt/addPolicy',
+  update: '/backend/infoMgmt/update',
+  getById: '/backend/infoMgmt/getById',
+  enable: '/backend/infoMgmt/enable',
+  pushTop: '/backend/infoMgmt/pushTop',
+  pushHot: '/backend/infoMgmt/pushHot',
+  getCategoryLevel: '/upload/getCategoryLevel',
+  coverImgUpload: '/backend/infoMgmt/coverImgUpload',
+  removeCoverImg: '/backend/infoMgmt/removeCoverImg',
+  contentImgUpload: '/backend/infoMgmt/contentImgUpload',
+  removeContentImg: '/backend/infoMgmt/removeContentImg',
+  getInfomationQrCode: '/backend/infoMgmt/getInfomationQrCode',
+  listPolicy: '/backend/infoMgmt/listPolicy',
+  removeInfo: '/backend/infoMgmt/removeInfo',
+  pagingInsuranceConfigure:
+    '/backend/insurancePolicyEdit/pagingInsuranceConfigure',
+  showInsurancePolicy: '/backend/insurancePolicyEdit/showInsurancePolicy',
+  deleteInsuranceConfigure:
+    '/backend/insurancePolicyEdit/deleteInsuranceConfigure',
+  saveUploadInsurancePolicy:
+    '/zuul/backend/insurancePolicyEdit/saveUploadInsurancePolicy',
+  editRemoveInsurancePolicy:
+    '/backend/insurancePolicyEdit/editRemoveInsurancePolicy',
+  uploadInsurancePolicyDoc:
+    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyDoc',
+  uploadInsurancePolicyPic:
+    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyPic',
+  showTwoStageCosByCos: '/backend/insurancePolicyEdit/showTwoStageCosByCos',
+  showTwoStageCosByCosMoreover:
+    '/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover'
 }
 // 待修改
 export function getWarrantyList (parameter) {
@@ -108,7 +125,6 @@ export function getRemoveUpload (parameter) {
 }
 
 //  内容图上传
-
 export function getContentImgUpload (parameter) {
   return axios({
     url: api.contentImgUpload,
@@ -144,10 +160,110 @@ export function getListPolicy (parameter) {
   })
 }
 
+// 删除政策
 export function getRemoveInfo (parameter) {
   return axios({
     url: api.removeInfo,
     method: 'post',
     params: parameter
   })
+}
+
+// 保单服务查询
+export function getPagingInsuranceConfigure (parameter) {
+  return axios({
+    url: api.pagingInsuranceConfigure,
+    method: 'get',
+    params: parameter
+  })
+}
+
+// 上传文档
+export function getUploadInsurancePolicyDoc (parameter) {
+  return axios({
+    url: api.uploadInsurancePolicyDoc,
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 上传样例
+export function getUploadInsurancePolicyPic (parameter) {
+  return axios({
+    url: api.uploadInsurancePolicyPic,
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 保单服务新增-保存
+export function getSaveUploadInsurancePolicy (parameter) {
+  return axios({
+    url: api.saveUploadInsurancePolicy,
+    method: 'post',
+    data: parameter,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+// 保单服务 删除
+export function getDeleteInsuranceConfigure (parameter) {
+  return axios({
+    url: api.deleteInsuranceConfigure,
+    method: 'post',
+    params: parameter
+  })
+}
+
+// 获取单条保单信息
+export function getShowInsurancePolicy (parameter) {
+  return axios({
+    url: api.showInsurancePolicy,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getEditRemoveInsurancePolicy (parameter) {
+  return axios({
+    url: api.editRemoveInsurancePolicy,
+    method: 'post',
+    params: parameter
+  })
+}
+
+export function getShowTwoStageCosByCos (parameter) {
+  return axios({
+    url: api.showTwoStageCosByCos,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export function getShowTwoStageCosByCosMoreover (parameter) {
+  return axios({
+    url: api.showTwoStageCosByCosMoreover,
+    method: 'get',
+    params: parameter
+  })
+}
+
+export let specialUrl = {
+  code: !isDev
+    ? 'https://testinfo.aifound.cn/newDetail.html?id='
+    : 'https://info.aifound.cn/newDetail.html?id=',
+  upload: !isDev
+    ? 'https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload'
+    : 'https://app.aifound.cn/backend/infoMgmt/coverImgUpload',
+  policyUpload: !isDev
+    ? 'https://testapp.aifound.cn/zuul/backend/insurancePolicyEdit/uploadPhysicalPdfAndPic'
+    : 'https://app.aifound.cn/zuul/backend/insurancePolicyEdit/uploadPhysicalPdfAndPic'
 }

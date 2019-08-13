@@ -1,142 +1,165 @@
 <template>
 	<div class="newsEditWrapper">
-		<a-form layout="inline"
+		<a-form layout="horizontal"
 			:form="form">
-			<div class="block">
-				<a-form-item label="标题：">
-					<a-input style="min-width:250px;"
-						placeholder="请输入"
-						v-decorator="[
+			<a-row>
+				<a-col :span="6">
+					<a-form-item>
+						<a-upload class="uploadWrapper"
+							listType="picture-card"
+							:headers='myHeaders'
+							:action="uploadUrl"
+							:fileList="fileList"
+							@preview="handlePreviewImg"
+							@change="handleUploadChange"
+							:remove="handleRemoveUpload"
+							name="multipartFile">
+							<div v-if="fileList.length<1">
+								<a-icon type="plus"></a-icon>
+								<div className="ant-upload-text">选择封面</div>
+							</div>
+						</a-upload>
+					</a-form-item>
+				</a-col>
+				<a-col :span="18">
+					<a-form-item label="标题："
+						:label-col="{span:1}">
+						<a-input style="max-width:250px;"
+							placeholder="请输入"
+							v-decorator="[
           'title',
           {rules: [{ required: true, message: '请输入标题！', trigger: 'change' }]}
         ]" />
-				</a-form-item>
-				<a-form-item label="作者："
-					style="margin-left:50px;">
-					<a-input style="min-width:250px;"
-						placeholder="请输入"
-						v-decorator="['editor']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="咨询类型：">
-					<a-select style="min-width:250px;"
-						placeholder="请选择"
-						v-decorator="[
+					</a-form-item>
+					<a-form-item label="作者："
+						:label-col="{span:1}">
+						<a-input style="max-width:250px;"
+							placeholder="请输入"
+							v-decorator="['editor']" />
+					</a-form-item>
+					<a-row>
+						<a-col :span="8">
+							<a-form-item label="发布时间："
+								:label-col="{span:5}">
+								<a-date-picker showTime
+									format="YYYY-MM-DD HH:mm:ss"
+									placeholder="选择时间"
+									v-decorator="['pTime']" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="操作："
+								:label-col="{span:2}">
+								<a-checkbox-group :options="plainOptions"
+									v-decorator="['checkedList']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-col>
+			</a-row>
+			<a-row style="margin:50px;">
+				<a-col :span="6">
+					<a-form-item label="资讯类型："
+						:label-col="{span:5}">
+						<a-select style="max-width:200px;"
+							placeholder="请选择"
+							v-decorator="[
           'inforDomain',
-          {rules: [{ required: true, message: '请选择咨询类型！', trigger: 'change' }]}
+          {rules: [{ required: true, message: '请选择资讯类型！', trigger: 'change' }]}
         ]">
-						<a-select-option value="1">信托</a-select-option>
-						<a-select-option value="2">房产</a-select-option>
-						<a-select-option value="3">私募基金</a-select-option>
-						<a-select-option value="4">保险</a-select-option>
-						<a-select-option value="5">理财</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item label="内容分类："
-					style="margin-left:50px;">
-					<a-select placeholder="请选择"
-						style="min-width:250px;"
-						v-decorator="[
+							<a-select-option value="1">信托</a-select-option>
+							<a-select-option value="2">房产</a-select-option>
+							<a-select-option value="3">私募基金</a-select-option>
+							<a-select-option value="4">保险</a-select-option>
+							<a-select-option value="5">理财</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="内容分类："
+						:label-col="{span:5}">
+						<a-select placeholder="请选择"
+							style="max-width:200px;"
+							v-decorator="[
           'category',
           {rules: [{ required: true, message: '请选择内容分类！', trigger: 'change' }]}
         ]">
-						<a-select-option value="110">监管类</a-select-option>
-						<a-select-option value="111">信批类</a-select-option>
-					</a-select>
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="咨询性质：">
-					<a-select style="min-width:250px;"
-						placeholder="请选择"
-						v-decorator="[
+							<a-select-option value="110">监管类</a-select-option>
+							<a-select-option value="111">信批类</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="资讯性质："
+						:label-col="{span:5}">
+						<a-select style="max-width:200px;"
+							placeholder="请选择"
+							v-decorator="[
           'categoryType',
-          {rules: [{ required: true, message: '请选择咨询性质！', trigger: 'change' }]}
+          {rules: [{ required: true, message: '请选择资讯性质！', trigger: 'change' }]}
         ]">
-						<a-select-option value="2126">正面</a-select-option>
-						<a-select-option value="2127">负面</a-select-option>
-						<a-select-option value="2128">中性</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item label="发布时间："
-					style="margin-left:50px;">
-					<a-date-picker showTime
-						format="YYYY-MM-DD HH:mm:ss"
-						placeholder="选择时间"
-						v-decorator="['pTime']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="风险分类：">
-					<a-cascader :options="dangerList"
-						:displayRender="displayRender"
-						expandTrigger="hover"
-						placeholder="请选择"
-						style="min-width:250px;"
-						v-decorator="['danger']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="来源网站：">
-					<a-input placeholder="请输入"
-						style="min-width:250px;"
-						v-decorator="[
+							<a-select-option value="2126">正面</a-select-option>
+							<a-select-option value="2127">负面</a-select-option>
+							<a-select-option value="2128">中性</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item label="风险分类："
+						:label-col="{span:5}">
+						<a-cascader :options="dangerList"
+							:displayRender="displayRender"
+							expandTrigger="hover"
+							placeholder="请选择"
+							style="max-width:200px;"
+							v-decorator="['danger']" />
+					</a-form-item>
+					<a-form-item label="来源网站："
+						:label-col="{span:5}">
+						<a-input placeholder="请输入"
+							style="max-width:200px;"
+							v-decorator="[
           'sourceform',
           {rules: [{ required: true, message: '请输入来源网站！', trigger: 'change' }]}
         ]" />
-				</a-form-item>
-				<a-form-item label="关键字：">
-					<a-input placeholder="多个关键字之间用英文逗号隔开"
-						style="min-width:250px;"
-						v-decorator="['topics']" />
-				</a-form-item>
-				<a-form-item label="标签：">
-					<a-input placeholder="多个标签之间用英文逗号隔开"
-						style="min-width:250px;"
-						v-decorator="['tags']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="标签：">
-					<a-checkbox-group :options="plainOptions"
-						v-decorator="['checkedList']" />
-				</a-form-item>
-			</div>
-			<div class="block">
-				<a-form-item label="上传封面图片：">
-					<a-upload listType="picture-card"
-						:headers='myHeaders'
-						action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
-						:fileList="fileList"
-						:beforeUpload="handleBeforeUpload"
-						@change="handleUploadChange"
-						:remove="handleRemoveUpload"
-						name="multipartFile">
-						<div v-if="fileList.length<1">
-							<a-icon type="plus"></a-icon>
-							<div className="ant-upload-text">选择封面</div>
-						</div>
-					</a-upload>
-				</a-form-item>
-			</div>
-			<div class="block">
-				<Ue ref="ue" />
-			</div>
-			<div class="block">
-				<a-form-item>
-					<a-button type="primary"
-						@click="save">
-						保存
-					</a-button>
-					<a-button type="primary"
-						@click="back"
-						style="margin-left:20px;">
-						返回
-					</a-button>
-				</a-form-item>
-			</div>
+					</a-form-item>
+					<a-form-item label="关键字："
+						:label-col="{span:5}">
+						<a-input placeholder="多个关键字之间用英文逗号隔开"
+							style="max-width:230px;"
+							v-decorator="['topics']" />
+					</a-form-item>
+					<a-form-item label="标签："
+						:label-col="{span:5}">
+						<a-input placeholder="多个标签之间用英文逗号隔开"
+							style="max-width:230px;"
+							v-decorator="['tags']" />
+					</a-form-item>
+				</a-col>
+				<a-col :span="18">
+					<Ue ref="ue" />
+				</a-col>
+			</a-row>
 		</a-form>
+		<div>
+			<a-button type="primary"
+				@click="save">
+				保存
+			</a-button>
+			<a-button type="primary"
+				@click="handlePreview"
+				v-show="isSave"
+				style="margin-left:20px;">
+				预览
+			</a-button>
+			<a-button type="primary"
+				@click="handleBack"
+				style="margin-left:20px;">
+				返回
+			</a-button>
+		</div>
+		<a-modal :title="modalTitle"
+			:visible="previewVisible"
+			:footer="null"
+			class="previewModal"
+			@cancel="handlePreviewCancel">
+			<img :src="qrCode"
+				style="width:100%;">
+		</a-modal>
 	</div>
 </template>
 
@@ -150,7 +173,9 @@ import {
   getDangerList,
   getNewsAdd,
   getRemoveUpload,
-  getNewsAddBanner
+  getNewsAddBanner,
+  getFastCode,
+  specialUrl
 } from '@/api/newsManage'
 
 export default {
@@ -160,6 +185,12 @@ export default {
       myHeaders: { Authorization: Vue.ls.get(ACCESS_TOKEN) }, // 上传图片用到
       form: this.$form.createForm(this),
       plainOptions: ['热门', '置顶', '启用', '生成快报'], // 多选项
+      previewVisible: false,
+      modalTitle: '',
+      qrCode: '',
+      id: '',
+      uploadUrl: '',
+      isSave: false, // 是否保存
       queryParam: {
         title: '',
         inforDomain: '',
@@ -185,6 +216,8 @@ export default {
     }
   },
   created () {
+    this.uploadUrl = specialUrl.upload
+
     this.getDangerList()
   },
   methods: {
@@ -209,8 +242,6 @@ export default {
       if (!value) return
       return moment(value).format('YYYY-MM-DD HH:mm:ss')
     },
-    // 上传图片
-    handleBeforeUpload () {},
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
       if (
@@ -243,6 +274,7 @@ export default {
         'tags',
         'checkedList'
       ])
+
       if (this.$refs.ue.content === '') {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
@@ -270,36 +302,63 @@ export default {
           this.queryParam.type1 = formObj.checkedList || []
 
           getNewsAdd(this.queryParam).then(res => {
-            this.$notification.success({
-              message: '保存成功！'
-            })
-            if (this.isBanner === '1') {
-              let params = {
-                bannerFlag: '1',
-                informationId: res.data,
-                title: this.queryParam.title,
-                infomationUrl:
-									'https://testinfo.aifound.cn/newDetail.html?id=' + res.data
-              }
-              getNewsAddBanner(params).then(resp => {
-                if (resp.code === 200) {
-                  console.log('快报生成成功')
-                  // 跳转到编辑
-                  this.$router.push({
-                    path: '/news/newsedit',
-                    query: {
-                      id: res.data,
-                      isBanner: '1'
-                    }
-                  })
-                }
+            if (res.code === 200) {
+              this.$notification.success({
+                message: '保存成功！'
               })
+
+              if (this.isBanner === '1') {
+                let params = {
+                  bannerFlag: '1',
+                  informationId: res.data,
+                  title: this.queryParam.title,
+                  infomationUrl: specialUrl.code + res.data
+                }
+                getNewsAddBanner(params).then(resp => {
+                  if (resp.code === 200) console.log('快报生成成功')
+                })
+              }
+              this.id = res.data
+              this.isSave = true
+              this.handleBack()
+            } else {
+              this.$notification.error({
+                message: '保存失败，请重试！'
+              })
+              this.isSave = false
             }
           })
         }
       })
     },
-    back () {
+    // 预览图片
+    handlePreviewImg (file) {
+      this.qrCode = file.url || file.thumbUrl
+      this.modalTitle = '查看大图'
+      this.previewVisible = true
+    },
+    // 预览 // 生成快报二维码
+    handlePreview () {
+      getFastCode({
+        url: specialUrl.code + this.id,
+        id: this.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.modalTitle = '扫码预览'
+          this.qrCode = res.data
+          this.previewVisible = true
+        } else {
+          this.$notification.error({
+            message: '生成二维码失败，请重试！'
+          })
+        }
+      })
+    },
+    handlePreviewCancel () {
+      this.qrCode = ''
+      this.previewVisible = false
+    },
+    handleBack () {
       this.$router.push('/news')
     }
   }
@@ -308,8 +367,16 @@ export default {
 
 <style lang="less" >
 .newsEditWrapper {
-	.block {
-		margin-top: 20px;
+	.uploadWrapper {
+		.ant-upload {
+			width: 250px;
+			height: 150px;
+		}
+	}
+	.previewModal {
+		.ant-modal-body {
+			text-align: center;
+		}
 	}
 }
 </style>

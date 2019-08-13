@@ -1,5 +1,5 @@
 const api = {
-  Login: '/api/employeeLogin/login',
+  Login: '/employeeLogin/login',
   Logout: '/auth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',

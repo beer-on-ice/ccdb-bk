@@ -111,7 +111,7 @@ export default {
       })
     },
     loginSuccess (res) {
-      this.$router.push({ name: 'policy' })
+      this.$router.push({ name: 'welcome' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
@@ -125,6 +125,7 @@ export default {
         message: '错误',
         description:
 					((err.response || {}).data || {}).message ||
+					err.msg ||
 					'请求出现错误，请稍后再试',
         duration: 4
       })

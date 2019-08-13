@@ -12,10 +12,10 @@
 						<a-upload listType="picture-card"
 							class="avatar-uploader"
 							:headers='myHeaders'
-							action="https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload"
+							:action="uploadUrl"
 							:fileList="fileList"
+							@preview="handlePreviewImg"
 							@change="handleUploadChange"
-							:beforeUpload="handleBeforeUpload"
 							:remove="handleRemoveUpload"
 							name="multipartFile">
 							<div v-if="fileList.length<1">
@@ -28,7 +28,7 @@
 					<a-form-item label="标签"
 						style="margin-top:30px;">
 						<a-input v-decorator="['tags']"
-							placeholder="多个标签请用半角“,”表示"
+							placeholder="多个标签请用英文“,”表示"
 							style="min-width:200px;" />
 					</a-form-item>
 					<div style="clear:both;display:block;height:0;" />
@@ -36,7 +36,7 @@
 						<h3>关键字:</h3>
 						<a-textarea placeholder="请输入关键字"
 							v-model="queryParam.topics" />
-						<p>多个关键字之间用半角“,”表示</p>
+						<p>多个关键字之间用英文“,”表示</p>
 					</div>
 				</a-col>
 				<a-col :xl="19"
@@ -88,17 +88,17 @@
 				v-auth="$route.meta.dutyName">发布</a-button>
 			<a-button type="primary"
 				@click="handleSave">保存</a-button>
-			<a-button @click="handlePreview"
+			<a-button @click="previewVisible=true"
 				v-show="isSave"
 				style="background:red;color:white;">预览</a-button>
 			<a-button @click="handleBack">返回</a-button>
 		</div>
-		<a-modal title="扫码预览"
+		<a-modal :title="modalTitle"
 			:visible="previewVisible"
 			:footer="null"
-			class="previewModal"
 			@cancel="handlePreviewCancel">
-			<img :src="qrCode">
+			<img :src="qrCode"
+				style="width:100%;">
 		</a-modal>
 	</div>
 </template>
@@ -109,7 +109,8 @@ import { ACCESS_TOKEN } from '@/store/mutation-types'
 import {
   getAddPolicy,
   getRemoveUpload,
-  getInfomationQrCode
+  getInfomationQrCode,
+  specialUrl
 } from '@/api/policy'
 import { Ue } from '@/components'
 import moment from 'moment'
@@ -122,6 +123,8 @@ export default {
       form: this.$form.createForm(this),
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
+      modalTitle: '',
+      id: '',
       state: 0,
       isSave: false, // 是否保存
       qrCode: '',
@@ -139,6 +142,9 @@ export default {
         covePicturePath: ''
       }
     }
+  },
+  created () {
+    this.uploadUrl = specialUrl.upload
   },
   methods: {
     // 上传图片
@@ -161,8 +167,6 @@ export default {
         if (res.code === 200) this.fileName = ''
       })
     },
-    // 上传之前，可处理格式等
-    handleBeforeUpload () {},
     // 发布
     handlePublish () {
       this.state = 1
@@ -211,28 +215,41 @@ export default {
           getAddPolicy(this.queryParam).then(res => {
             if (res.code === 200) {
               this.$notification.success({
-                message: '保存成功！'
+                message: this.state === 1 ? '发布成功！' : '保存成功！'
               })
-              this.handlePreview(res.data)
+              // if (this.state === 1) {
+              //   this.$router.go(-1)
+              // } else {
+              //   this.id = res.data
+              //   this.isSave = true
+              // }
+              this.id = res.data
               this.isSave = true
+              this.handleBack()
             } else {
               this.$notification.error({
                 message: '保存失败，稍后重试！'
               })
-              this.isSave = true
+              this.isSave = false
             }
           })
         }
       })
     },
-    // 预览
-    handlePreview (id) {
-      // 生成快报二维码
+    // 预览图片
+    handlePreviewImg (file) {
+      this.qrCode = file.url || file.thumbUrl
+      this.modalTitle = '查看大图'
+      this.previewVisible = true
+    },
+    // 预览// 生成快报二维码
+    handlePreview () {
       getInfomationQrCode({
-        url: 'https://testinfo.aifound.cn/newDetail.html?id=' + id,
-        id: id
+        url: specialUrl.code + this.id,
+        id: this.id
       }).then(res => {
         if (res.code === 200) {
+          this.modalTitle = '扫码预览'
           this.qrCode = res.data
           this.previewVisible = true
         } else {
@@ -243,11 +260,12 @@ export default {
       })
     },
     handlePreviewCancel () {
+      this.qrCode = ''
       this.previewVisible = false
     },
     // 返回
     handleBack () {
-      this.$router.push({ path: '/policy/policyManagement' })
+      this.$router.go(-1)
     }
   }
 }
@@ -285,11 +303,6 @@ export default {
 		margin-top: 20px;
 		.ant-btn {
 			margin: 0 10px;
-		}
-	}
-	.previewModal {
-		.ant-modal-body {
-			text-align: center;
 		}
 	}
 }

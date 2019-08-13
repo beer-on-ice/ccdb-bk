@@ -19,8 +19,7 @@ export const constantRouterMap = [
         name: 'welcome',
         component: () => import('@/views/welcome'),
         meta: {
-          title: '欢迎',
-          keepAlive: true
+          title: '欢迎'
         }
       },
       // 保单管理
@@ -30,8 +29,7 @@ export const constantRouterMap = [
         redirect: '/policy/policyManagement',
         component: RouteView,
         meta: {
-          title: '内容管理',
-          keepAlive: true
+          title: '内容管理'
         },
         children: [
           {
@@ -65,8 +63,7 @@ export const constantRouterMap = [
         redirect: '/news/newsManagement',
         component: RouteView,
         meta: {
-          title: '资讯管理',
-          keepAlive: true
+          title: '资讯管理'
         },
         children: [
           {
