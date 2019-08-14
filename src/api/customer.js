@@ -9,10 +9,8 @@ const api = {
   showConsultService: '/backend/insurancePolicyEdit/showConsultService',
   insuranceConsultationFeedback:
     '/backend/insurancePolicyEdit/insuranceConsultationFeedback',
-  allList: '/backend/insurancePolicyEdit/multipleConditionsPolicyList',
   currentUser: '/backend/insurancePolicyEdit/singlePolicyList',
   updatePolicy: '/backend/insurancePolicyEdit/updatePolicy'
-
 }
 /**
  * @param parameter

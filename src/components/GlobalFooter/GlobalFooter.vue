@@ -2,7 +2,7 @@
 	<div class="footer">
 		<div class="copyright">
 			Copyright
-			<a-icon type="copyright" /> 2019 <span>苏州技术研发组出品</span>
+			<a-icon type="copyright" /> 2019 <span>上海才查到科技有限公司</span>
 		</div>
 	</div>
 </template>

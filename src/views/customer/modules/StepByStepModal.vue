@@ -120,19 +120,16 @@
 	</div>
 </template>
 <script>
-import pick from 'lodash.pick'
-import FileSaver from 'file-saver'
 import { getCurrentUser, updatePolicy, getAllList } from '@/api/customer'
-import { Bus } from '../../../main.js'
 import pdf from 'vue-pdf'
+import moment from 'moment'
+import downloadFile from '@/utils/download'
 
-var JSZip = require('jszip')
 const stepForms = [
   ['name', 'desc'],
   ['target', 'template', 'type'],
   ['time', 'frequency']
 ]
-
 export default {
   name: 'StepByStepModal',
   components: {
@@ -170,13 +167,11 @@ export default {
   methods: {
     /* 上传文件材料 */
     checkTab (item, idx) {
-      console.log('item', item, idx)
       item.ischecked = !item.ischecked
       this.docUrl[idx].ischecked = item.ischecked
     },
     /* 上传证明材料 */
     checkTabProvid (item, idx) {
-      console.log('item', item, idx)
       item.ischecked = !item.ischecked
       this.picUrl[idx].ischecked = item.ischecked
       console.log('上传证明文件', this.picUrl)
@@ -214,70 +209,34 @@ export default {
 
     /* 下载图片功能 */
     download () {
-      var zip = new JSZip()
-      // var imgs = zip.folder("images")
-      var imgs = zip.folder(this.userId + '-' + this.lasttime)
-      var baseList = []
-      var _this = this
-      let arr = []
       let arr1 = []
       let arr2 = []
-      // 遍历pdf
       let newarr = this.docUrl.filter(item => item.ischecked === true)
       for (let i = 0; i < newarr.length; i++) {
         arr1.push(newarr[i].path)
       }
-      console.log('选中的arr1', arr1)
-      // 遍历所有图片 找出ischecked为true的图片
       let newarr1 = this.picUrl.filter(item => item.ischecked === true)
       for (let i = 0; i < newarr1.length; i++) {
         arr2.push(newarr1[i].path)
       }
-      console.log('选中的arr2', arr2)
-      arr = arr1.concat(arr2)
-      console.log('合并后的arr', arr)
-      // arr 就是 url的集合
-      for (var i = 0; i < arr.length; i++) {
-        let image = new Image()
-        // 解决跨域 Canvas 污染问题
-        image.setAttribute('crossOrigin', 'anonymous')
-        image.onload = function () {
-          let canvas = document.createElement('canvas')
-          canvas.width = image.width
-          canvas.height = image.height
-          let context = canvas.getContext('2d')
-          context.drawImage(image, 0, 0, image.width, image.height)
-          let url = canvas.toDataURL() // 得到图片的base64编码数据 let url = canvas.toDataURL('image/png')
-          baseList.push(url.substring(22))
-          if (baseList.length === arr.length) {
-            if (baseList.length > 0) {
-              _this.$notify({
-                title: '成功',
-                message: '即将下载',
-                type: 'success'
-              })
-              for (let k = 0; k < baseList.length; k++) {
-                imgs.file('photo' + k + '.png', baseList[k], { base64: true })
-              }
-              zip.generateAsync({ type: 'blob' }).then(function (content) {
-                FileSaver.saveAs(content, _this.userId + '-' + _this.lasttime)
-              })
-            } else {
-              _this.$notify.error({
-                title: '错误',
-                message: '暂无图片可下载'
-              })
-            }
-          }
+
+      let arr = [
+        {
+          title: '文件材料',
+          list: arr1
+        },
+        {
+          title: '证明材料',
+          list: arr2
         }
-        image.src = arr[i].replace('webp', 'png') // 替换打包后的图片后缀
-      }
+      ]
+
+      downloadFile(arr, `${this.userId}-${this.lasttime}`, this)
     },
 
     // 使模态框显示
     edit (record) {
       this.visible = true
-      console.log('record', record)
       let data = {
         id: record
       }
@@ -301,8 +260,6 @@ export default {
         this.docUrl = onlyData.fileUrls.docUrl
         this.picUrl = onlyData.fileUrls.picUrl
         this.$previewRefresh()
-
-        console.log('9999999', this.docUrl, this.picUrl)
 
         this.userId = onlyData.userId
         this.listid = onlyData.id
@@ -350,7 +307,7 @@ export default {
           // 关闭模态框
           this.visible = false
           // 刷新页面
-          Bus.$emit('resetData')
+          this.$emit('saveOk')
         })
       }
     },
@@ -374,7 +331,7 @@ export default {
           console.log('审核通过的返回值', res)
 
           this.visible = false
-          Bus.$emit('resetData')
+          this.$emit('saveOk')
         })
       }
     },

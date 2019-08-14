@@ -1,13 +1,13 @@
 <template>
 	<div class="user-wrapper">
 		<div class="content-box">
-			<a href="https://pro.loacg.com/docs/getting-started"
+			<!-- <a href="https://pro.loacg.com/docs/getting-started"
 				target="_blank">
 				<span class="action">
 					<a-icon type="question-circle-o"></a-icon>
 				</span>
-			</a>
-			<notice-icon class="action" />
+			</a> -->
+			<!-- <notice-icon class="action" /> -->
 			<a-dropdown>
 				<span class="action ant-dropdown-link user-dropdown-menu">
 					<!-- <a-avatar class="avatar"
@@ -17,7 +17,7 @@
 				</span>
 				<a-menu slot="overlay"
 					class="user-dropdown-menu-wrapper">
-					<a-menu-item key="0">
+					<!-- <a-menu-item key="0">
 						<router-link :to="{ name: 'center' }">
 							<a-icon type="user" />
 							<span>个人中心</span>
@@ -29,7 +29,7 @@
 							<span>账户设置</span>
 						</router-link>
 					</a-menu-item>
-					<a-menu-divider />
+					<a-menu-divider /> -->
 					<a-menu-item key="3">
 						<a href="javascript:;"
 							@click="handleLogout">
@@ -57,7 +57,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'UserMenu',
   components: {
-    NoticeIcon
+    // NoticeIcon
   },
   data () {
     return {

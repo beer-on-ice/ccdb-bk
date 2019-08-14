@@ -233,21 +233,22 @@ export default {
       ],
       loadData: () => {
         return getMultipleConsultServiceList(this.queryParam).then(res => {
-          if (res.code === 200 && res.data) {
-            res.data.data = res.data.list
-            res.data.pageNo = res.data.pageNum
-            res.data.totalPage = res.data.pages
-            res.data.totalCount = res.data.total
-            console.log(res.data.data)
-
-            delete res.data.list
-            delete res.data.pageNum
-            delete res.data.pages
-            delete res.data.total
-            this.currentRowIndex = ''
-
-            return res.data
+          if (res.data.pageNum > res.data.navigateLastPage) {
+            // 解决当点击的页码超过实际页数重复请求bug
+            this.queryParam.startPage = res.data.navigateLastPage
           }
+          res.data.data = res.data.list
+          res.data.pageNo = res.data.pageNum
+          res.data.totalPage = res.data.pages
+          res.data.totalCount = res.data.total
+
+          delete res.data.list
+          delete res.data.pageNum
+          delete res.data.pages
+          delete res.data.total
+          this.currentRowIndex = ''
+
+          return res.data
         })
       }
     }

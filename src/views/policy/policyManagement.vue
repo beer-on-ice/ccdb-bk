@@ -201,7 +201,7 @@
 			@handleWarrantyEditClose="handleWarrentyClose"></WarrantyEdit>
 		<WarrantyAdd :visible="warrantyAddVisible"
 			@viewPdfOrImg="viewPdfOrImg"
-			@handleWarrantyAddClose="warrantyAddVisible=false"></WarrantyAdd>
+			@handleWarrantyAddClose="handleWarrentyClose"></WarrantyAdd>
 		<a href=""
 			ref="a"
 			target="_blank"
@@ -336,6 +336,10 @@ export default {
       },
       loadData: parameter => {
         return getPagingInsuranceConfigure(this.queryParam).then(res => {
+          if (res.data.pageNum > res.data.navigateLastPage) {
+            // 解决当点击的页码超过实际页数重复请求bug
+            this.queryParam.startPage = res.data.navigateLastPage
+          }
           res.data.data = res.data.list
           res.data.pageNo = res.data.pageNum
           res.data.totalPage = res.data.pages

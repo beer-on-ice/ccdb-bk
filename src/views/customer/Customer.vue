@@ -113,7 +113,6 @@ import moment from 'moment'
 import { STable } from '@/components'
 import StepByStepModal from './modules/StepByStepModal'
 import { getAllList } from '@/api/customer'
-import { Bus } from '../../main.js'
 
 export default {
   name: 'customerBook',
@@ -242,6 +241,10 @@ export default {
       ],
       loadData: () => {
         return getAllList(this.queryParam).then(res => {
+          if (res.data.pageNum > res.data.navigateLastPage) {
+            // 解决当点击的页码超过实际页数重复请求bug
+            this.queryParam.startPage = res.data.navigateLastPage
+          }
           res.data.data = res.data.list
           res.data.pageNo = res.data.pageNum
           res.data.totalPage = res.data.pages
@@ -258,11 +261,7 @@ export default {
       }
     }
   },
-  mounted () {
-    Bus.$on('resetData', () => {
-      this.loadData()
-    })
-  },
+  mounted () {},
   methods: {
     // 重置搜索表单
     resetSearchForm () {
