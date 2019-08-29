@@ -1,99 +1,101 @@
 <template>
-	<a-card :bordered="false">
-		<div class="table-page-search-wrapper">
-			<a-form layout="inline"
-				:form="form">
-				<a-row :gutter="48">
-					<a-col :md="8"
-						:sm="24">
-						<a-form-item label="用户id: ">
-							<a-input v-model="queryParam.userId"
-								placeholder="请输入用户id" />
-						</a-form-item>
-					</a-col>
-				</a-row>
-				<a-row>
-					<a-col :md="12"
-						:sm="24">
-						<a-form-item label="服务类别: ">
-							<a-button-group>
-								<a-button @click="handleTypeChose(allBtn)"
-									type="primary"
-									:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
-								<a-button v-for="item in btnGroups"
-									:key="item.id"
-									@click="handleTypeChose(item)"
-									type="primary"
-									:ghost="!item.isChosen">{{item.name}}</a-button>
-							</a-button-group>
-						</a-form-item>
-					</a-col>
-					<a-col :md="8"
-						:sm="24">
-						<a-form-item label="提交时间">
-							<a-range-picker @change="onDatePickChange"
-								v-decorator="['dateRange']" />
-						</a-form-item>
-					</a-col>
-				</a-row>
-				<a-row>
-					<a-col :md="14"
-						:sm="24">
-						<a-form-item label="系统状态: ">
-							<a-button-group>
-								<a-button @click="handleTypeChose2(allBtn)"
-									type="primary"
-									:ghost="!allBtn2.isChosen">{{allBtn.name}}</a-button>
-								<a-button v-for="item in btnGroups2"
-									:key="item.id"
-									@click="handleTypeChose2(item)"
-									type="primary"
-									:ghost="!item.isChosen">{{item.name}}</a-button>
-							</a-button-group>
-						</a-form-item>
-					</a-col>
-				</a-row>
-			</a-form>
-		</div>
-		<div class="table-operator"
-			style="margin-bottom:50px">
-			<span class="table-page-search-submitButtons"
-				:style="{ float: 'left', overflow: 'hidden' } || {} ">
-				<a-button type="primary"
-					@click="$refs.table.refresh(false)">查询</a-button>
-				<a-button style="margin-left: 8px"
-					@click="resetSearchForm">重置</a-button>
-			</span>
-			<span style="float:right">
-				<a-button type="primary"
-					@click="handleEdit()">操作</a-button>
-			</span>
-		</div>
-		<s-table ref="table"
-			rowKey="id"
-			:columns="columns"
-			:data="loadData"
-			:pagination="pagination"
-			:customRow="columnsClick"
-			:rowClassName="changeclassname"
-			bordered>
-			<span slot="userId"
-				slot-scope="text">{{text}}</span>
-			<span slot="cos"
-				slot-scope="text">
-				{{text == 0?'体检预约':'保单咨询'}}
-			</span>
-			<span slot="serviceState"
-				slot-scope="text">
-				{{text == 0?'未服务':text == 1?'已服务':'信息有误'}}
-			</span>
-		</s-table>
-		<!-- 这个不可以删除  是用来展示模态框的 -->
-		<BookTest ref="bookTest"
-			@saveOk="$refs.table.refresh(true)" />
-		<FeedBack ref="feedBack"
-			@saveOk="$refs.table.refresh(true)" />
-	</a-card>
+	<div class="custormerBookWrapper">
+		<a-card :bordered="false">
+			<div class="table-page-search-wrapper">
+				<a-form layout="inline"
+					:form="form">
+					<a-row :gutter="48">
+						<a-col :md="8"
+							:sm="24">
+							<a-form-item label="用户id: ">
+								<a-input v-model="queryParam.userId"
+									placeholder="请输入用户id" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col :md="12"
+							:sm="24">
+							<a-form-item label="服务类别: ">
+								<a-button-group>
+									<a-button @click="handleTypeChose(allBtn)"
+										type="primary"
+										:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
+									<a-button v-for="item in btnGroups"
+										:key="item.id"
+										@click="handleTypeChose(item)"
+										type="primary"
+										:ghost="!item.isChosen">{{item.name}}</a-button>
+								</a-button-group>
+							</a-form-item>
+						</a-col>
+						<a-col :md="8"
+							:sm="24">
+							<a-form-item label="提交时间">
+								<a-range-picker @change="onDatePickChange"
+									v-decorator="['dateRange']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col :md="14"
+							:sm="24">
+							<a-form-item label="系统状态: ">
+								<a-button-group>
+									<a-button @click="handleTypeChose2(allBtn)"
+										type="primary"
+										:ghost="!allBtn2.isChosen">{{allBtn.name}}</a-button>
+									<a-button v-for="item in btnGroups2"
+										:key="item.id"
+										@click="handleTypeChose2(item)"
+										type="primary"
+										:ghost="!item.isChosen">{{item.name}}</a-button>
+								</a-button-group>
+							</a-form-item>
+						</a-col>
+					</a-row>
+				</a-form>
+			</div>
+			<div class="table-operator"
+				style="margin-bottom:50px">
+				<span class="table-page-search-submitButtons"
+					:style="{ float: 'left', overflow: 'hidden' } || {} ">
+					<a-button type="primary"
+						@click="$refs.table.refresh(false)">查询</a-button>
+					<a-button style="margin-left: 8px"
+						@click="resetSearchForm">重置</a-button>
+				</span>
+				<span style="float:right">
+					<a-button type="primary"
+						@click="handleEdit()">操作</a-button>
+				</span>
+			</div>
+			<s-table ref="table"
+				rowKey="id"
+				:columns="columns"
+				:data="loadData"
+				:pagination="pagination"
+				:customRow="columnsClick"
+				:rowClassName="changeclassname"
+				bordered>
+				<span slot="userId"
+					slot-scope="text">{{text}}</span>
+				<span slot="cos"
+					slot-scope="text">
+					{{text == 0?'体检预约':'保单咨询'}}
+				</span>
+				<span slot="serviceState"
+					slot-scope="text">
+					{{text == 0?'未服务':text == 1?'已服务':'信息有误'}}
+				</span>
+			</s-table>
+			<!-- 这个不可以删除  是用来展示模态框的 -->
+			<BookTest ref="bookTest"
+				@saveOk="$refs.table.refresh(true)" />
+			<FeedBack ref="feedBack"
+				@saveOk="$refs.table.refresh(true)" />
+		</a-card>
+	</div>
 </template>
 
 <script>
@@ -233,22 +235,32 @@ export default {
       ],
       loadData: () => {
         return getMultipleConsultServiceList(this.queryParam).then(res => {
-          if (res.data.pageNum > res.data.navigateLastPage) {
-            // 解决当点击的页码超过实际页数重复请求bug
-            this.queryParam.startPage = res.data.navigateLastPage
+          if (res.code === 200 && res.data) {
+            if (res.data.pageNum > res.data.navigateLastPage) {
+              // 解决当点击的页码超过实际页数重复请求bug
+              this.queryParam.startPage = res.data.navigateLastPage
+            }
+            res.data.data = res.data.list
+            res.data.pageNo = res.data.pageNum
+            res.data.totalPage = res.data.pages
+            res.data.totalCount = res.data.total
+
+            delete res.data.list
+            delete res.data.pageNum
+            delete res.data.pages
+            delete res.data.total
+            this.currentRowIndex = ''
+
+            return res.data
+          } else {
+            res.data = {}
+            console.log('走了else', res.data)
+            res.data.data = []
+            res.data.pageNo = 0
+            res.data.totalPage = 0
+            res.data.totalCount = 0
+            return res.data
           }
-          res.data.data = res.data.list
-          res.data.pageNo = res.data.pageNum
-          res.data.totalPage = res.data.pages
-          res.data.totalCount = res.data.total
-
-          delete res.data.list
-          delete res.data.pageNum
-          delete res.data.pages
-          delete res.data.total
-          this.currentRowIndex = ''
-
-          return res.data
         })
       }
     }
@@ -357,7 +369,9 @@ export default {
 }
 </script>
 <style lang="less">
-.active {
-	background-color: rgba(42, 130, 228, 0.3);
+.custormerBookWrapper {
+	.active {
+		background-color: rgba(42, 130, 228, 0.3);
+	}
 }
 </style>

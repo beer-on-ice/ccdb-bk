@@ -153,7 +153,6 @@ export default {
   },
   created () {
     this.uploadUrl = specialUrl.upload
-
     this.id = this.$route.query.id
     this.getInfo()
   },
@@ -257,7 +256,6 @@ export default {
               this.$notification.success({
                 message: this.state === 1 ? '发布成功！' : '更新成功！'
               })
-              this.$router.go(-1)
             }
           })
         }
@@ -291,7 +289,7 @@ export default {
     },
     // 返回
     handleBack () {
-      this.$router.push({ path: '/policy/policyManagement' })
+      this.$router.push('/policy/policyManagement')
     }
   }
 }

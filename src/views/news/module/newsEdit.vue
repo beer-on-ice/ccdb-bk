@@ -54,11 +54,24 @@
 									v-decorator="['pTime']" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :span="9">
 							<a-form-item label="操作："
 								:label-col="{span:2}">
 								<a-checkbox-group :options="plainOptions"
 									v-decorator="['checkedList']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col>
+							<a-form-item label="发布到：">
+								<a-radio-group v-decorator="[
+          'showType',
+          {rules: [{ required: true, message: '请选择发布位置！', trigger: 'change' }]}
+        ]">
+									<a-radio value="1">看看</a-radio>
+									<a-radio value="2">推荐</a-radio>
+								</a-radio-group>
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -144,11 +157,11 @@
 			<div class="block">
 				<a-form-item>
 					<a-button type="primary"
-						@click="save">
+						@click="handleSave">
 						保存
 					</a-button>
 					<a-button type="primary"
-						@click="back"
+						@click="handleBack"
 						style="margin-left:20px;">
 						返回
 					</a-button>
@@ -201,6 +214,7 @@ export default {
         releaseDate: '',
         editor: '',
         sourceform: '',
+        showType: '',
         topCategory: '',
         twoLevel: '',
         isEssence: '',
@@ -208,7 +222,8 @@ export default {
         topics: '',
         type1: [],
         content: '',
-        imgName: ''
+        imgName: '',
+        opinionType: '' || 2
       }, // 最终添加的参数
       uploadUrl: '',
       fileList: [], // 上传的图片列表
@@ -240,12 +255,14 @@ export default {
         // 回绑
         this.handleCoverImg(data)
         this.handleBackUe(data)
+        this.opinionType = data.opinionType || 2
         this.form.setFieldsValue({
           title: data.title,
           editor: data.editor,
           sourceform: data.sourceform,
           topics: data.topics,
           tags: data.tags,
+          showType: data.showType.toString(),
           danger: this.handelBackDanger(data),
           inforDomain: data.inforDomain.toString(),
           category: data.category.toString(),
@@ -267,8 +284,6 @@ export default {
     },
     // 反向回绑多选
     handleBackCheckbox (data) {
-      console.log(data)
-
       let arr = []
       if (data && Number(data.isHot)) {
         arr.push('热门')
@@ -327,7 +342,6 @@ export default {
     },
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
-      console.log(fileList)
 
       if (
         fileList[0] &&
@@ -348,7 +362,7 @@ export default {
         }
       })
     },
-    save () {
+    handleSave () {
       let formObj = this.form.getFieldsValue([
         'title',
         'editor',
@@ -360,14 +374,13 @@ export default {
         'danger',
         'topics',
         'tags',
+        'showType',
         'checkedList'
       ])
-
       if (this.$refs.ue.content === '') {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
         })
-        return
       }
 
       this.form.validateFields(err => {
@@ -386,6 +399,7 @@ export default {
           this.queryParam.sourceform = formObj.sourceform || ''
           this.queryParam.topics = formObj.topics || ''
           this.queryParam.tags = formObj.tags || ''
+          this.queryParam.showType = formObj.showType || ''
           this.queryParam.imgName = this.fileName || ''
           this.queryParam.content = this.$refs.ue.content || ''
           this.queryParam.type1 = formObj.checkedList || []
@@ -410,7 +424,6 @@ export default {
                 console.log('快报生成/删除成功')
               })
             }
-            this.$router.push({ path: '/news/newsManagement' })
           })
         }
       })
@@ -424,8 +437,8 @@ export default {
       this.imgUrl = ''
       this.previewVisible = false
     },
-    back () {
-      this.$router.push('/news')
+    handleBack () {
+      this.$router.push('/news/newsManagement')
     }
   }
 }

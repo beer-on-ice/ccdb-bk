@@ -47,11 +47,24 @@
 									v-decorator="['pTime']" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="12">
+						<a-col :span="9">
 							<a-form-item label="操作："
 								:label-col="{span:2}">
 								<a-checkbox-group :options="plainOptions"
 									v-decorator="['checkedList']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col>
+							<a-form-item label="发布到：">
+								<a-radio-group v-decorator="[
+          'showType',
+          {rules: [{ required: true, message: '请选择发布位置！', trigger: 'change' }]}
+        ]">
+									<a-radio value="1">看看</a-radio>
+									<a-radio value="2">推荐</a-radio>
+								</a-radio-group>
 							</a-form-item>
 						</a-col>
 					</a-row>
@@ -202,12 +215,14 @@ export default {
         topCategory: '',
         twoLevel: '',
         isEssence: '',
+        showType: '',
         tags: '',
         topics: '',
         type1: [],
         content: '',
         imgName: '',
-        covePicturePath: ''
+        covePicturePath: '',
+        opinionType: 2
       }, // 最终添加的参数
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
@@ -270,6 +285,7 @@ export default {
         'sourceform',
         'pTime',
         'danger',
+        'showType',
         'topics',
         'tags',
         'checkedList'
@@ -297,6 +313,7 @@ export default {
           this.queryParam.sourceform = formObj.sourceform || ''
           this.queryParam.topics = formObj.topics || ''
           this.queryParam.tags = formObj.tags || ''
+          this.queryParam.showType = formObj.showType || ''
           this.queryParam.imgName = this.fileName || ''
           this.queryParam.content = this.$refs.ue.content || ''
           this.queryParam.type1 = formObj.checkedList || []
@@ -320,7 +337,10 @@ export default {
               }
               this.id = res.data
               this.isSave = true
-              this.handleBack()
+              this.$router.push({
+                path: '/news/newsedit',
+                query: { id: res.data }
+              })
             } else {
               this.$notification.error({
                 message: '保存失败，请重试！'

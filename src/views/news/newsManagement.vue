@@ -318,20 +318,30 @@ export default {
           this.queryParam.sort = ''
         }
         return getNewsList(this.queryParam).then(res => {
-          if (res.data.pageNum > res.data.navigateLastPage) {
-            // 解决当点击的页码超过实际页数重复请求bug
-            this.queryParam.startPage = res.data.navigateLastPage
-          }
-          res.data.data = res.data.list
-          res.data.pageNo = res.data.pageNum
-          res.data.totalPage = res.data.pages
-          res.data.totalCount = res.data.total
+          if (res.code === 200 && res.data) {
+            if (res.data.pageNum > res.data.navigateLastPage) {
+              // 解决当点击的页码超过实际页数重复请求bug
+              this.queryParam.startPage = res.data.navigateLastPage
+            }
+            res.data.data = res.data.list
+            res.data.pageNo = res.data.pageNum
+            res.data.totalPage = res.data.pages
+            res.data.totalCount = res.data.total
 
-          delete res.data.list
-          delete res.data.pageNum
-          delete res.data.pages
-          delete res.data.total
-          return res.data
+            delete res.data.list
+            delete res.data.pageNum
+            delete res.data.pages
+            delete res.data.total
+            return res.data
+          } else {
+            res.data = {}
+            console.log('走了else', res.data)
+            res.data.data = []
+            res.data.pageNo = 0
+            res.data.totalPage = 0
+            res.data.totalCount = 0
+            return res.data
+          }
         })
       }
     }

@@ -2,13 +2,14 @@ const path = require('path')
 const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const generate = require('@ant-design/colors/lib/generate').default
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const isDev = process.env.NODE_ENV === 'production'
-// vue.config.js
+const isDev = process.env.NODE_ENV === 'production' // true->production false->development/test
+
 module.exports = {
   publicPath: !isDev ? '/' : './',
   configureWebpack: {
@@ -16,7 +17,6 @@ module.exports = {
       // Ignore all locale files of moment.js
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       // 生成仅包含颜色的替换样式（主题色等）
-      // TODO 需要增加根据环境不开启主题需求
       new ThemeColorReplacer({
         fileName: 'css/theme-colors-[contenthash:8].css',
         matchColors: getAntdSerials('#1890ff'), // 主色系列
@@ -43,7 +43,21 @@ module.exports = {
           }
         }
       })
-    ]
+    ],
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          uglifyOptions: {
+            compress: {
+              warnings: false,
+              drop_console: true, // console
+              drop_debugger: false,
+              pure_funcs: ['console.log'] // 移除console
+            }
+          }
+        })
+      ]
+    }
   },
 
   chainWebpack: config => {
@@ -111,7 +125,7 @@ module.exports = {
 
   // disable source map in production
   productionSourceMap: false,
-  lintOnSave: undefined,
+  lintOnSave: true,
   // babel-loader no-ignore node_modules/*
   transpileDependencies: []
 }

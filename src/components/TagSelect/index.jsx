@@ -59,22 +59,34 @@ export default {
     getItemsKey (items) {
       const totalItem = {}
       items.forEach(item => {
-        totalItem[item.componentOptions.propsData && item.componentOptions.propsData.value] = false
+        totalItem[
+          item.componentOptions.propsData &&
+						item.componentOptions.propsData.value
+        ] = false
       })
       return totalItem
     },
     // CheckAll Button
     renderCheckAll () {
-      return !this.hideCheckAll && (<Option key={'total'} checked={this.localCheckAll} onChange={this.onCheckAll}>All</Option>) || null
+      return (
+        (!this.hideCheckAll && (
+          <Option
+            key={'total'}
+            checked={this.localCheckAll}
+            onChange={this.onCheckAll}
+          >
+						All
+          </Option>
+        )) ||
+				null
+      )
     },
     // expandable
-    renderExpandable () {
-
-    },
+    renderExpandable () {},
     // render option
     renderTags (items) {
       const listeners = {
-        change: (checked) => {
+        change: checked => {
           this.onChange(checked)
           this.$emit('change', checked)
         }
@@ -88,7 +100,9 @@ export default {
     }
   },
   render () {
-    const { $props: { prefixCls } } = this
+    const {
+      $props: { prefixCls }
+    } = this
     const classString = {
       [`${prefixCls}`]: true
     }

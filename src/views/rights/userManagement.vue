@@ -255,9 +255,9 @@ export default {
       console.log('添加保存按钮', this.formListAdd)
       // 所有项为必填项
       if (
-        this.formListAdd.username == '' ||
-				this.formListAdd.password == '' ||
-				this.formListAdd.writeOff == ''
+        this.formListAdd.username === '' ||
+				this.formListAdd.password === '' ||
+				this.formListAdd.writeOff === ''
       ) {
         this.$message({
           type: 'error',
@@ -297,8 +297,8 @@ export default {
     // 编辑保存按钮
     submitFormEditor () {
       if (
-        this.formListEditor.oldPassword == '' ||
-				this.formListEditor.password == ''
+        this.formListEditor.oldPassword === '' ||
+				this.formListEditor.password === ''
       ) {
         this.$message({
           type: 'error',

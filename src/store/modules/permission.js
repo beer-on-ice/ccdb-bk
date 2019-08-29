@@ -79,7 +79,7 @@ function generateAllRoutes (roles) {
       name: 'index',
       component: BasicLayout,
       meta: { title: '首页' },
-      redirect: '/policy/policyManagement',
+      redirect: '/welcome',
       children: [...flatRoles]
     },
     {

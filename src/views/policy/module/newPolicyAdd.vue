@@ -217,15 +217,12 @@ export default {
               this.$notification.success({
                 message: this.state === 1 ? '发布成功！' : '保存成功！'
               })
-              // if (this.state === 1) {
-              //   this.$router.go(-1)
-              // } else {
-              //   this.id = res.data
-              //   this.isSave = true
-              // }
               this.id = res.data
               this.isSave = true
-              this.handleBack()
+              this.$router.push({
+                path: '/policy/newpolicyedit',
+                query: { id: res.data }
+              })
             } else {
               this.$notification.error({
                 message: '保存失败，稍后重试！'
