@@ -46,7 +46,7 @@
 			</a-layout-footer>
 
 			<!-- Setting Drawer (show in development mode) -->
-			<setting-drawer v-if="!production"></setting-drawer>
+			<setting-drawer v-if="development"></setting-drawer>
 		</a-layout>
 	</a-layout>
 
@@ -79,6 +79,7 @@ export default {
   data () {
     return {
       production: config.production,
+      development: config.development,
       collapsed: false,
       menus: []
     }

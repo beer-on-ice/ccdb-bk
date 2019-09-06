@@ -24,6 +24,7 @@ export default {
   colorWeak: false,
   multiTab: false,
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true',
+  development: process.env.NODE_ENV === 'development' && process.env.VUE_APP_PREVIEW !== 'true',
   // vue-ls options
   storageOptions: {
     namespace: 'pro__', // key prefix

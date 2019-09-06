@@ -1,5 +1,6 @@
 import { axios } from '@/utils/request'
 const isDev = process.env.NODE_ENV === 'production'
+
 const api = {
   newslist: '/backend/infoMgmt/list',
   top: '/backend/infoMgmt/pushTop',

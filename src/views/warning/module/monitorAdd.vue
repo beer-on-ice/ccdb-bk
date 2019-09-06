@@ -1,12 +1,11 @@
 <template>
-	<div class="monitorEditWrapper">
+	<div class="monitorAddWrapper">
 		<a-form layout="horizontal"
 			:form="form">
 			<a-row>
 				<a-col :span="6">
 					<a-form-item>
 						<a-upload class="uploadWrapper"
-							v-if="covePicturePath == ''"
 							listType="picture-card"
 							:headers='myHeaders'
 							:action="uploadUrl"
@@ -20,18 +19,12 @@
 								<div className="ant-upload-text">选择封面</div>
 							</div>
 						</a-upload>
-						<div v-else>
-							<img :src="covePicturePath"
-								style="width:100px;margin-right:20px;">
-							<a-button type="danger"
-								@click="handleRemoveUpload">删除图片</a-button>
-						</div>
 					</a-form-item>
 				</a-col>
 				<a-col :span="18">
 					<a-form-item label="标题："
 						:label-col="{span:1}">
-						<a-input style="max-width:450px;"
+						<a-input style="max-width:250px;"
 							placeholder="请输入"
 							v-decorator="[
           'title',
@@ -84,7 +77,7 @@
 					<a-form-item label="内容分类："
 						:label-col="{span:5}">
 						<a-select placeholder="请选择"
-							style="max-width:250px;"
+							style="max-width:200px;"
 							v-decorator="[
           'category',
           {rules: [{ required: true, message: '请选择内容分类！', trigger: 'change' }]}
@@ -95,7 +88,7 @@
 					</a-form-item>
 					<a-form-item label="资讯性质："
 						:label-col="{span:5}">
-						<a-select style="max-width:250px;"
+						<a-select style="max-width:200px;"
 							placeholder="请选择"
 							v-decorator="[
           'categoryType',
@@ -112,13 +105,13 @@
 							:displayRender="displayRender"
 							expandTrigger="hover"
 							placeholder="请选择"
-							style="max-width:250px;"
+							style="max-width:200px;"
 							v-decorator="['danger']" />
 					</a-form-item>
 					<a-form-item label="来源网站："
 						:label-col="{span:5}">
 						<a-input placeholder="请输入"
-							style="max-width:250px;"
+							style="max-width:200px;"
 							v-decorator="[
           'sourceform',
           {rules: [{ required: true, message: '请输入来源网站！', trigger: 'change' }]}
@@ -140,7 +133,7 @@
 							optionLabelProp="text">
 							<template slot="dataSource">
 								<a-select-option v-for="item in tagsSearchResult"
-									:key="item.category"
+									:key="item.id"
 									:text="item.category">
 									<div v-html="item.category"></div>
 								</a-select-option>
@@ -154,7 +147,18 @@
 								:key="item">
 								<span v-html="item" />
 								<a-icon type="close"
-									@click="handleDelTag(item)" />
+									@click="handleDelTag(item,0)" />
+							</li>
+						</ul>
+					</div>
+					<div v-if="oldTags.length">
+						<h4>默认标签：</h4>
+						<ul class='newTagWrapper'>
+							<li v-for="item in oldTags"
+								:key="item">
+								<span v-html="item" />
+								<a-icon type="close"
+									@click="handleDelTag(item,1)" />
 							</li>
 						</ul>
 					</div>
@@ -163,29 +167,30 @@
 					<Ue ref="ue" />
 				</a-col>
 			</a-row>
-			<div class="block">
-				<a-form-item>
-					<a-button type="primary"
-						@click="handleSave">
-						保存
-					</a-button>
-					<a-button type="primary"
-						@click="handleBack"
-						style="margin-left:20px;">
-						返回
-					</a-button>
-				</a-form-item>
-			</div>
 		</a-form>
-		<div class="qrcode">
-			<img :src="qrCode">
-			<p>预览扫一扫</p>
+		<div>
+			<a-button type="primary"
+				@click="handleSave">
+				保存
+			</a-button>
+			<a-button type="primary"
+				@click="handlePreview"
+				v-show="isSave"
+				style="margin-left:20px;">
+				预览
+			</a-button>
+			<a-button type="primary"
+				@click="handleBack"
+				style="margin-left:20px;">
+				返回
+			</a-button>
 		</div>
-		<a-modal title="查看大图"
+		<a-modal :title="modalTitle"
 			:visible="previewVisible"
 			:footer="null"
+			class="previewModal"
 			@cancel="handlePreviewCancel">
-			<img :src="imgUrl"
+			<img :src="qrCode"
 				style="width:100%;">
 		</a-modal>
 	</div>
@@ -193,19 +198,19 @@
 
 <script>
 import Vue from 'vue'
-import moment from 'moment'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { Ue } from '@/components'
+import moment from 'moment'
+
 import {
   getDangerList,
+  getNewsAdd,
   getRemoveUpload,
   getNewsAddBanner,
   getFastCode,
-  getUpdate,
   specialUrl
 } from '@/api/newsManage'
-
-import { getCurrentInfo, getkeywordSystem } from '@/api/warning'
+import { getkeywordSystem } from '@/api/warning'
 
 export default {
   components: { Ue },
@@ -222,11 +227,14 @@ export default {
           value: 2,
           label: '自身舆情'
         }
-      ], // 单选
-      covePicturePath: '',
-      // 最终添加的参数
+      ],
+      previewVisible: false,
+      modalTitle: '',
+      qrCode: '',
+      id: '',
+      uploadUrl: '',
+      isSave: false, // 是否保存
       queryParam: {
-        id: '',
         title: '',
         inforDomain: '',
         category: '',
@@ -234,96 +242,62 @@ export default {
         releaseDate: '',
         editor: '',
         sourceform: '',
-        showType: '',
         topCategory: '',
         twoLevel: '',
         isEssence: '',
+        showType: '',
         tags: '',
         topics: '',
+        type1: [],
         content: '',
         imgName: '',
-        type1: [],
+        covePicturePath: '',
         opinionType: 1
-      },
-      imgUrl: '', // 查看大图的地址
-      uploadUrl: '', // 上传的图片地址
+      }, // 最终添加的参数
       fileList: [], // 上传的图片列表
       fileName: '', // 上传后返回的图片名称
       dangerList: [], // 级联列表-风险
       isBanner: '', // 是否生成查到快报
-      previewVisible: false, // 能否预览
-      qrCode: '', // 二维码地址
-      info: {}, // 舆情信息
       newTags: [], // 新添加的标签
+      oldTags: [], // 已存在的标签
       tagsSearchResult: [] // 搜索到的标签列表
     }
   },
   created () {
-    this.handleBackCurrentTag()
-
+    this.handleInitInfo()
     this.getDangerList()
-    this.generateFastCode()
-    this.getCurrentPageInfo()
   },
   methods: {
-    // 获取当前页面信息
-    getCurrentPageInfo () {
-      getCurrentInfo({ id: this.info.id }).then(res => {
-        const data = res.data
-
-        this.handleCoverImg(data)
-        this.handleBackUe(data)
-        this.form.setFieldsValue({
-          title: data.title,
-          editor: data.editor,
-          sourceform: data.sourceform,
-          topics: data.topics,
-          tags: data.tags,
-          danger: this.handelBackDanger(data),
-          inforDomain: data.inforDomain.toString(),
-          category: data.category.toString(),
-          categoryType: data.categoryType.toString(),
-          pTime: moment(data.releaseDate)
-        })
-        if (data.tags !== '') {
-          this.newTags = data.tags.split(',')
-        }
+    // 获取风险分类
+    getDangerList () {
+      getDangerList().then(res => {
+        this.dangerList = res.data
       })
     },
-    // 反向-绑定已有标签
-    handleBackCurrentTag () {
+    handleInitInfo () {
       this.uploadUrl = specialUrl.upload
-      this.info = this.$route.params.info
-    },
-    // 反向-回绑ue
-    handleBackUe (data) {
-      this.$refs.ue.content = data.content
-    },
-    // 反向-回绑图片
-    handleCoverImg (data) {
-      let str = data.covePicturePath
-      this.covePicturePath = str
-      this.fileName = str.substring(str.lastIndexOf('/') + 1)
-    },
-    // 反向-回绑风险
-    handelBackDanger (data) {
-      let arr = []
-      if (data.twoLevel) {
-        arr.push(data.topCategory)
-        arr.push(data.twoLevel)
+
+      if (this.$route.params.info.modalInfo.administratorName) {
+        this.oldTags.push(this.$route.params.info.modalInfo.administratorName)
       }
-      arr = arr.length === 0 ? '' : arr
-      return arr
+      if (this.$route.params.info.modalInfo.productName) {
+        this.oldTags.push(this.$route.params.info.modalInfo.productName)
+      }
+      if (this.$route.params.info.modalInfo.managerName) {
+        this.oldTags.push(this.$route.params.info.modalInfo.managerName)
+      }
     },
     // 实时搜索标签
     tagsQuerySearch (queryString) {
       this.tagsSearchResult = queryString ? this.searchResult(queryString) : []
     },
+    // 实时搜索标签 - 搜索结果
     searchResult (query) {
       let arr = []
       getkeywordSystem({ keyword: query }).then(res => {
         res.data.forEach(item => {
           arr.push({
+            query,
             category: item.keyword,
             identity: item.identity,
             id: item.id
@@ -332,8 +306,7 @@ export default {
       })
       return arr
     },
-
-    // 选择标签
+    // 实时搜索标签 - 选择标签
     handleTagsSelect (item, option) {
       this.newTags.push(option.data.attrs.text)
       this.newTags = this.unique(this.newTags)
@@ -341,32 +314,13 @@ export default {
     unique (arr) {
       return [...new Set(arr)]
     },
-    handleDelTag (el) {
-      this.newTags = this.newTags.filter(item => item !== el)
-    },
-    // 生成快报二维码
-    generateFastCode () {
-      getFastCode({
-        url: specialUrl.code + this.info.id,
-        id: this.info.id
-      }).then(res => {
-        this.qrCode = res.data
-      })
-    },
-    // 获取风险分类
-    getDangerList () {
-      getDangerList().then(res => {
-        this.dangerList = res.data
-      })
-    },
-    // 渲染风险
-    displayRender ({ labels }) {
-      return labels[labels.length - 1]
-    },
-    // 处理时间
-    handlePtime (value) {
-      if (!value) return
-      return moment(value).format('YYYY-MM-DD HH:mm:ss')
+    // 实时搜索标签 - 删除标签
+    handleDelTag (el, type) {
+      if (type) {
+        this.oldTags = this.oldTags.filter(item => item !== el)
+      } else {
+        this.newTags = this.newTags.filter(item => item !== el)
+      }
     },
     // 保存
     handleSave () {
@@ -379,14 +333,17 @@ export default {
         'sourceform',
         'pTime',
         'danger',
-        'topics'
+        'showType',
+        'topics',
+        'checkedList'
       ])
+
       if (this.$refs.ue.content === '') {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
         })
+        return
       }
-
       this.form.validateFields(err => {
         if (!err) {
           let pTime = this.handlePtime(formObj.pTime)
@@ -401,38 +358,52 @@ export default {
           this.queryParam.twoLevel = formObj.danger ? formObj.danger[1] : ''
           this.queryParam.sourceform = formObj.sourceform || ''
           this.queryParam.topics = formObj.topics || ''
+          this.queryParam.showType = formObj.showType || ''
           this.queryParam.imgName = this.fileName || ''
           this.queryParam.content = this.$refs.ue.content || ''
-          this.queryParam.id = this.info.id
-          this.queryParam.tags = this.newTags.join(',')
+          let tagArr = this.newTags.concat(this.oldTags)
+          this.queryParam.tags = tagArr.join(',')
 
-          console.log('queryParam', this.queryParam)
-
-          getUpdate(this.queryParam).then(res => {
-            this.$notification.success({
-              message: '更新成功！'
-            })
-            this.generateFastCode()
-
-            if (this.isBanner) {
-              let params = {
-                bannerFlag: this.isBanner,
-                informationId: this.info.id,
-                title: this.queryParam.title,
-                infomationUrl: specialUrl.code + this.info.id
-              }
-              getNewsAddBanner(params).then(res => {
-                console.log('快报生成/删除成功')
+          getNewsAdd(this.queryParam).then(res => {
+            if (res.code === 200) {
+              this.$notification.success({
+                message: '保存成功！'
               })
+
+              if (this.isBanner === '1') {
+                let params = {
+                  bannerFlag: '1',
+                  informationId: res.data,
+                  title: this.queryParam.title,
+                  infomationUrl: specialUrl.code + res.data
+                }
+                getNewsAddBanner(params).then(resp => {
+                  if (resp.code === 200) console.log('快报生成成功')
+                })
+              }
+              this.id = res.data
+              this.isSave = true
+              this.$router.push({
+                path: '/warning/monitor'
+                // query: { id: res.data }
+              })
+            } else {
+              this.$notification.error({
+                message: '保存失败，请重试！'
+              })
+              this.isSave = false
             }
           })
         }
       })
     },
-    // 上传图片
+    // 处理时间
+    handlePtime (value) {
+      if (!value) return
+      return moment(value).format('YYYY-MM-DD HH:mm:ss')
+    },
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
-
       if (
         fileList[0] &&
 				fileList[0].response &&
@@ -441,28 +412,44 @@ export default {
         this.fileName = fileList[0].response.data
       }
     },
+    displayRender ({ labels }) {
+      return labels[labels.length - 1]
+    },
     // 移除上传的图片
     handleRemoveUpload () {
       getRemoveUpload({
         fileName: this.fileName
       }).then(res => {
-        if (res.code === 200) {
-          this.fileName = ''
-          this.covePicturePath = ''
-        }
+        if (res.code === 200) this.fileName = ''
       })
     },
     // 预览图片
     handlePreviewImg (file) {
-      this.imgUrl = file.url || file.thumbUrl
+      this.qrCode = file.url || file.thumbUrl
+      this.modalTitle = '查看大图'
       this.previewVisible = true
     },
-    // 取消预览
+    // 预览 // 生成快报二维码
+    handlePreview () {
+      getFastCode({
+        url: specialUrl.code + this.id,
+        id: this.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.modalTitle = '扫码预览'
+          this.qrCode = res.data
+          this.previewVisible = true
+        } else {
+          this.$notification.error({
+            message: '生成二维码失败，请重试！'
+          })
+        }
+      })
+    },
     handlePreviewCancel () {
-      this.imgUrl = ''
+      this.qrCode = ''
       this.previewVisible = false
     },
-    // 返回
     handleBack () {
       this.$router.push('/warning/monitor')
     }
@@ -471,21 +458,16 @@ export default {
 </script>
 
 <style lang="less" >
-.monitorEditWrapper {
-	position: relative;
+.monitorAddWrapper {
 	.uploadWrapper {
 		.ant-upload {
 			width: 250px;
 			height: 150px;
 		}
 	}
-	.qrcode {
-		position: absolute;
-		right: 10px;
-		top: 0;
-		text-align: center;
-		img {
-			width: 180px;
+	.previewModal {
+		.ant-modal-body {
+			text-align: center;
 		}
 	}
 	.newTagWrapper {

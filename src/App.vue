@@ -1,9 +1,9 @@
 <template>
-  <a-locale-provider :locale="locale">
-    <div id="app">
-      <router-view/>
-    </div>
-  </a-locale-provider>
+	<a-locale-provider :locale="locale">
+		<div id="app">
+			<router-view />
+		</div>
+	</a-locale-provider>
 </template>
 
 <script>
@@ -16,14 +16,11 @@ export default {
     return {
       locale: zhCN
     }
-  },
-  mounted () {
-  
   }
 }
 </script>
 <style>
-  #app {
-    height: 100%;
-  }
+#app {
+	height: 100%;
+}
 </style>

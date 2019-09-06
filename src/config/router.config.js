@@ -88,12 +88,23 @@ export const constantRouterMap = [
         children: [
           {
             path: '/warning/monitorEdit',
-            name: 'newsEdit',
+            name: 'monitorEdit',
             hidden: true,
             component: () => import('@/views/warning/module/monitorEdit'),
             meta: {
-              title: '资讯编辑',
-              dutyName: 'news',
+              title: '舆情编辑',
+              dutyName: 'warning',
+              keepAlive: false
+            }
+          },
+          {
+            path: '/warning/monitorAdd',
+            name: 'monitorAdd',
+            hidden: true,
+            component: () => import('@/views/warning/module/monitorAdd'),
+            meta: {
+              title: '舆情新增',
+              dutyName: 'warning',
               keepAlive: false
             }
           }

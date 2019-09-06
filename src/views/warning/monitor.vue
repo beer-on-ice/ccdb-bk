@@ -6,9 +6,9 @@
 					:form="form">
 					<a-row :gutter="48">
 						<a-col :span="4">
-							<a-form-item label="公司: ">
+							<a-form-item :label="queryParam.targetType==1?'公司：':queryParam.targetType==2?'产品名称：':'高管姓名：'">
 								<a-input v-model="queryParam.keyword"
-									placeholder="请输入公司名称" />
+									placeholder="请输入" />
 							</a-form-item>
 						</a-col>
 						<a-col :span="3">
@@ -22,17 +22,17 @@
 								</a-select>
 							</a-form-item>
 						</a-col>
-						<a-col :span="5">
+						<a-col :span="7">
 							<a-form-item>
 								<a-dropdown>
 									<a href="javascript:;">
-										{{column}}
+										{{columnName}}
 										<a-icon type="down" />
 									</a>
 									<a-menu slot="overlay"
 										@click="onSortRangeClick">
-										<a-menu-item v-for="item in sortRange"
-											:key="item.id">
+										<a-menu-item v-for="(item,index) in sortRange"
+											:key="index">
 											<a href="javascript:;">{{item.name}}</a>
 										</a-menu-item>
 									</a-menu>
@@ -99,24 +99,23 @@
 				<span slot="self"
 					slot-scope="text,record"
 					style="color:blue;"
-					@click="showInfo(record,5)">
+					@click="showInfoTwo(record,2)">
 					{{text}}[查看]
 				</span>
 				<span slot="administratorName"
 					slot-scope="text,record"
-					style="color:blue;"
 					@click="showInfo(record,7)">
 					{{text}}[查看]
 				</span>
 				<span slot="around"
 					slot-scope="text,record"
 					style="color:blue;"
-					@click="showInfo(record,6)">
+					@click="showInfoTwo(record,1)">
 					{{text}}[查看]
 				</span>
 				<span slot="operate"
 					slot-scope="text,record"
-					@click="handleEdit(record)">
+					@click="handleAdd(record)">
 					<a-icon type="edit" />
 				</span>
 			</s-table>
@@ -125,22 +124,19 @@
 			:modalData="modalData"
 			:modalVisible="modalVisible"
 			:modalStatus="modalStatus"
-			@closeModal="modalVisible = false" />
+			@closeModal="handleModalClose"
+			@hanldeModalPageChange="hanldeModalPageChange" />
 	</div>
 </template>
 
 <script>
 import moment from 'moment'
 import { STable } from '@/components'
-import { getList, getColumn } from '@/api/warning'
+import { getList, getColumn, getColumnsp } from '@/api/warning'
 import monitorDetail from './module/monitorDetail'
 
 // 区间列表
 const dayRange = [
-  {
-    id: 0,
-    name: '全部'
-  },
   {
     id: 1,
     name: '30天'
@@ -155,7 +151,7 @@ const dayRange = [
   }
 ]
 // 筛选方式
-const sortRange = [
+const sortRange_1 = [
   {
     id: 1,
     name: '关注数'
@@ -181,7 +177,38 @@ const sortRange = [
     name: '周边舆情'
   }
 ]
-const fakeData = []
+const sortRange_2 = [
+  {
+    id: 1,
+    name: '关注数'
+  },
+  {
+    id: 2,
+    name: '记账数'
+  },
+  {
+    id: 5,
+    name: '自身舆情'
+  },
+  {
+    id: 6,
+    name: '周边舆情'
+  }
+]
+const sortRange_3 = [
+  {
+    id: 1,
+    name: '关注数'
+  },
+  {
+    id: 5,
+    name: '自身舆情'
+  },
+  {
+    id: 6,
+    name: '周边舆情'
+  }
+]
 
 export default {
   name: 'monitor',
@@ -193,23 +220,32 @@ export default {
     return {
       form: this.$form.createForm(this),
       dayRange,
-      sortRange,
-      column: sortRange[0].name,
+      sortRange: sortRange_1,
+      columnName: sortRange_1[0].name,
       modalVisible: false,
       modalStatus: 3,
       modalTitle: '',
-      modalData: fakeData,
+      modalData: {},
+      modalQueryParam: {
+        startPage: 1,
+        pageSize: 5,
+        targetId: '',
+        targetType: '',
+        periodType: '',
+        type: '',
+        productType: ''
+      },
       queryParam: {
         startPage: 1,
         pageSize: 10,
         keyword: '',
-        periodType: '',
+        periodType: 1,
         targetType: '' || 1,
         startTime: '',
         endTime: '',
-        column: '',
-        startNum: '' || 0,
-        endNum: ''
+        column: 1,
+        startNum: 0,
+        endNum: 10000
       },
       pagination: {
         defaultPageSize: 10,
@@ -405,13 +441,13 @@ export default {
         startPage: 1,
         pageSize: 10,
         keyword: '',
-        periodType: '',
+        periodType: 1,
         targetType: '' || 1,
         startTime: '',
         endTime: '',
-        column: '',
-        startNum: '' || 0,
-        endNum: ''
+        column: 1,
+        startNum: 0,
+        endNum: 10000
       }
 
       this.resetDatePicker()
@@ -430,12 +466,20 @@ export default {
     },
     // 改变数量筛选方式
     onSortRangeClick ({ key }) {
-      this.column = sortRange[key].name
-      this.queryParam.column = key
+      this.columnName = this.sortRange[key].name
+      this.queryParam.column = this.sortRange[key].id
     },
     // 切换舆情种类
     onSearchTypeChange (e) {
-      this.$refs.table.refresh()
+      this.sortRange =
+				this.queryParam.targetType == 1
+				  ? sortRange_1
+				  : this.queryParam.targetType == 2
+				    ? sortRange_2
+				    : sortRange_3
+      this.columnName = this.sortRange[0].name
+      this.queryParam.column = this.sortRange[0].id
+      this.$refs.table.refresh(true)
     },
     // 查看明细
     showInfo (record, type) {
@@ -446,12 +490,6 @@ export default {
         case 4:
           this.modalTitle = '产品明细'
           break
-        case 5:
-          this.modalTitle = '自身舆情'
-          break
-        case 6:
-          this.modalTitle = '周边舆情'
-          break
         case 7:
           this.modalTitle = '公司名称'
           break
@@ -461,18 +499,67 @@ export default {
       let param = {
         targetType: this.queryParam.targetType,
         targetId: record.administratorId,
-        column: type
+        column: type,
+        periodType: this.queryParam.periodType
       }
       getColumn(param).then(res => {
-        this.modalData = res.data
+        let newRes = {}
+        newRes.list = res.data
+        this.modalData = newRes
       })
     },
-    // 编辑
-    handleEdit (record) {
+    showInfoTwo (record, type) {
+      switch (type) {
+        case 2:
+          this.modalTitle = '自身舆情'
+          break
+        case 1:
+          this.modalTitle = '周边舆情'
+          break
+      }
+      this.modalStatus = type
+      this.modalVisible = true
+
+      let param = {
+        targetId:
+					this.queryParam.targetType == 3
+					  ? record.managerId
+					  : this.queryParam.targetType == 2
+					    ? record.productId
+					    : record.administratorId,
+        targetType: this.queryParam.targetType,
+        periodType: this.queryParam.periodType,
+        type,
+        productType: record.productType || ''
+      }
+      this.modalQueryParam = Object.assign(this.modalQueryParam, param)
+      this.getInfoTwoList(record)
+    },
+    getInfoTwoList (record) {
+      getColumnsp(this.modalQueryParam).then(res => {
+        this.modalData = res.data
+        this.modalData.modalInfo = record
+      })
+    },
+    hanldeModalPageChange (page) {
+      this.modalQueryParam.startPage = page
+      this.getInfoTwoList()
+    },
+    handleModalClose () {
+      this.modalVisible = false
+      this.modalQueryParam.startPage = 1
+      this.modalData = {}
+    },
+    // 新增
+    handleAdd (record) {
+      let info = {
+        modalInfo: record
+      }
       this.$router.push({
-        path: '/warning/monitorEdit',
-        query: {
-          id: record.id
+        // path: '/warning/monitorAdd',
+        name: 'monitorAdd',
+        params: {
+          info
         }
       })
     }

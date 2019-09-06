@@ -2,7 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
 const generate = require('@ant-design/colors/lib/generate').default
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -22,7 +22,6 @@ module.exports = {
         matchColors: getAntdSerials('#1890ff'), // 主色系列
         // 改变样式选择器，解决样式覆盖问题
         changeSelector (selector) {
-          console.log('selector', selector)
           switch (selector) {
             case '.ant-calendar-today .ant-calendar-date':
               return (
@@ -46,13 +45,13 @@ module.exports = {
     ],
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
-          uglifyOptions: {
+        new TerserPlugin({
+          terserOptions: {
             compress: {
               warnings: false,
-              drop_console: true, // console
-              drop_debugger: false,
-              pure_funcs: ['console.log'] // 移除console
+              drop_console: true,
+              drop_debugger: true,
+              pure_funcs: ['console.log']
             }
           }
         })
