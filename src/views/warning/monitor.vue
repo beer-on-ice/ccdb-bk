@@ -102,11 +102,11 @@
 					@click="showInfoTwo(record,2)">
 					{{text}}[查看]
 				</span>
-				<span slot="administratorName"
+				<!-- <span slot="administratorName"
 					slot-scope="text,record"
 					@click="showInfo(record,7)">
 					{{text}}[查看]
-				</span>
+				</span> -->
 				<span slot="around"
 					slot-scope="text,record"
 					style="color:blue;"
@@ -151,7 +151,7 @@ const dayRange = [
   }
 ]
 // 筛选方式
-const sortRange_1 = [
+const sortRangeA = [
   {
     id: 1,
     name: '关注数'
@@ -177,7 +177,7 @@ const sortRange_1 = [
     name: '周边舆情'
   }
 ]
-const sortRange_2 = [
+const sortRangeB = [
   {
     id: 1,
     name: '关注数'
@@ -195,7 +195,7 @@ const sortRange_2 = [
     name: '周边舆情'
   }
 ]
-const sortRange_3 = [
+const sortRangeC = [
   {
     id: 1,
     name: '关注数'
@@ -220,8 +220,8 @@ export default {
     return {
       form: this.$form.createForm(this),
       dayRange,
-      sortRange: sortRange_1,
-      columnName: sortRange_1[0].name,
+      sortRange: sortRangeA,
+      columnName: sortRangeA[0].name,
       modalVisible: false,
       modalStatus: 3,
       modalTitle: '',
@@ -451,6 +451,7 @@ export default {
       }
 
       this.resetDatePicker()
+      this.resetSortRange()
       this.$refs.table.refresh(true)
     },
     // 重置时间
@@ -458,6 +459,11 @@ export default {
       this.form.setFieldsValue({
         dateRange: undefined
       })
+    },
+    // 重置搜索条件
+    resetSortRange () {
+      this.columnName = this.sortRange[0].name
+      this.queryParam.column = this.sortRange[0].id
     },
     // 改变日期
     onDatePickChange (date, dateString) {
@@ -472,11 +478,11 @@ export default {
     // 切换舆情种类
     onSearchTypeChange (e) {
       this.sortRange =
-				this.queryParam.targetType == 1
-				  ? sortRange_1
-				  : this.queryParam.targetType == 2
-				    ? sortRange_2
-				    : sortRange_3
+				this.queryParam.targetType === 1
+				  ? sortRangeA
+				  : this.queryParam.targetType === 2
+				    ? sortRangeB
+				    : sortRangeC
       this.columnName = this.sortRange[0].name
       this.queryParam.column = this.sortRange[0].id
       this.$refs.table.refresh(true)
@@ -522,9 +528,9 @@ export default {
 
       let param = {
         targetId:
-					this.queryParam.targetType == 3
+					this.queryParam.targetType === 3
 					  ? record.managerId
-					  : this.queryParam.targetType == 2
+					  : this.queryParam.targetType === 2
 					    ? record.productId
 					    : record.administratorId,
         targetType: this.queryParam.targetType,
@@ -553,7 +559,8 @@ export default {
     // 新增
     handleAdd (record) {
       let info = {
-        modalInfo: record
+        modalInfo: record,
+        type: this.queryParam.targetType
       }
       this.$router.push({
         // path: '/warning/monitorAdd',

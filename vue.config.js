@@ -8,10 +8,10 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
-const isDev = process.env.NODE_ENV === 'production' // true->production false->development/test
+const isDev = process.env.NODE_ENV === 'development' // true->production false->development/test
 
 module.exports = {
-  publicPath: !isDev ? '/' : './',
+  publicPath: isDev ? '/' : './',
   configureWebpack: {
     plugins: [
       // Ignore all locale files of moment.js

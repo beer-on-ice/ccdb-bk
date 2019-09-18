@@ -31,6 +31,7 @@
 </template>
 <script>
 export default {
+  name: 'monitorDetail',
   props: {
     modalVisible: Boolean,
     title: String,
@@ -41,7 +42,6 @@ export default {
     return {
       paginationOption: {
         defaultPageSize: 5,
-        showTotal: total => `共 ${total} 条数据`,
         onChange: page => this.hanldePageChange(page),
         total: 0,
         size: 'small',
@@ -120,7 +120,7 @@ export default {
     }
   },
   updated () {
-    this.paginationOption.total = this.modalData.total
+    this.paginationOption.total = this.modalData.total || 0
   },
   methods: {
     // 翻页
@@ -139,7 +139,6 @@ export default {
       }
 
       this.$router.push({
-        // path: '/warning/monitorEdit',
         name: 'monitorEdit',
         params: {
           info

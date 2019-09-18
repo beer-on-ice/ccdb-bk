@@ -123,7 +123,14 @@
 							style="max-width:230px;"
 							v-decorator="['topics']" />
 					</a-form-item>
-					<a-form-item label="标签："
+					<a-form-item label="自定义标签："
+						:label-col="{span:5}">
+						<a-input style="max-width: 230px"
+							placeholder="多个标签请用英文逗号隔开"
+							v-decorator="['tags']" />
+					</a-form-item>
+					<a-form-item label="
+							标签搜索："
 						:label-col="{span:5}">
 						<a-auto-complete class="global-search"
 							style="max-width: 230px"
@@ -134,18 +141,20 @@
 							<template slot="dataSource">
 								<a-select-option v-for="item in tagsSearchResult"
 									:key="item.id"
-									:text="item.category">
+									:text="delHtmlTag(item.category).split(' ')[0]"
+									:obj="item">
 									<div v-html="item.category"></div>
 								</a-select-option>
 							</template>
 						</a-auto-complete>
+						<p style="color:red;margin-left:80px;">* 请不要添加重复标签</p>
 					</a-form-item>
 					<div v-if="newTags.length">
 						<h4>新增标签：</h4>
 						<ul class='newTagWrapper'>
 							<li v-for="item in newTags"
-								:key="item">
-								<span v-html="item" />
+								:key="item.keywordId">
+								<span>{{item.keyword}}</span>
 								<a-icon type="close"
 									@click="handleDelTag(item,0)" />
 							</li>
@@ -155,10 +164,14 @@
 						<h4>默认标签：</h4>
 						<ul class='newTagWrapper'>
 							<li v-for="item in oldTags"
-								:key="item">
-								<span v-html="item" />
-								<a-icon type="close"
-									@click="handleDelTag(item,1)" />
+								:key="item.keywordId">
+								<span>{{item.keyword}}</span>
+								<a-popconfirm title="确定要删除默认标签吗？"
+									@confirm="handleDelTag(item,1)"
+									okText="确认"
+									cancelText="取消">
+									<a-icon type="close" />
+								</a-popconfirm>
 							</li>
 						</ul>
 					</div>
@@ -208,11 +221,12 @@ import {
   getRemoveUpload,
   getNewsAddBanner,
   getFastCode,
-  specialUrl
-} from '@/api/newsManage'
-import { getkeywordSystem } from '@/api/warning'
+  specialUrl,
+  getkeywordSystem
+} from '@/api/warning'
 
 export default {
+  name: 'monitorAdd',
   components: { Ue },
   data () {
     return {
@@ -276,16 +290,48 @@ export default {
     },
     handleInitInfo () {
       this.uploadUrl = specialUrl.upload
+      let arr = []
+      let modalInfo = this.$route.params.info.modalInfo
+      let type = this.$route.params.info.type
 
-      if (this.$route.params.info.modalInfo.administratorName) {
-        this.oldTags.push(this.$route.params.info.modalInfo.administratorName)
+      if (this.$route.params.info.type === 1) {
+        arr = [
+          {
+            keywordId: modalInfo.administratorId,
+            keyword: modalInfo.administratorName,
+            type: 1
+          }
+        ]
+      } else if (type === 2) {
+        arr = [
+          {
+            keywordId: modalInfo.administratorId,
+            keyword: modalInfo.administratorName,
+            type: 1
+          },
+          {
+            keywordId: modalInfo.productId,
+            keyword: modalInfo.productName,
+            type: modalInfo.productType === 1 ? 2 : 3
+          }
+        ]
+      } else if (type === 3) {
+        arr = [
+          {
+            keywordId: modalInfo.administratorId,
+            keyword: modalInfo.administratorName,
+            type: 1
+          },
+          {
+            keywordId: modalInfo.managerId,
+            keyword: modalInfo.managerName,
+            type: 4
+          }
+        ]
+      } else {
+        arr = []
       }
-      if (this.$route.params.info.modalInfo.productName) {
-        this.oldTags.push(this.$route.params.info.modalInfo.productName)
-      }
-      if (this.$route.params.info.modalInfo.managerName) {
-        this.oldTags.push(this.$route.params.info.modalInfo.managerName)
-      }
+      this.oldTags = [].concat(arr)
     },
     // 实时搜索标签
     tagsQuerySearch (queryString) {
@@ -300,6 +346,8 @@ export default {
             query,
             category: item.keyword,
             identity: item.identity,
+            keywordId: item.keywordId,
+            type: item.type,
             id: item.id
           })
         })
@@ -308,18 +356,33 @@ export default {
     },
     // 实时搜索标签 - 选择标签
     handleTagsSelect (item, option) {
-      this.newTags.push(option.data.attrs.text)
-      this.newTags = this.unique(this.newTags)
+      let str = this.delHtmlTag(option.data.attrs.text)
+      let obj = option.data.attrs.obj
+      let result = {
+        keyword: str,
+        keywordId: obj.keywordId,
+        type: obj.type
+      }
+      this.newTags.push(result)
+      this.newTags = this.uniqueTag(this.newTags)
     },
-    unique (arr) {
-      return [...new Set(arr)]
+    uniqueTag (arr) {
+      const res = new Map()
+      return arr.filter(a => !res.has(a.keywordId) && res.set(a.keywordId, 1))
+    },
+    delHtmlTag (str) {
+      return str.replace(/<[^>]+>/g, '')
     },
     // 实时搜索标签 - 删除标签
     handleDelTag (el, type) {
       if (type) {
-        this.oldTags = this.oldTags.filter(item => item !== el)
+        this.oldTags = this.oldTags.filter(
+          item => item.keywordId !== el.keywordId
+        )
       } else {
-        this.newTags = this.newTags.filter(item => item !== el)
+        this.newTags = this.newTags.filter(
+          item => item.keywordId !== el.keywordId
+        )
       }
     },
     // 保存
@@ -331,6 +394,7 @@ export default {
         'category',
         'categoryType',
         'sourceform',
+        'tags',
         'pTime',
         'danger',
         'showType',
@@ -342,7 +406,6 @@ export default {
         this.$notification.warning({
           message: '请在编辑器中输入内容'
         })
-        return
       }
       this.form.validateFields(err => {
         if (!err) {
@@ -361,8 +424,8 @@ export default {
           this.queryParam.showType = formObj.showType || ''
           this.queryParam.imgName = this.fileName || ''
           this.queryParam.content = this.$refs.ue.content || ''
-          let tagArr = this.newTags.concat(this.oldTags)
-          this.queryParam.tags = tagArr.join(',')
+          this.queryParam.tags = formObj.tags || ''
+          this.queryParam.tagList = this.newTags.concat(this.oldTags)
 
           getNewsAdd(this.queryParam).then(res => {
             if (res.code === 200) {
@@ -384,12 +447,16 @@ export default {
               this.id = res.data
               this.isSave = true
               this.$router.push({
-                path: '/warning/monitor'
-                // query: { id: res.data }
+                name: 'monitorEdit',
+                params: {
+                  info: {
+                    id: res.data
+                  }
+                }
               })
             } else {
               this.$notification.error({
-                message: '保存失败，请重试！'
+                message: res.msg || '保存失败，请重试'
               })
               this.isSave = false
             }

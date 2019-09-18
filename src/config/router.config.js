@@ -109,6 +109,24 @@ export const constantRouterMap = [
             }
           }
         ]
+      },
+      {
+        path: '/userlist',
+        // name: 'userlist',
+        component: RouteView,
+        children: [
+          {
+            path: '/userlist/detail',
+            name: 'userlistDetail',
+            hidden: true,
+            component: () => import('@/views/userlist/module/detail'),
+            meta: {
+              title: '用户详情',
+              dutyName: 'userlist',
+              keepAlive: false
+            }
+          }
+        ]
       }
     ]
   },

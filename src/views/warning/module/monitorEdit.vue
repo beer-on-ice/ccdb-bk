@@ -130,7 +130,13 @@
 							style="max-width:230px;"
 							v-decorator="['topics']" />
 					</a-form-item>
-					<a-form-item label="标签："
+					<a-form-item label="自定义标签："
+						:label-col="{span:5}">
+						<a-input style="max-width: 230px"
+							placeholder="多个标签请用英文逗号隔开"
+							v-decorator="['tags']" />
+					</a-form-item>
+					<a-form-item label="标签搜索："
 						:label-col="{span:5}">
 						<a-auto-complete class="global-search"
 							style="max-width: 230px"
@@ -141,20 +147,37 @@
 							<template slot="dataSource">
 								<a-select-option v-for="item in tagsSearchResult"
 									:key="item.category"
-									:text="item.category">
+									:text="delHtmlTag(item.category).split(' ')[0]"
+									:obj="item">
 									<div v-html="item.category"></div>
 								</a-select-option>
 							</template>
 						</a-auto-complete>
+						<p style="color:red;margin-left:80px;">* 请不要添加重复标签</p>
 					</a-form-item>
 					<div v-if="newTags.length">
 						<h4>新增标签：</h4>
 						<ul class='newTagWrapper'>
 							<li v-for="item in newTags"
-								:key="item">
-								<span v-html="item" />
+								:key="item.keywordId">
+								<span>{{item.keyword}}</span>
 								<a-icon type="close"
-									@click="handleDelTag(item)" />
+									@click="handleDelTag(item,0)" />
+							</li>
+						</ul>
+					</div>
+					<div v-if="oldTags.length">
+						<h4>默认标签：</h4>
+						<ul class='newTagWrapper'>
+							<li v-for="item in oldTags"
+								:key="item.keywordId">
+								<span>{{item.keyword}}</span>
+								<a-popconfirm title="确定要删除默认标签吗？"
+									@confirm="handleDelTag(item,1)"
+									okText="确认"
+									cancelText="取消">
+									<a-icon type="close" />
+								</a-popconfirm>
 							</li>
 						</ul>
 					</div>
@@ -196,18 +219,20 @@ import Vue from 'vue'
 import moment from 'moment'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { Ue } from '@/components'
+
 import {
   getDangerList,
   getRemoveUpload,
   getNewsAddBanner,
   getFastCode,
   getUpdate,
-  specialUrl
-} from '@/api/newsManage'
-
-import { getCurrentInfo, getkeywordSystem } from '@/api/warning'
+  specialUrl,
+  getCurrentInfo,
+  getkeywordSystem
+} from '@/api/warning'
 
 export default {
+  name: 'monitorEdit',
   components: { Ue },
   data () {
     return {
@@ -239,11 +264,13 @@ export default {
         twoLevel: '',
         isEssence: '',
         tags: '',
+        tagList: [],
         topics: '',
         content: '',
         imgName: '',
         type1: [],
-        opinionType: 1
+        opinionType: 1,
+        oldOpinionType: ''
       },
       imgUrl: '', // 查看大图的地址
       uploadUrl: '', // 上传的图片地址
@@ -255,6 +282,7 @@ export default {
       qrCode: '', // 二维码地址
       info: {}, // 舆情信息
       newTags: [], // 新添加的标签
+      oldTags: [], // 已存在的标签
       tagsSearchResult: [] // 搜索到的标签列表
     }
   },
@@ -285,8 +313,11 @@ export default {
           categoryType: data.categoryType.toString(),
           pTime: moment(data.releaseDate)
         })
-        if (data.tags !== '') {
-          this.newTags = data.tags.split(',')
+        this.queryParam.opinionType = data.opinionType
+        this.queryParam.oldOpinionType = data.opinionType
+
+        if (data && data.tagList && data.tagList.length) {
+          this.oldTags = [].concat(data.tagList)
         }
       })
     },
@@ -324,25 +355,46 @@ export default {
       getkeywordSystem({ keyword: query }).then(res => {
         res.data.forEach(item => {
           arr.push({
+            query,
             category: item.keyword,
             identity: item.identity,
+            keywordId: item.keywordId,
+            type: item.type,
             id: item.id
           })
         })
       })
       return arr
     },
-
     // 选择标签
     handleTagsSelect (item, option) {
-      this.newTags.push(option.data.attrs.text)
-      this.newTags = this.unique(this.newTags)
+      let str = this.delHtmlTag(option.data.attrs.text)
+      let obj = option.data.attrs.obj
+      let result = {
+        keyword: str,
+        keywordId: obj.keywordId,
+        type: obj.type
+      }
+      this.newTags.push(result)
+      this.newTags = this.uniqueTag(this.newTags)
     },
-    unique (arr) {
-      return [...new Set(arr)]
+    uniqueTag (arr) {
+      const res = new Map()
+      return arr.filter(a => !res.has(a.keywordId) && res.set(a.keywordId, 1))
     },
-    handleDelTag (el) {
-      this.newTags = this.newTags.filter(item => item !== el)
+    delHtmlTag (str) {
+      return str.replace(/<[^>]+>/g, '')
+    },
+    handleDelTag (el, type) {
+      if (type) {
+        this.oldTags = this.oldTags.filter(
+          item => item.keywordId !== el.keywordId
+        )
+      } else {
+        this.newTags = this.newTags.filter(
+          item => item.keywordId !== el.keywordId
+        )
+      }
     },
     // 生成快报二维码
     generateFastCode () {
@@ -378,6 +430,7 @@ export default {
         'categoryType',
         'sourceform',
         'pTime',
+        'tags',
         'danger',
         'topics'
       ])
@@ -404,26 +457,34 @@ export default {
           this.queryParam.imgName = this.fileName || ''
           this.queryParam.content = this.$refs.ue.content || ''
           this.queryParam.id = this.info.id
-          this.queryParam.tags = this.newTags.join(',')
+          this.queryParam.tags = formObj.tags || ''
+          this.queryParam.tagList = this.newTags.concat(this.oldTags)
 
           console.log('queryParam', this.queryParam)
-
           getUpdate(this.queryParam).then(res => {
-            this.$notification.success({
-              message: '更新成功！'
-            })
-            this.generateFastCode()
-
-            if (this.isBanner) {
-              let params = {
-                bannerFlag: this.isBanner,
-                informationId: this.info.id,
-                title: this.queryParam.title,
-                infomationUrl: specialUrl.code + this.info.id
-              }
-              getNewsAddBanner(params).then(res => {
-                console.log('快报生成/删除成功')
+            if (res.code === 200) {
+              this.$notification.success({
+                message: '更新成功！'
               })
+              this.generateFastCode()
+
+              if (this.isBanner) {
+                let params = {
+                  bannerFlag: this.isBanner,
+                  informationId: this.info.id,
+                  title: this.queryParam.title,
+                  infomationUrl: specialUrl.code + this.info.id
+                }
+                getNewsAddBanner(params).then(res => {
+                  console.log('快报生成/删除成功')
+                })
+              }
+              this.getCurrentPageInfo()
+            } else {
+              this.$notification.error({
+                message: res.msg || '更新失败，请重试'
+              })
+              this.isSave = false
             }
           })
         }
