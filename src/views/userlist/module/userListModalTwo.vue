@@ -16,7 +16,8 @@
 				:gutter="48">
 				<a-col>
 					<a-radio-group v-if="modalInfo.status===2"
-						v-model="currentRadio">
+						v-model="currentRadio"
+						@change="handleRadioChange">
 						<a-radio-button :value="1">理财产品</a-radio-button>
 						<a-radio-button :value="2">定期存款</a-radio-button>
 						<a-radio-button :value="3">债券</a-radio-button>
@@ -31,111 +32,38 @@
 						:columns="columns"
 						:dataSource="fakeData"
 						:pagination="paginationOption"
+						:customRow="columnsClick"
+						:rowClassName="changeclassname"
 						bordered>
-						<span slot="serial"
-							slot-scope="text, record, index">
-							{{ index + 1 }}
-						</span>
+						<p slot="serial"
+							slot-scope="text, record, index"
+							style="margin:0;">
+							<span style="text-align:center;float:left;">
+								{{ index + 1 }}
+							</span>
+							<a-icon class="iconNowSelect"
+								type="caret-left"
+								v-show="currentRowIndex === index" />
+						</p>
 					</a-table>
 				</a-card>
-				<a-card style="width:774px;height:600px;overflow-y:scroll;"
-					class="userlistDetailTwoRight">
-					<a-card title="基本信息">
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>基金名称</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>合同编号</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-					</a-card>
-					<a-card title="投资信息">
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>投资本金</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>投资期限</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>起始日期</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>到期日期</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>年华收益率</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>付息方式</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>预计已付息</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>近期付息日</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:100%;textAlign:'center'">
-							<div>
-								<p>产品风险等级</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-					</a-card>
-					<a-card title="附加信息">
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>客户经理</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>联系电话</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-						<a-card-grid style="width:50%;textAlign:'center'">
-							<div>
-								<p>是否帮填</p>
-								<p>10000</p>
-							</div>
-						</a-card-grid>
-					</a-card>
+				<a-card class="userlistDetailTwoRight">
+					<component :is="currentViewArr[currentViewIndex]"></component>
 				</a-card>
 			</div>
 		</a-modal>
 	</div>
 </template>
 <script>
+import fundSlot from './userlistDetailTwoRightSlot/fundSlot'
+import trustSlot from './userlistDetailTwoRightSlot/trustSlot'
+import insuranceSlot from './userlistDetailTwoRightSlot/insuranceSlot'
+import outerInsuranceSlot from './userlistDetailTwoRightSlot/outerInsuranceSlot'
+import houseSlot from './userlistDetailTwoRightSlot/houseSlot'
+import bankFirstSlot from './userlistDetailTwoRightSlot/bankFirstSlot'
+import bankSecSlot from './userlistDetailTwoRightSlot/bankSecSlot'
+import bankThrSlot from './userlistDetailTwoRightSlot/bankThrSlot'
+import bankFourSlot from './userlistDetailTwoRightSlot/bankFourSlot'
 const fakeData = [
   {
     name: '哈哈哈',
@@ -155,10 +83,35 @@ export default {
   props: {
     modalInfo: Object
   },
+  components: {
+    fundSlot,
+    trustSlot,
+    insuranceSlot,
+    outerInsuranceSlot,
+    houseSlot,
+    bankFirstSlot,
+    bankSecSlot,
+    bankThrSlot,
+    bankFourSlot
+  },
   data () {
     return {
       fakeData,
-      currentRadio: 1,
+      currentRadio: 1, // 当前radio
+      currentRowIndex: 0, // 当前行
+      currentViewIndex: 0, // 当前组件
+      currentViewArr: [
+        'fund-slot',
+        'trust-slot',
+        'insurance-slot',
+        'outer-insurance-slot',
+        'house-slot',
+        'bank-first-slot',
+        'bank-sec-slot',
+        'bank-thr-slot',
+        'bank-four-slot'
+      ],
+      // 页面
       paginationOption: {
         total: 0,
         defaultPageSize: 5,
@@ -182,14 +135,50 @@ export default {
     }
   },
   methods: {
+    handleRadioChange (e) {
+      switch (e.target.value) {
+        case 1:
+          this.currentViewIndex = 5
+          break
+        case 2:
+          this.currentViewIndex = 6
+          break
+        case 3:
+          this.currentViewIndex = 7
+          break
+        case 4:
+          this.currentViewIndex = 8
+          break
+      }
+      this.$emit('changeInfoType', e.target.value)
+    },
+    // 点击当前行
+    columnsClick (record, index) {
+      return {
+        on: {
+          click: () => {
+            this.currentRowIndex = index
+            this.$emit('changeInfoMain', record)
+          }
+        }
+      }
+    },
+    // 点击当前行使其高亮
+    changeclassname (record, index) {
+      return index === this.currentRowIndex ? 'active' : ''
+    },
     // 翻页
     hanldePageChange (page) {
       this.$emit('hanldeModalPageChange', page)
     },
     // 关闭模态框
     handleModalCancel () {
+      this.currentRadio = 1
       this.$emit('closeModal')
     }
+  },
+  updated () {
+    this.paginationOption.total = this.modalInfo.data.total || 0
   },
   filters: {
     // 类型
@@ -215,7 +204,38 @@ export default {
       } else if (type === 4) {
         return '查看明细-保险记账'
       } else if (type === 5) {
+        return '查看明细-境外资产记账'
+      } else if (type === 6) {
         return '查看明细-不动产记账'
+      }
+    }
+  },
+  computed: {
+    status () {
+      return this.modalInfo.status
+    }
+  },
+  watch: {
+    status (newValue, oldValue) {
+      switch (newValue) {
+        case 1:
+          this.currentViewIndex = 0
+          break
+        case 2:
+          this.currentViewIndex = 5
+          break
+        case 3:
+          this.currentViewIndex = 1
+          break
+        case 4:
+          this.currentViewIndex = 2
+          break
+        case 5:
+          this.currentViewIndex = 3
+          break
+        case 6:
+          this.currentViewIndex = 4
+          break
       }
     }
   }
@@ -232,10 +252,23 @@ export default {
 			margin-top: 20px;
 			display: flex;
 			justify-content: space-around;
+			.active {
+				background-color: rgba(42, 130, 228, 0.3);
+			}
+			.iconNowSelect {
+				font-size: 28px;
+				color: rgba(255, 87, 51, 1);
+				position: relative;
+				top: 0;
+				left: 300px;
+			}
 		}
 	}
 }
 .userlistDetailTwoRight {
+	width: 774px;
+	height: 600px;
+	overflow-y: scroll;
 	.ant-card-head {
 		background: rgba(240, 240, 240, 1);
 		.ant-card-head-title {

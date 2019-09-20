@@ -32,6 +32,7 @@ export default {
   },
   data () {
     return {
+      // 页码选项
       paginationOption: {
         total: 0,
         defaultPageSize: 5,

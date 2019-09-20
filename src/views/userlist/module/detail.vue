@@ -1,6 +1,7 @@
 <template>
 	<div class="userlistDetailWrapper">
-		<a-button type="primary">
+		<a-button type="primary"
+			@click="hanldeBack">
 			返回
 		</a-button>
 		<div class="userlistMainPart">
@@ -283,7 +284,9 @@
 			@hanldeModalPageChange="hanldeModalOnePageChange" />
 		<user-list-modal-two :modalInfo="modalTwoInfo"
 			@closeModal="handleModalTwoClose"
-			@hanldeModalPageChange="hanldeModalTwoPageChange" />
+			@hanldeModalPageChange="hanldeModalTwoPageChange"
+			@changeInfoType="handleChangeInfoType"
+			@changeInfoMain="handleChangeInfoMain" />
 	</div>
 </template>
 
@@ -361,6 +364,15 @@ export default {
         })
       }
     },
+    // 改变了二类弹框里radio值
+    handleChangeInfoType (i) {
+      console.log(i)
+    },
+    // 改变了查看的行的值
+    handleChangeInfoMain (record) {
+      console.log(record)
+    },
+    // 展示模态框
     showModalOne (type) {
       this.modalOneInfo.visible = true
       this.modalOneInfo.status = type
@@ -381,6 +393,17 @@ export default {
       this.modalTwoInfo.visible = true
       this.modalTwoInfo.status = type
     },
+    // 跳页
+    hanldeModalOnePageChange (page) {
+      this.modalOneParam.startPage = page
+      if (this.modalOneInfo.status === 5 || this.modalOneInfo.status === 6) {
+        this.getInfoByUserId()
+      }
+    },
+    hanldeModalTwoPageChange (page) {
+      this.modalTwoParam.startPage = page
+    },
+    // 关闭模态框
     handleModalOneClose () {
       let initial = {
         status: -1,
@@ -399,14 +422,9 @@ export default {
       this.modalTwoInfo = { ...initial }
       this.modalTwoParam.startPage = 1
     },
-    hanldeModalOnePageChange (page) {
-      this.modalOneParam.startPage = page
-      if (this.modalOneInfo.status === 5 || this.modalOneInfo.status === 6) {
-        this.getInfoByUserId()
-      }
-    },
-    hanldeModalTwoPageChange (page) {
-      this.modalTwoParam.startPage = page
+    // 返回
+    hanldeBack () {
+      this.$router.go(-1)
     }
   }
 }
@@ -415,6 +433,7 @@ export default {
 <style lang="less">
 .userlistDetailWrapper {
 	.userlistMainPart {
+		margin-top: 20px;
 		.ant-card-head {
 			background: rgba(240, 240, 240, 1);
 		}
