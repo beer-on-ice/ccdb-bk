@@ -67,7 +67,7 @@ function generateAllRoutes (roles) {
     item.meta = {}
     item.meta.title = item.nodeName
     item.meta.dutyName = item.url
-    item.meta.keepAlive = false
+    item.meta.keepAlive = true
     item.meta.isBack = false
     item.path = `/${item.url}`
   })

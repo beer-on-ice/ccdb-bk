@@ -20,18 +20,19 @@
 						@change="handleRadioChange">
 						<a-radio-button :value="1">理财产品</a-radio-button>
 						<a-radio-button :value="2">定期存款</a-radio-button>
-						<a-radio-button :value="3">债券</a-radio-button>
-						<a-radio-button :value="4">票据</a-radio-button>
+						<!-- <a-radio-button :value="3">债券</a-radio-button>
+						<a-radio-button :value="4">票据</a-radio-button> -->
 					</a-radio-group>
 				</a-col>
 			</a-row>
 			<div class="main">
 				<a-card>
 					<a-table style="width:274px;"
-						rowKey="id"
+						rowKey="orderId"
 						:columns="columns"
-						:dataSource="fakeData"
-						:pagination="paginationOption"
+						:scroll="{ y: 500 }"
+						:dataSource="leftList"
+						:pagination="false"
 						:customRow="columnsClick"
 						:rowClassName="changeclassname"
 						bordered>
@@ -48,7 +49,8 @@
 					</a-table>
 				</a-card>
 				<a-card class="userlistDetailTwoRight">
-					<component :is="currentViewArr[currentViewIndex]"></component>
+					<component :is="currentViewArr[currentViewIndex]"
+						:info="currentViewObj"></component>
 				</a-card>
 			</div>
 		</a-modal>
@@ -64,20 +66,7 @@ import bankFirstSlot from './userlistDetailTwoRightSlot/bankFirstSlot'
 import bankSecSlot from './userlistDetailTwoRightSlot/bankSecSlot'
 import bankThrSlot from './userlistDetailTwoRightSlot/bankThrSlot'
 import bankFourSlot from './userlistDetailTwoRightSlot/bankFourSlot'
-const fakeData = [
-  {
-    name: '哈哈哈',
-    id: 1
-  },
-  {
-    name: '嘻嘻嘻',
-    id: 2
-  },
-  {
-    name: '呵呵呵吼吼吼吼吼吼吼吼吼吼吼吼吼吼吼',
-    id: 3
-  }
-]
+
 export default {
   name: 'userListModalTwo',
   props: {
@@ -96,7 +85,6 @@ export default {
   },
   data () {
     return {
-      fakeData,
       currentRadio: 1, // 当前radio
       currentRowIndex: 0, // 当前行
       currentViewIndex: 0, // 当前组件
@@ -111,14 +99,6 @@ export default {
         'bank-thr-slot',
         'bank-four-slot'
       ],
-      // 页面
-      paginationOption: {
-        total: 0,
-        defaultPageSize: 5,
-        onChange: page => this.hanldePageChange(page),
-        size: 'small',
-        hideOnSinglePage: true
-      },
       columns: [
         {
           title: '序号',
@@ -128,10 +108,31 @@ export default {
         },
         {
           title: '产品名称',
-          dataIndex: 'name',
+          dataIndex: 'keyword',
           align: 'center'
         }
       ]
+    }
+  },
+  computed: {
+    status () {
+      return this.modalInfo.status
+    },
+    leftList () {
+      return this.modalInfo.data[`tab${this.currentRadio}`]
+    },
+    currentViewObj () {
+      if (
+        this.modalInfo &&
+				this.modalInfo.data &&
+				this.modalInfo.data.tab1 &&
+				this.modalInfo.data.tab1.length
+      ) {
+        return this.modalInfo.data[`tab${this.currentRadio}`][
+          this.currentRowIndex
+        ].firstItem
+      }
+      return {}
     }
   },
   methods: {
@@ -150,7 +151,7 @@ export default {
           this.currentViewIndex = 8
           break
       }
-      this.$emit('changeInfoType', e.target.value)
+      this.currentRowIndex = 0
     },
     // 点击当前行
     columnsClick (record, index) {
@@ -158,7 +159,6 @@ export default {
         on: {
           click: () => {
             this.currentRowIndex = index
-            this.$emit('changeInfoMain', record)
           }
         }
       }
@@ -167,18 +167,12 @@ export default {
     changeclassname (record, index) {
       return index === this.currentRowIndex ? 'active' : ''
     },
-    // 翻页
-    hanldePageChange (page) {
-      this.$emit('hanldeModalPageChange', page)
-    },
     // 关闭模态框
     handleModalCancel () {
       this.currentRadio = 1
+      this.currentViewIndex = 0
       this.$emit('closeModal')
     }
-  },
-  updated () {
-    this.paginationOption.total = this.modalInfo.data.total || 0
   },
   filters: {
     // 类型
@@ -208,11 +202,6 @@ export default {
       } else if (type === 6) {
         return '查看明细-不动产记账'
       }
-    }
-  },
-  computed: {
-    status () {
-      return this.modalInfo.status
     }
   },
   watch: {
@@ -258,7 +247,6 @@ export default {
 			.iconNowSelect {
 				font-size: 28px;
 				color: rgba(255, 87, 51, 1);
-				position: relative;
 				top: 0;
 				left: 300px;
 			}
@@ -282,7 +270,7 @@ export default {
 			align-items: center;
 			p {
 				margin: 0;
-				padding: 24px;
+				padding: 0 8px;
 				text-align: center;
 				&:nth-of-type(odd) {
 					padding: 24px 0;

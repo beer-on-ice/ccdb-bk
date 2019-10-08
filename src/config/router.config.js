@@ -123,7 +123,7 @@ export const constantRouterMap = [
             meta: {
               title: '用户详情',
               dutyName: 'userlist',
-              keepAlive: false
+              keepAlive: true
             }
           }
         ]

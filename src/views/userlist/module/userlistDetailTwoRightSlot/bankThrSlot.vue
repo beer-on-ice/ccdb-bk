@@ -1,6 +1,10 @@
 <template>
 	<div class="bankThrSlotWrapper">
 		<a-card title="基本信息">
+			<div slot="extra">
+				<span>首次记账日期：{{info.createTime}}</span>
+				<span style="margin-left:10px;">最后修改时间：{{info.updateTime}}</span>
+			</div>
 			<a-card-grid style="width:50%;textAlign:'center'">
 				<div>
 					<p>债券名称</p>
@@ -23,7 +27,7 @@
 			</a-card-grid>
 			<a-card-grid style="width:50%;textAlign:'center'">
 				<div>
-					<p>年华收益率</p>
+					<p>年化收益率（%）</p>
 					<p>10000</p>
 				</div>
 			</a-card-grid>

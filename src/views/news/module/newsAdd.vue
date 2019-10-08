@@ -343,7 +343,7 @@ export default {
               })
             } else {
               this.$notification.error({
-                message: '保存失败，请重试！'
+                message: res.msg
               })
               this.isSave = false
             }

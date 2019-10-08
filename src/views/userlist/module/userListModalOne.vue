@@ -20,11 +20,25 @@
 					slot-scope="text, record, index">
 					{{ index + 1 }}
 				</span>
+				<span slot="adviserType"
+					slot-scope="text">
+					{{text | adviserTypeFilter}}
+				</span>
+				<span slot="actionTime"
+					slot-scope="text">
+					{{handlePtime(text)}}
+				</span>
+				<span slot="relateTime"
+					slot-scope="text">
+					{{handlePtime(text)}}
+				</span>
 			</a-table>
 		</a-modal>
 	</div>
 </template>
 <script>
+import moment from 'moment'
+
 export default {
   name: 'userListModalOne',
   props: {
@@ -51,12 +65,13 @@ export default {
             let filter = this.$options.filters['columnFilter']
             return filter(this.modalInfo.status)
           },
-          dataIndex: 'managerName',
+          dataIndex: 'objectName',
           align: 'center'
         },
         {
           title: '关注日期',
-          dataIndex: 'follower',
+          dataIndex: 'actionTime',
+          scopedSlots: { customRender: 'actionTime' },
           align: 'center'
         }
       ],
@@ -117,22 +132,24 @@ export default {
         },
         {
           title: '关联顾问',
-          dataIndex: 'managerName',
+          dataIndex: 'adviserName',
           align: 'center'
         },
         {
           title: '顾问类型',
-          dataIndex: 'follower',
+          dataIndex: 'adviserType',
+          scopedSlots: { customRender: 'adviserType' },
           align: 'center'
         },
         {
           title: '帮填次数',
-          dataIndex: 'followers',
+          dataIndex: 'filledTimes',
           align: 'center'
         },
         {
           title: '关联日期',
-          dataIndex: 'uses',
+          dataIndex: 'relateTime',
+          scopedSlots: { customRender: 'relateTime' },
           align: 'center'
         }
       ]
@@ -142,6 +159,10 @@ export default {
     this.paginationOption.total = this.modalInfo.data.total || 0
   },
   methods: {
+    handlePtime (value) {
+      if (!value) return
+      return moment(value).format('YYYY-MM-DD HH:mm:ss')
+    },
     // 翻页
     hanldePageChange (page) {
       this.$emit('hanldeModalPageChange', page)
@@ -193,6 +214,21 @@ export default {
         return '查看明细-人工舆情预警'
       } else if (type === 7) {
         return '查看明细-顾问帮填'
+      }
+    },
+    adviserTypeFilter (type) {
+      if (type === 2099) {
+        return '信托'
+      } else if (type === 2100) {
+        return '国内保险'
+      } else if (type === 2098) {
+        return '银行理财'
+      } else if (type === 2097) {
+        return '基金'
+      } else if (type === 2251) {
+        return '香港保险'
+      } else if (type === 2252) {
+        return '不动产'
       }
     }
   }
