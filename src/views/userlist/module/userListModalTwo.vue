@@ -66,6 +66,7 @@ import bankFirstSlot from './userlistDetailTwoRightSlot/bankFirstSlot'
 import bankSecSlot from './userlistDetailTwoRightSlot/bankSecSlot'
 import bankThrSlot from './userlistDetailTwoRightSlot/bankThrSlot'
 import bankFourSlot from './userlistDetailTwoRightSlot/bankFourSlot'
+import goldExchangeSlot from './userlistDetailTwoRightSlot/goldExchangeSlot'
 
 export default {
   name: 'userListModalTwo',
@@ -81,7 +82,8 @@ export default {
     bankFirstSlot,
     bankSecSlot,
     bankThrSlot,
-    bankFourSlot
+    bankFourSlot,
+    goldExchangeSlot
   },
   data () {
     return {
@@ -97,7 +99,8 @@ export default {
         'bank-first-slot',
         'bank-sec-slot',
         'bank-thr-slot',
-        'bank-four-slot'
+        'bank-four-slot',
+        'gold-exchange-slot'
       ],
       columns: [
         {
@@ -125,8 +128,8 @@ export default {
       if (
         this.modalInfo &&
 				this.modalInfo.data &&
-				this.modalInfo.data.tab1 &&
-				this.modalInfo.data.tab1.length
+				this.modalInfo.data[`tab${this.currentRadio}`] &&
+				this.modalInfo.data[`tab${this.currentRadio}`].length
       ) {
         return this.modalInfo.data[`tab${this.currentRadio}`][
           this.currentRowIndex
@@ -139,15 +142,19 @@ export default {
     handleRadioChange (e) {
       switch (e.target.value) {
         case 1:
+          this.columns[1].title = '产品名称'
           this.currentViewIndex = 5
           break
         case 2:
+          this.columns[1].title = '购入银行'
           this.currentViewIndex = 6
           break
         case 3:
+          this.columns[1].title = '债券名称'
           this.currentViewIndex = 7
           break
         case 4:
+          this.columns[1].title = '票据名称'
           this.currentViewIndex = 8
           break
       }
@@ -175,19 +182,6 @@ export default {
     }
   },
   filters: {
-    // 类型
-    columnFilter (type) {
-      switch (type) {
-        case 1:
-          return '关注公司'
-        case 2:
-          return '关注高管'
-        case 3:
-          return '关注产品'
-        case 4:
-          return '关注资讯'
-      }
-    },
     titleFilter (type) {
       if (type === 1) {
         return '查看明细-基金产品记账'
@@ -201,29 +195,43 @@ export default {
         return '查看明细-境外资产记账'
       } else if (type === 6) {
         return '查看明细-不动产记账'
+      } else if (type === 7) {
+        return '查看明细-金交所投资详情'
       }
     }
   },
   watch: {
     status (newValue, oldValue) {
+      this.currentRowIndex = 0
+
       switch (newValue) {
         case 1:
+          this.columns[1].title = '产品名称'
           this.currentViewIndex = 0
           break
         case 2:
+          this.columns[1].title = '产品名称'
           this.currentViewIndex = 5
           break
         case 3:
+          this.columns[1].title = '产品名称'
           this.currentViewIndex = 1
           break
         case 4:
+          this.columns[1].title = '主险名称'
           this.currentViewIndex = 2
           break
         case 5:
+          this.columns[1].title = '保险名称'
           this.currentViewIndex = 3
           break
         case 6:
+          this.columns[1].title = '小区名称'
           this.currentViewIndex = 4
+          break
+        case 7:
+          this.columns[1].title = '产品名称'
+          this.currentViewIndex = 9
           break
       }
     }

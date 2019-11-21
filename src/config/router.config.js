@@ -28,10 +28,10 @@ export const constantRouterMap = [
         component: RouteView,
         children: [
           {
-            path: '/policy/newpolicyedit',
-            name: 'newPolicyEdit',
+            path: '/policy/slideshowedit',
+            name: 'slideShowEdit',
             hidden: true,
-            component: () => import('@/views/policy/module/newPolicyEdit'),
+            component: () => import('@/views/policy/modules/slideShowEdit'),
             meta: {
               title: '保单管理-政策编辑',
               dutyName: 'policy',
@@ -39,12 +39,34 @@ export const constantRouterMap = [
             }
           },
           {
-            path: '/policy/newpolicyadd',
-            name: 'newPolicyAdd',
+            path: '/policy/slideshowadd',
+            name: 'slideShowAdd',
             hidden: true,
-            component: () => import('@/views/policy/module/newPolicyAdd'),
+            component: () => import('@/views/policy/modules/slideShowAdd'),
             meta: {
-              title: '保单管理-政策编辑',
+              title: '保单管理-政策新增',
+              dutyName: 'policy',
+              keepAlive: false
+            }
+          },
+          {
+            path: '/policy/newsedit',
+            name: 'policyNewsEdit',
+            hidden: true,
+            component: () => import('@/views/policy/modules/newsEdit'),
+            meta: {
+              title: '保单管理-保险课堂内容编辑',
+              dutyName: 'policy',
+              keepAlive: false
+            }
+          },
+          {
+            path: '/policy/newsadd',
+            name: 'policyNewsAdd',
+            hidden: true,
+            component: () => import('@/views/policy/modules/newsAdd'),
+            meta: {
+              title: '保单管理-保险课堂内容新增',
               dutyName: 'policy',
               keepAlive: false
             }
@@ -61,7 +83,7 @@ export const constantRouterMap = [
             path: '/news/newsedit',
             name: 'newsEdit',
             hidden: true,
-            component: () => import('@/views/news/module/newsEdit'),
+            component: () => import('@/views/news/modules/newsEdit'),
             meta: {
               title: '资讯编辑',
               dutyName: 'news',
@@ -72,7 +94,7 @@ export const constantRouterMap = [
             path: '/news/newsadd',
             name: 'newsAdd',
             hidden: true,
-            component: () => import('@/views/news/module/newsAdd'),
+            component: () => import('@/views/news/modules/newsAdd'),
             meta: {
               title: '资讯新增',
               dutyName: 'news',
@@ -81,6 +103,7 @@ export const constantRouterMap = [
           }
         ]
       },
+      // 舆情管理
       {
         path: '/warning',
         // name: 'warning',
@@ -110,6 +133,7 @@ export const constantRouterMap = [
           }
         ]
       },
+      // 用户管理
       {
         path: '/userlist',
         // name: 'userlist',

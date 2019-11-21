@@ -193,11 +193,11 @@ export default {
           scopedSlots: { customRender: 'mobile' },
           align: 'center'
         },
-        {
-          title: '用户姓名',
-          dataIndex: 'nickName',
-          align: 'center'
-        },
+        // {
+        //   title: '用户姓名',
+        //   dataIndex: 'nickName',
+        //   align: 'center'
+        // },
         {
           title: '邀请码填写',
           dataIndex: 'shareCode',

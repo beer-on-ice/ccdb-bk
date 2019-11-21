@@ -285,12 +285,21 @@
 										</p>
 									</div>
 								</a-card-grid>
+								<a-card-grid style="width:50%;textAlign:'center'">
+									<div>
+										<p>金交所投资</p>
+										<p @click="showModalTwo(7)">
+											{{overViewInfo.bookOverview.goldExchangeBook}}
+											<span>[查看]</span>
+										</p>
+									</div>
+								</a-card-grid>
 							</a-card>
 							<a-card title="风险评测">
 								<a-card-grid style="width:50%;textAlign:'center'">
 									<div>
 										<p>风险提交</p>
-										<p>{{overViewInfo.riskAssessmentOverview.assessmentTimes}}</p>
+										<p>{{Number(overViewInfo.riskAssessmentOverview.assessmentTimes)?overViewInfo.riskAssessmentOverview.assessmentTimes:''}}</p>
 									</div>
 								</a-card-grid>
 								<a-card-grid style="width:50%;textAlign:'center'">
@@ -527,6 +536,9 @@ export default {
           break
         case 6:
           this.type = 5
+          break
+        case 7:
+          this.type = 6
           break
       }
       this.getBookdetail()

@@ -139,15 +139,15 @@ import monitorDetail from './module/monitorDetail'
 const dayRange = [
   {
     id: 1,
-    name: '30天'
+    name: '本月'
   },
   {
     id: 3,
-    name: '90天'
+    name: '3个月内'
   },
   {
     id: 6,
-    name: '180天'
+    name: '6个月内'
   }
 ]
 // 筛选方式
@@ -175,6 +175,10 @@ const sortRangeA = [
   {
     id: 6,
     name: '周边舆情'
+  },
+  {
+    id: 8,
+    name: '浏览量'
   }
 ]
 const sortRangeB = [
@@ -193,6 +197,10 @@ const sortRangeB = [
   {
     id: 6,
     name: '周边舆情'
+  },
+  {
+    id: 8,
+    name: '浏览量'
   }
 ]
 const sortRangeC = [
@@ -207,6 +215,10 @@ const sortRangeC = [
   {
     id: 6,
     name: '周边舆情'
+  },
+  {
+    id: 8,
+    name: '浏览量'
   }
 ]
 
@@ -268,6 +280,11 @@ export default {
           align: 'center'
         },
         {
+          title: '浏览量',
+          dataIndex: 'viewTimes',
+          align: 'center'
+        },
+        {
           title: '关注',
           dataIndex: 'follower',
           align: 'center'
@@ -323,6 +340,11 @@ export default {
           align: 'center'
         },
         {
+          title: '浏览量',
+          dataIndex: 'viewTimes',
+          align: 'center'
+        },
+        {
           title: '关注',
           dataIndex: 'follower',
           align: 'center'
@@ -368,6 +390,11 @@ export default {
         {
           title: '高管姓名',
           dataIndex: 'managerName',
+          align: 'center'
+        },
+        {
+          title: '浏览量',
+          dataIndex: 'viewTimes',
           align: 'center'
         },
         {

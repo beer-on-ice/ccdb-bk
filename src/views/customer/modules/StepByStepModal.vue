@@ -120,7 +120,7 @@
 	</div>
 </template>
 <script>
-import { getCurrentUser, updatePolicy, getAllList } from '@/api/customer'
+import { getCurrentUser, updatePolicy } from '@/api/customer'
 import pdf from 'vue-pdf'
 import moment from 'moment'
 import downloadFile from '@/utils/download'
@@ -271,7 +271,7 @@ export default {
         this.auditor = onlyData.auditor || ''
         this.remark = onlyData.remark || ''
         // 用来判断如果是审批通过 => 就显示灰色框 0表示通过 1表示驳回
-        if (onlyData.approvalStatus == 0) {
+        if (onlyData.approvalStatus === 0) {
           this.isShowGrey = true
         } else {
           this.isShowGrey = ''
@@ -297,13 +297,6 @@ export default {
       } else {
         updatePolicy(data).then(res => {
           console.log('审核通过的返回值', res)
-          // 刷新数据  => 发现并不能刷新  所以采用了bus总线
-          /* getAllList().then( res => {
-                  console.log('我是在模态框里调用的数据', res)
-                  this.dataList = res.data.list
-                  this.total = res.data.total - 0
-                  this.pageNum = res.data.pageNum - 0
-                }) */
           // 关闭模态框
           this.visible = false
           // 刷新页面

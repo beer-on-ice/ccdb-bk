@@ -12,12 +12,9 @@ import TransferBar from '@/components/Charts/TransferBar'
 import TagCloud from '@/components/Charts/TagCloud'
 
 // pro components
-import AvatarList from '@/components/AvatarList'
-import CountDown from '@/components/CountDown'
 import Ellipsis from '@/components/Ellipsis'
 import FooterToolbar from '@/components/FooterToolbar'
 import NumberInfo from '@/components/NumberInfo'
-import DescriptionList from '@/components/DescriptionList'
 import Tree from '@/components/Tree/Tree'
 import Trend from '@/components/Trend'
 import STable from '@/components/Table'
@@ -27,15 +24,15 @@ import IconSelector from '@/components/IconSelector'
 import TagSelect from '@/components/TagSelect'
 import ExceptionPage from '@/components/Exception'
 import StandardFormRow from '@/components/StandardFormRow'
-import ArticleListContent from '@/components/ArticleListContent'
 
 // self components
 import Ue from '@/components/Ue' // 富文本编辑
 import WarrantyEdit from '@/components/WarrantyEdit' // 保单编辑
 import WarrantyAdd from '@/components/WarrantyEdit/index2' // 保单编辑
+import WarrantyLandEdit from '@/components/WarrantyEdit/indexLand' // 保单编辑
+import WarrantyLandAdd from '@/components/WarrantyEdit/index2Land' // 保单编辑
 
 export {
-  AvatarList,
   Bar,
   ChartCard,
   Liquid,
@@ -48,13 +45,9 @@ export {
   RankList,
   TransferBar,
   Trend,
-  CountDown,
   Ellipsis,
   FooterToolbar,
   NumberInfo,
-  DescriptionList,
-  // 兼容写法，请勿继续使用
-  DescriptionList as DetailList,
   Tree,
   STable,
   MultiTab,
@@ -63,8 +56,9 @@ export {
   IconSelector,
   TagSelect,
   StandardFormRow,
-  ArticleListContent,
   Ue,
   WarrantyEdit,
-  WarrantyAdd
+  WarrantyAdd,
+  WarrantyLandEdit,
+  WarrantyLandAdd
 }

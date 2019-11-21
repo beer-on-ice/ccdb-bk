@@ -2,7 +2,7 @@ import { axios } from '@/utils/request';
 const isDev = process.env.NODE_ENV === 'production';
 
 const api = {
-  // 香港
+  // 国内
   warrantyList: '/backend/infoMgmt/warrantyList',
   addPolicy: '/backend/infoMgmt/addPolicy',
   update: '/backend/infoMgmt/update',
@@ -18,34 +18,29 @@ const api = {
   getInfomationQrCode: '/backend/infoMgmt/getInfomationQrCode',
   listPolicy: '/backend/infoMgmt/listPolicy',
   removeInfo: '/backend/infoMgmt/removeInfo',
+  showCorporateName: '/backend/internalPolicyEdit/showCorporateName',
   pagingInsuranceConfigure:
-    '/backend/insurancePolicyEdit/pagingInsuranceConfigure',
-  showInsurancePolicy: '/backend/insurancePolicyEdit/showInsurancePolicy',
+    '/backend/internalPolicyEdit/pagingInsuranceConfigure',
+  showInsurancePolicy: '/backend/internalPolicyEdit/showInsurancePolicy',
   deleteInsuranceConfigure:
-    '/backend/insurancePolicyEdit/deleteInsuranceConfigure',
+    '/backend/internalPolicyEdit/deleteInsuranceConfigure',
   saveUploadInsurancePolicy:
-    '/zuul/backend/insurancePolicyEdit/saveUploadInsurancePolicy',
+    '/zuul/backend/internalPolicyEdit/saveUploadInsurancePolicy',
   editRemoveInsurancePolicy:
-    '/backend/insurancePolicyEdit/editRemoveInsurancePolicy',
+    '/backend/internalPolicyEdit/editRemoveInsurancePolicy',
   uploadInsurancePolicyDoc:
-    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyDoc',
+    '/zuul/backend/internalPolicyEdit/uploadInsurancePolicyDoc',
   uploadInsurancePolicyPic:
-    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyPic',
+    '/zuul/backend/internalPolicyEdit/uploadInsurancePolicyPic',
   showTwoStageCosByCos: '/backend/insurancePolicyEdit/showTwoStageCosByCos',
   showTwoStageCosByCosMoreover:
     '/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover',
-  /// / 保险课堂 ////
-  addInsurance: '/backend/insuranceClassroom/addInsurance',
-  updateInsurance: '/backend/insuranceClassroom/updateInsurance',
-  listInsurance: '/backend/insuranceClassroom/listInsurance',
   /// ///////  头条推荐///////////
   listLeadNews: '/backend/insuranceClassroom/listLeadNews',
   /// /// 轮播图 ///////
   listInsuranceBanner: '/backend/infoMgmt/listInsuranceBanner',
   addInsuranceBanner: '/backend/infoMgmt/addInsuranceBanner'
 }
-
-/// //////////// 香港保险 ///////////////////
 // 待修改
 export function getWarrantyList (parameter) {
   return axios({
@@ -259,40 +254,18 @@ export function getShowTwoStageCosByCos (parameter) {
   })
 }
 
-// 获取二级分类
+export function getShowCorporateName (parameter) {
+  return axios({
+    url: api.showCorporateName,
+    method: 'get'
+  })
+}
+
 export function getShowTwoStageCosByCosMoreover (parameter) {
   return axios({
     url: api.showTwoStageCosByCosMoreover,
     method: 'get',
     params: parameter
-  })
-}
-
-/// /////////////// 保险课堂 /////////////////////////
-// 获取列表
-export function getListInsurance (parameter) {
-  return axios({
-    url: api.listInsurance,
-    method: 'get',
-    params: parameter
-  })
-}
-
-// 新增列表
-export function getAddInsurance (parameter) {
-  return axios({
-    url: api.addInsurance,
-    method: 'post',
-    data: parameter
-  })
-}
-
-// 更新列表
-export function getUpdateInsurance (parameter) {
-  return axios({
-    url: api.updateInsurance,
-    method: 'post',
-    data: parameter
   })
 }
 

@@ -229,6 +229,8 @@ export default {
         return '香港保险'
       } else if (type === 2252) {
         return '不动产'
+      } else if (type === 2444) {
+        return '金交所'
       }
     }
   }

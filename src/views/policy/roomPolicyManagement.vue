@@ -21,13 +21,9 @@
 				<a-row>
 					<a-col :span="8">
 						<a-form-item label="资讯类型">
-							<a-select v-model="queryParam.inforDomain"
+							<a-select defaultValue="3"
 								placeholder="请选择类型">
-								<a-select-option value="1">信托</a-select-option>
-								<a-select-option value="2">房产</a-select-option>
-								<a-select-option value="3">私募基金</a-select-option>
-								<a-select-option value="4">保险</a-select-option>
-								<a-select-option value="5 ">理财</a-select-option>
+								<a-select-option value="3">保险课堂</a-select-option>
 							</a-select>
 						</a-form-item>
 					</a-col>
@@ -89,7 +85,6 @@
 				</a-row>
 			</a-form>
 		</div>
-
 		<s-table ref="table"
 			style="margin-top:30px;"
 			size="default"
@@ -113,10 +108,6 @@
 				slot-scope="text">
 				{{text == 0?'否':'是'}}
 			</span>
-			<span slot="isHot"
-				slot-scope="text">
-				{{text == 0?'否':'是'}}
-			</span>
 			<span slot="scannCount"
 				slot-scope="text,record">
 				<span @click="handleEditScannCount(record)">{{text}}</span>
@@ -132,27 +123,11 @@
 						<a>{{Number(record.isTop)?'取消置顶':'置顶'}}</a>
 					</a-popconfirm>
 					<a-divider type="vertical" />
-					<a-popconfirm :title="`是否确定要${Number(record.isHot)?'取消热门':'热门'}？`"
-						@confirm="confirmHot(record)"
-						okText="确定"
-						cancelText="取消">
-						<a>{{Number(record.isHot)?'取消热门':'热门'}}</a>
-					</a-popconfirm>
-					<a-divider type="vertical" />
 					<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
 						@confirm="confirmForbidden(record)"
 						okText="确定"
 						cancelText="取消">
 						<a>{{record.state?'禁用':'启用'}}</a>
-					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a v-if="record.isNotified">{{record.isNotified?'已推送':'推送'}}</a>
-					<a-popconfirm v-if="!record.isNotified"
-						title="是否确定要推送？"
-						@confirm="confirmPushNew(record)"
-						okText="确定"
-						cancelText="取消">
-						<a>{{record.isNotified?'已推送':'推送'}}</a>
 					</a-popconfirm>
 					<a-divider type="vertical" />
 					<a @click="handleEdit(record)">编辑</a>
@@ -176,17 +151,15 @@
 import qs from 'qs'
 import { STable } from '@/components'
 import {
-  getNewsList,
   getTop,
-  getHot,
   getEnable,
-  getBroadcast,
   getUserNameList,
   getUpdateScannCount
 } from '@/api/newsManage'
+import { getListInsurance } from '@/api/policy'
 
 export default {
-  name: 'newsManagement',
+  name: 'roomNewsManagement',
   components: {
     STable
   },
@@ -209,18 +182,8 @@ export default {
           isChosen: false
         },
         {
-          id: 1,
-          name: '已热门',
-          isChosen: false
-        },
-        {
           id: 2,
           name: '已启用',
-          isChosen: false
-        },
-        {
-          id: 3,
-          name: '已推送',
           isChosen: false
         }
       ],
@@ -229,11 +192,8 @@ export default {
         startPage: 1,
         pageSize: 10,
         title: '',
-        inforDomain: '',
         isTop: '', // 置顶
-        isHot: '', // 热门
-        isNotified: '', // 已推送
-        state: '', // 启用
+        state: '', // 是否启用
         start: '', // 开始时间
         end: '', // 结束时间
         sort: '', // 排序
@@ -254,11 +214,6 @@ export default {
           title: '类型',
           dataIndex: 'inforDomain',
           scopedSlots: { customRender: 'inforDomain' }
-        },
-        {
-          title: '热门',
-          dataIndex: 'isHot',
-          scopedSlots: { customRender: 'isHot' }
         },
         {
           title: '置顶',
@@ -318,7 +273,7 @@ export default {
         if (this.queryParam.orderName === '' && this.queryParam.sort !== '') {
           this.queryParam.sort = ''
         }
-        return getNewsList(this.queryParam).then(res => {
+        return getListInsurance(this.queryParam).then(res => {
           if (res.code === 200 && res.data) {
             if (res.data.pageNum > res.data.navigateLastPage) {
               // 解决当点击的页码超过实际页数重复请求bug
@@ -354,16 +309,8 @@ export default {
     // 类型
     inforDomainFilter (type) {
       switch (type) {
-        case 1:
-          return '信托'
-        case 2:
-          return '房产'
         case 3:
-          return '私募基金'
-        case 4:
-          return '保险'
-        case 5:
-          return '理财'
+          return '保险课堂'
       }
     }
   },
@@ -379,10 +326,7 @@ export default {
         startPage: 1,
         pageSize: 10,
         title: '',
-        inforDomain: '',
         isTop: '', // 置顶
-        isHot: '', // 热门
-        isNotified: '', // 已推送
         state: '', // 启用
         start: '', // 开始时间
         end: '', // 结束时间
@@ -421,22 +365,6 @@ export default {
         }
       })
     },
-    // 表格行-热门
-    confirmHot (record) {
-      let param = { id: record.id, isHot: Number(record.isHot) ? 0 : 1 }
-      getHot(param).then(res => {
-        if (res.code === 200) {
-          record.isHot = !Number(record.isHot)
-          this.$notification.open({
-            message: '操作成功'
-          })
-        } else {
-          this.$notification.open({
-            message: '操作失败，请重试'
-          })
-        }
-      })
-    },
     // 表格行-禁用
     confirmForbidden (record) {
       let param = { id: record.id, state: record.state ? 0 : 1 }
@@ -453,33 +381,10 @@ export default {
         }
       })
     },
-    // 表格行-推送
-    confirmPushNew (record) {
-      if (record.isNotified) return
-      let param = { infoId: record.id }
-      getBroadcast(param).then(res => {
-        if (res.code === 200) {
-          record.isNotified = !record.isNotified
-          this.$notification.open({
-            message: '操作成功'
-          })
-        } else {
-          this.$notification.open({
-            message: '操作失败，请重试'
-          })
-        }
-      })
-    },
     // 表格行-编辑
     handleEdit (record) {
-      // this.$router.push({
-      //   path: '/news/newsedit',
-      //   query: {
-      //     id: record.id
-      //   }
-      // })
       let newpage = this.$router.resolve({
-        name: 'newsEdit',
+        name: 'policyNewsEdit',
         query: {
           id: record.id
         }
@@ -495,11 +400,8 @@ export default {
     },
     // 新增->跳转到编辑页
     handleAddNew () {
-      // this.$router.push({
-      //   path: '/news/newsadd'
-      // })
       let newpage = this.$router.resolve({
-        name: 'newsAdd'
+        name: 'policyNewsAdd'
       })
       window.open(newpage.href, '_blank')
     },
@@ -509,9 +411,7 @@ export default {
         this.allBtn.isChosen = true
         this.btnGroups.map(item => (item.isChosen = false))
         this.queryParam.isTop = ''
-        this.queryParam.isHot = ''
         this.queryParam.state = ''
-        this.queryParam.isNotified = ''
         return
       }
       item.isChosen = !item.isChosen
@@ -524,9 +424,7 @@ export default {
         if (item.isChosen === true) result.push(item.id)
       })
       this.queryParam.isTop = result.includes(0) ? 1 : ''
-      this.queryParam.isHot = result.includes(1) ? 1 : ''
       this.queryParam.state = result.includes(2) ? 1 : ''
-      this.queryParam.isNotified = result.includes(3) ? 1 : ''
     },
     // 日期选择器
     onDateChange (date, dateString) {
