@@ -32,13 +32,18 @@
 					slot-scope="text,record,index">
 					{{ index + 1 }}
 				</span>
+				<span slot="state"
+					slot-scope="text">
+					{{ text?'启用':'禁用' }}
+				</span>
 				<span slot="action"
 					slot-scope="text,record">
 					<template>
 						<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
 							@confirm="confirmForbidden(record)"
 							okText="确定"
-							cancelText="取消">
+							cancelText="取消"
+							v-auth="$route.meta.dutyName">
 							<a-button type="danger">{{record.state?'禁用':'启用'}}</a-button>
 						</a-popconfirm>
 						<a-button type="primary"
@@ -100,7 +105,8 @@ export default {
         {
           title: '状态',
           align: 'center',
-          dataIndex: 'state'
+          dataIndex: 'state',
+          scopedSlots: { customRender: 'state' }
         },
         {
           title: '操作',

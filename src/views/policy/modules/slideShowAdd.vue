@@ -1,7 +1,7 @@
 <template>
 	<div class="newPolicyEditWrapper">
 		<h2 class="newPolicyEditTitle">
-			保单管理 - {{ sourceFromVisible ? "头条推荐新增" : "轮播图新增" }}
+			保单管理 - {{  handlePageTitle() }}
 		</h2>
 		<a-form layout="inline"
 			:form="form">
@@ -181,6 +181,27 @@ export default {
     this.sourceFromVisible = !this.$route.query.noSource
   },
   methods: {
+    handlePageTitle () {
+      if (this.sourceFromVisible) {
+        switch (this.$route.query.type) {
+          case 'topHk':
+            return '头条推荐新增(香港)'
+          case 'topLand':
+            return '头条推荐新增(国内)'
+          default:
+            return '头条推荐新增'
+        }
+      } else {
+        switch (this.$route.query.type) {
+          case 'slideHk':
+            return '轮播图新增(香港)'
+          case 'slideLand':
+            return '轮播图新增(国内)'
+          default:
+            return '轮播图新增'
+        }
+      }
+    },
     // 上传图片
     handleUploadChange ({ fileList }) {
       this.fileList = fileList
@@ -276,7 +297,7 @@ export default {
               this.isSave = true
               this.$router.push({
                 path: '/policy/slideshowedit',
-                query: { id: res.data, type: this.$route.query.type }
+                query: { id: res.data, type: this.$route.query.type,noSource:this.$route.query.noSource }
               })
             } else {
               this.$notification.error({

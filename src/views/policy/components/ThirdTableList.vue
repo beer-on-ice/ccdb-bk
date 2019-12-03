@@ -92,9 +92,9 @@
 					</span>
 				</s-table>
 				<!-- 这个不可以删除  是用来展示模态框的 -->
-				<BookTest ref="bookTest"
+				<book-test ref="bookTest"
 					@saveOk="$refs.table.refresh(true)" />
-				<FeedBack ref="feedBack"
+				<feed-back ref="feedBack"
 					@saveOk="$refs.table.refresh(true)" />
 			</a-card>
 		</div>
@@ -103,9 +103,7 @@
 
 <script>
 import moment from 'moment'
-import { STable } from '@/components'
-import BookTest from '@/views/policy/modules/BookTest'
-import FeedBack from '@/views/policy/modules/FeedBack'
+import { STable, BookTest, FeedBack } from '@/components'
 
 import { getMultipleConsultServiceList } from '@/api/customer'
 

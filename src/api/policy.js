@@ -1,5 +1,5 @@
-import { axios } from '@/utils/request';
-const isDev = process.env.NODE_ENV === 'production';
+import { axios } from '@/utils/request'
+const isDev = process.env.NODE_ENV === 'production'
 
 const api = {
   // 香港

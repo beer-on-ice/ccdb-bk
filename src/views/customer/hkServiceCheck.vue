@@ -112,8 +112,7 @@
 
 <script>
 import moment from 'moment'
-import { STable } from '@/components'
-import StepByStepModal from './modules/StepByStepModal'
+import { STable, StepByStepModal } from '@/components'
 import { getAllList } from '@/api/customer'
 
 export default {

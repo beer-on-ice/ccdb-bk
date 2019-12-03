@@ -37,7 +37,7 @@
 									v-auth="$route.meta.dutyName">删除</a-button>
 								<a-button class="btn"
 									type="primary"
-									@click="handleSlideShowEdit(item.id, 'slide')">{{ item.state ? "已发布" : "待发布" }}</a-button>
+									@click="handleSlideShowEdit(item.id, 'slideHk',true)">{{ item.state ? "已发布" : "待发布" }}</a-button>
 								<span style="float:right;">{{ item.releaseDate }}</span>
 							</p>
 						</a-col>
@@ -58,10 +58,9 @@
 			<first-table-list @handleWarrantyEdit="handleWarrantyEdit"
 				@handleWrrantyAdd="handleWrrantyAdd"
 				ref="firstTable"></first-table-list>
-			<second-table-list @handleEdit="handleSlideShowEdit(arguments[0],'topHk')"
+			<second-table-list @handleEdit="handleSlideShowEdit(arguments[0],'topHk',false)"
 				@handleAdd="handleSlideShowAdd('topHk',false)"
 				ref="secondTable"></second-table-list>
-			<third-table-list></third-table-list>
 		</div>
 	</div>
 </template>
@@ -69,14 +68,13 @@
 <script>
 import Vue from 'vue'
 import { WarrantyEdit, WarrantyAdd } from '@/components'
-import { FirstTableList, SecondTableList, ThirdTableList } from './components'
+import { FirstTableList, SecondTableList } from './components'
 import { getListInsuranceBanner, getRemoveInfo } from '@/api/policy'
 
 export default {
   components: {
     FirstTableList,
     SecondTableList,
-    ThirdTableList,
     WarrantyEdit,
     WarrantyAdd
   },
@@ -130,10 +128,10 @@ export default {
       })
     },
     // 轮播 - 编辑
-    handleSlideShowEdit (id, type) {
+    handleSlideShowEdit (id, type, noSource) {
       this.$router.push({
         path: '/policy/slideshowedit',
-        query: { id, type }
+        query: { id, type, noSource }
       })
     },
     // 轮播 - 新增

@@ -42,7 +42,8 @@
 						<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
 							@confirm="confirmForbidden(record)"
 							okText="确定"
-							cancelText="取消">
+							cancelText="取消"
+							v-auth="$route.meta.dutyName">
 							<a-button type="danger">{{record.state?'禁用':'启用'}}</a-button>
 						</a-popconfirm>
 						<a-button type="primary"

@@ -61,7 +61,6 @@
 			<second-table-list-land @handleEdit="handleSlideShowEdit(arguments[0],'topLand',false)"
 				@handleAdd="handleSlideShowAdd('topLand',false)"
 				ref="secondTable"></second-table-list-land>
-			<third-table-list-land></third-table-list-land>
 		</div>
 	</div>
 </template>
@@ -69,18 +68,13 @@
 <script>
 import Vue from 'vue'
 import { WarrantyLandEdit, WarrantyLandAdd } from '@/components'
-import {
-  FirstTableListLand,
-  SecondTableListLand,
-  ThirdTableListLand
-} from './components'
+import { FirstTableListLand, SecondTableListLand } from './components'
 import { getListInsuranceBanner, getRemoveInfo } from '@/api/landPolicy'
 
 export default {
   components: {
     FirstTableListLand,
     SecondTableListLand,
-    ThirdTableListLand,
     WarrantyLandEdit,
     WarrantyLandAdd
   },

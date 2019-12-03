@@ -1,6 +1,6 @@
 <template>
 	<div class="newPolicyEditWrapper">
-		<h2 class="newPolicyEditTitle">保单管理 - {{sourceFromVisible ? '头条推荐编辑': '轮播图编辑' }}</h2>
+		<h2 class="newPolicyEditTitle">保单管理 - {{handlePageTitle()}}</h2>
 		<a-form layout="inline"
 			:form="form">
 			<a-row :gutter="48">
@@ -147,6 +147,7 @@ export default {
       state: 0,
       qrCode: '',
       previewVisible: false,
+      sourceFromTitle: '',
       sourceFromVisible: false, // 是否有来源网站选项
       // 编辑参数
       queryParam: {
@@ -167,8 +168,8 @@ export default {
   created () {
     this.uploadUrl = specialUrl.upload
     this.id = this.$route.query.id
-    this.sourceFromVisible = !this.$route.query.noSource
 
+    this.sourceFromVisible = !this.$route.query.noSource
     this.getInfo()
   },
   methods: {
@@ -188,6 +189,27 @@ export default {
         tags: data.tags,
         pTime: moment(data.releaseDate)
       })
+    },
+    handlePageTitle () {
+      if (this.sourceFromVisible) {
+        switch (this.$route.query.type) {
+          case 'topHk':
+            return '头条推荐编辑(香港)'
+          case 'topLand':
+            return '头条推荐编辑(国内)'
+          default:
+            return '头条推荐编辑'
+        }
+      } else {
+        switch (this.$route.query.type) {
+          case 'slideHk':
+            return '轮播图编辑(香港)'
+          case 'slideLand':
+            return '轮播图编辑(国内)'
+          default:
+            return '轮播图编辑'
+        }
+      }
     },
     /// // 反向回绑 /////
     handleBackTopics (data) {
@@ -329,7 +351,11 @@ export default {
     },
     // 返回
     handleBack () {
-      this.$router.push('/policy/policyManagement')
+      if (this.$route.query.type === 'topHk' || this.$route.query.type === 'slideHk') {
+        this.$router.push('/policy/hkPolicyManagement')
+      } else {
+        this.$router.push('/policy/landPolicyManagement')
+      }
     }
   }
 }

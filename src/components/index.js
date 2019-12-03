@@ -31,6 +31,9 @@ import WarrantyEdit from '@/components/WarrantyEdit' // 保单编辑
 import WarrantyAdd from '@/components/WarrantyEdit/index2' // 保单编辑
 import WarrantyLandEdit from '@/components/WarrantyEdit/indexLand' // 保单编辑
 import WarrantyLandAdd from '@/components/WarrantyEdit/index2Land' // 保单编辑
+import BookTest from '@/components/CustomerTest/BookTest' // 反馈
+import FeedBack from '@/components/CustomerTest/FeedBack' // 保单编辑
+import StepByStepModal from '@/components/CustomerTest/StepByStepModal' // 保单编辑
 
 export {
   Bar,
@@ -60,5 +63,8 @@ export {
   WarrantyEdit,
   WarrantyAdd,
   WarrantyLandEdit,
-  WarrantyLandAdd
+  WarrantyLandAdd,
+  BookTest,
+  FeedBack,
+  StepByStepModal
 }

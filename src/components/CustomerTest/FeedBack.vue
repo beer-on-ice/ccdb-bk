@@ -2,7 +2,7 @@
 	<a-modal title="保单管理-保单咨询反馈"
 		:visible="visible"
 		@cancel="handleCancel"
-		width="800px"
+		width="960px"
 		:footer="null"
 		:destroyOnClose="true"
 		class="operateModal">
@@ -34,13 +34,10 @@
 							</a-col>
 						</a-row>
 						<a-row style="margin-bottom:10px">
-							<a-col :span="8">
-								<span>联系方式:</span>
-								<span>{{userInfo.mobile}}</span>
-							</a-col>
-							<a-col :span="2"
-								:offset="2">
-								<div :class="userInfo.serviceState==2?'isWrong active':'isWrong'"
+							<a-col :span="6">联系方式: {{userInfo.mobile}}</a-col>
+							<a-col :span="2">
+								<div style="margin-top:-10px;"
+									:class="userInfo.serviceState==2?'isWrong active':'isWrong'"
 									@click="handleServeState">信息有误</div>
 							</a-col>
 							<a-col :span="6"
@@ -81,11 +78,10 @@
 					</a-col>
 				</a-row>
 				<a-row style="margin-top:10px">
-					<a-col :span="2"
-						style="margin-right:10px">问题描述:</a-col>
+					<a-col :span="2">问题描述:</a-col>
 					<a-col :span="20">
-						<div style="background-color:rgba(230, 230, 230, 1)">
-							<p>{{userInfo.problemDescription}}</p>
+						<div style="background-color:rgba(230, 230, 230, 1);">
+							<p style="padding: 3px 8px;">{{userInfo.problemDescription}}</p>
 						</div>
 					</a-col>
 				</a-row>
@@ -233,9 +229,10 @@ export default {
 }
 .operateModal {
 	.isWrong {
+		width: 50px;
+		padding: 5px 8px;
 		background: #ccc;
-		font-size: 16px;
-		padding: 5px;
+		font-size: 12px;
 		&.active {
 			background: red;
 			color: #fff;

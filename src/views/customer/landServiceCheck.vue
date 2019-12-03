@@ -104,7 +104,7 @@
 				</span>
 			</s-table>
 			<!-- 这个不可以删除  是用来展示模态框的 -->
-			<StepByStepModal ref="modal"
+			<step-by-step-modal ref="modal"
 				@saveOk="$refs.table.refresh(true)" />
 		</a-card>
 	</div>
@@ -112,8 +112,7 @@
 
 <script>
 import moment from 'moment'
-import { STable } from '@/components'
-import StepByStepModal from './modules/StepByStepModal'
+import { STable, StepByStepModal } from '@/components'
 import { getAllList } from '@/api/landCustomer'
 
 export default {
