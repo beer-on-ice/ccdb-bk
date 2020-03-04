@@ -23,4 +23,7 @@ export default {
 #app {
 	height: 100%;
 }
+.ant-table-tbody > tr > td {
+	word-break: break-all;
+}
 </style>

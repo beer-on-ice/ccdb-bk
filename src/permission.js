@@ -15,12 +15,12 @@ const whiteList = ['login', 'register', 'registerResult'] // no redirect whiteli
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
   to.meta &&
-    (typeof to.meta.title !== 'undefined' &&
-      setDocumentTitle(`${to.meta.title} - ${domTitle}`))
+		(typeof to.meta.title !== 'undefined' &&
+			setDocumentTitle(`${to.meta.title} - ${domTitle}`))
 
   if (Vue.ls.get(ACCESS_TOKEN)) {
     if (to.path === '/user/login') {
-      next({ path: '/policy/management' })
+      next({ path: '/welcome' })
       NProgress.done()
     } else {
       if (store.getters.roles.length === 0) {

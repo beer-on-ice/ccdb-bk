@@ -26,6 +26,7 @@
 								<div className="ant-upload-text">选择封面</div>
 							</div>
 						</a-upload>
+						<p style="color:red;margin:0;">图片尺寸：678*166</p>
 					</div>
 					<div style="clear:both;display:block;height:0;" />
 
@@ -297,7 +298,11 @@ export default {
               this.isSave = true
               this.$router.push({
                 path: '/policy/slideshowedit',
-                query: { id: res.data, type: this.$route.query.type,noSource:this.$route.query.noSource }
+                query: {
+                  id: res.data,
+                  type: this.$route.query.type,
+                  noSource: this.$route.query.noSource
+                }
               })
             } else {
               this.$notification.error({

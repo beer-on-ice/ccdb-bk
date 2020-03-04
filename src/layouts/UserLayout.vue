@@ -29,7 +29,7 @@
 			<div class="containerBottom">
 				<h1>上海才查到科技有限公司</h1>
 				<div class="copyright">
-					Copyright &copy; 2019 V1.4.0
+					Copyright &copy; 2020 V1.4.0
 				</div>
 			</div>
 		</div>

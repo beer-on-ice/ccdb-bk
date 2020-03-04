@@ -31,6 +31,7 @@
 							<a-button type="danger"
 								@click="handleRemoveUpload">删除图片</a-button>
 						</div>
+						<p style="color:red;margin:0;">图片尺寸：678*166</p>
 					</div>
 					<div style="clear:both;display:block;height:0;" />
 
@@ -351,7 +352,10 @@ export default {
     },
     // 返回
     handleBack () {
-      if (this.$route.query.type === 'topHk' || this.$route.query.type === 'slideHk') {
+      if (
+        this.$route.query.type === 'topHk' ||
+				this.$route.query.type === 'slideHk'
+      ) {
         this.$router.push('/policy/hkPolicyManagement')
       } else {
         this.$router.push('/policy/landPolicyManagement')

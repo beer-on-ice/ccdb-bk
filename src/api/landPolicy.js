@@ -1,5 +1,5 @@
-import { axios } from '@/utils/request';
-const isDev = process.env.NODE_ENV === 'production';
+import { axios } from '@/utils/request'
+const isDev = process.env.NODE_ENV === 'production'
 
 const api = {
   // 国内
@@ -20,21 +20,21 @@ const api = {
   removeInfo: '/backend/infoMgmt/removeInfo',
   showCorporateName: '/backend/internalPolicyEdit/showCorporateName',
   pagingInsuranceConfigure:
-    '/backend/internalPolicyEdit/pagingInsuranceConfigure',
+		'/backend/internalPolicyEdit/pagingInsuranceConfigure',
   showInsurancePolicy: '/backend/internalPolicyEdit/showInsurancePolicy',
   deleteInsuranceConfigure:
-    '/backend/internalPolicyEdit/deleteInsuranceConfigure',
+		'/backend/internalPolicyEdit/deleteInsuranceConfigure',
   saveUploadInsurancePolicy:
-    '/zuul/backend/internalPolicyEdit/saveUploadInsurancePolicy',
+		'/zuul/backend/internalPolicyEdit/saveUploadInsurancePolicy',
   editRemoveInsurancePolicy:
-    '/backend/internalPolicyEdit/editRemoveInsurancePolicy',
+		'/backend/internalPolicyEdit/editRemoveInsurancePolicy',
   uploadInsurancePolicyDoc:
-    '/zuul/backend/internalPolicyEdit/uploadInsurancePolicyDoc',
+		'/zuul/backend/internalPolicyEdit/uploadInsurancePolicyDoc',
   uploadInsurancePolicyPic:
-    '/zuul/backend/internalPolicyEdit/uploadInsurancePolicyPic',
+		'/zuul/backend/internalPolicyEdit/uploadInsurancePolicyPic',
   showTwoStageCosByCos: '/backend/insurancePolicyEdit/showTwoStageCosByCos',
   showTwoStageCosByCosMoreover:
-    '/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover',
+		'/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover',
   /// ///////  头条推荐///////////
   listLeadNews: '/backend/insuranceClassroom/listLeadNews',
   /// /// 轮播图 ///////

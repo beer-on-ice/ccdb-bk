@@ -19,21 +19,21 @@ const api = {
   listPolicy: '/backend/infoMgmt/listPolicy',
   removeInfo: '/backend/infoMgmt/removeInfo',
   pagingInsuranceConfigure:
-    '/backend/insurancePolicyEdit/pagingInsuranceConfigure',
+		'/backend/insurancePolicyEdit/pagingInsuranceConfigure',
   showInsurancePolicy: '/backend/insurancePolicyEdit/showInsurancePolicy',
   deleteInsuranceConfigure:
-    '/backend/insurancePolicyEdit/deleteInsuranceConfigure',
+		'/backend/insurancePolicyEdit/deleteInsuranceConfigure',
   saveUploadInsurancePolicy:
-    '/zuul/backend/insurancePolicyEdit/saveUploadInsurancePolicy',
+		'/zuul/backend/insurancePolicyEdit/saveUploadInsurancePolicy',
   editRemoveInsurancePolicy:
-    '/backend/insurancePolicyEdit/editRemoveInsurancePolicy',
+		'/backend/insurancePolicyEdit/editRemoveInsurancePolicy',
   uploadInsurancePolicyDoc:
-    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyDoc',
+		'/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyDoc',
   uploadInsurancePolicyPic:
-    '/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyPic',
+		'/zuul/backend/insurancePolicyEdit/uploadInsurancePolicyPic',
   showTwoStageCosByCos: '/backend/insurancePolicyEdit/showTwoStageCosByCos',
   showTwoStageCosByCosMoreover:
-    '/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover',
+		'/backend/insurancePolicyEdit/showTwoStageCosByCosMoreover',
   /// / 保险课堂 ////
   addInsurance: '/backend/insuranceClassroom/addInsurance',
   updateInsurance: '/backend/insuranceClassroom/updateInsurance',

@@ -46,6 +46,7 @@ function hasRole(roles, route) {
  * @param roles 登录用户的信息
  * @returns {*}
  */
+
 function filterAsyncRouter (routerMap, roles) {
   const accessedRouters = routerMap.filter(route => {
     if (hasPermission(roles.permissionList, route)) {
@@ -68,6 +69,7 @@ function generateAllRoutes (roles) {
     item.meta.title = item.nodeName
     item.meta.dutyName = item.url
     item.meta.keepAlive = true
+    item.meta.icon = `table`
     item.path = `/${item.url}`
   })
 
