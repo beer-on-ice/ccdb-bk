@@ -5,7 +5,8 @@ const api = {
   queryBrandDicList: '/backend/brand/queryBrandDicList',
   validateBrand: '/backend/brand/validateBrand',
   queryListWithState: '/backend/institution/queryListWithState',
-  queryListNum: '/backend/institution/queryListNum'
+  queryListNum: '/backend/institution/queryListNum',
+  resetIns: '/backend/institution/resetIns'
 }
 
 // 审核列表数量
@@ -49,6 +50,15 @@ export function validateBrand (parameter) {
   return axios({
     url: api.validateBrand,
     method: 'get',
+    params: parameter
+  })
+}
+
+// 重置
+export function resetIns (parameter) {
+  return axios({
+    url: api.resetIns,
+    method: 'post',
     params: parameter
   })
 }

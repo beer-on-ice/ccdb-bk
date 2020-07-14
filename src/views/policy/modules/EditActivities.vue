@@ -294,7 +294,8 @@ export default {
       let Expression = /^[0-9]*$/
       let objExp = new RegExp(Expression)
       if (objExp.test(str) !== true) {
-        callback('请输入整数纯数字！')
+        // eslint-disable-next-line
+				callback('请输入整数纯数字！')
       }
       callback()
     },

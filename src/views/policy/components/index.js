@@ -4,6 +4,7 @@ import SecondTableList from './SecondTableList.vue'
 import SecondTableListLand from './SecondTableListLand.vue'
 import ThirdTableList from './ThirdTableList.vue'
 import ThirdTableListLand from './ThirdTableListLand.vue'
+import DropdownSearch from './DropdownSearch.vue'
 
 export {
   FirstTableList,
@@ -11,5 +12,6 @@ export {
   ThirdTableList,
   FirstTableListLand,
   SecondTableListLand,
-  ThirdTableListLand
+  ThirdTableListLand,
+  DropdownSearch
 }

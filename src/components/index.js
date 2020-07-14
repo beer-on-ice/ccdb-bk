@@ -25,6 +25,7 @@ import PrevImgUpload from '@/components/PrevImgUpload'
 import PreviewImgModal from '@/components/PreviewImgModal'
 import SingleImgUpload from '@/components/SingleImgUpload'
 import SingleImgUploadNew from '@/components/SingleImgUpload/indexNew'
+import UploadAnnex from '@/components/SingleImgUpload/pdfOnly'
 
 export {
   Trend,
@@ -50,5 +51,6 @@ export {
   PrevImgUpload,
   PreviewImgModal,
   SingleImgUpload,
-  SingleImgUploadNew
+  SingleImgUploadNew,
+  UploadAnnex
 }

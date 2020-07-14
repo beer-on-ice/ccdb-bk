@@ -72,6 +72,17 @@
 								查看
 							</a-button>
 
+							<!-- bd 下 驳回 有 -->
+							<a-popconfirm v-if="queryParam.examineState === 3&&record.show"
+								title="是否确认清空该机构的认证材料?"
+								@confirm="handleReset(record)"
+								okText="确认"
+								cancelText="取消">
+								<a-button type="primary">
+									重置
+								</a-button>
+							</a-popconfirm>
+
 						</template>
 					</span>
 				</s-table>
@@ -82,6 +93,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { STable } from '@/components'
 import moment from 'moment'
 
@@ -90,7 +102,8 @@ import {
   queryDicList,
   queryBrandDicList,
   queryListWithState,
-  multipleBranchOrganizations
+  multipleBranchOrganizations,
+  resetIns
 } from '@/api/institution/institutionList'
 
 export default {
@@ -289,6 +302,28 @@ export default {
     this.queryListNum()
   },
   methods: {
+    async handleReset (record) {
+      const param = {
+        id: record.id,
+        dicType: record.dicType,
+        examineUser: JSON.parse(Vue.ls.get('USERINFO')).username
+      }
+      try {
+        let res = await resetIns(param)
+        if (res.code === 200) {
+          this.$notification.success({
+            message: res.msg || '网络故障，请重试！'
+          })
+          this.$refs.table.refresh(true)
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '网络故障，请重试！'
+        })
+      }
+    },
     async queryBrandDicList (name, type) {
       try {
         let res = await queryBrandDicList({
@@ -441,7 +476,6 @@ export default {
 
 <style lang="less">
 .instituManagementWrapper {
-	min-width: 1200px;
 	h1 {
 		font-size: 20px;
 		font-weight: bold;

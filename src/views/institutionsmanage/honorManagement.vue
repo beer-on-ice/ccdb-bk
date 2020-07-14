@@ -226,7 +226,6 @@ export default {
 
 <style lang="less">
 .honorManagement {
-	min-width: 1200px;
 	h1 {
 		font-size: 20px;
 		font-weight: bold;

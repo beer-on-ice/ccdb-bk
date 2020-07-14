@@ -379,7 +379,7 @@ export default {
       }
     }
   },
-  activated () {
+  created () {
     this.userId = this.$route.query.id
     this.getDetailData()
   },
@@ -396,10 +396,14 @@ export default {
           userId: this.userId
         }
         let res = await getOverview(param)
-        this.overViewInfo = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.overViewInfo = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },
@@ -410,10 +414,14 @@ export default {
           userId: this.userId
         }
         let res = await getPushInfoCount(param)
-        this.detailInfo = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.detailInfo = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },
@@ -426,10 +434,14 @@ export default {
         }
         let param = Object.assign(this.modalOneParam, paramOnly)
         let res = await getFollowdetail(param)
-        this.modalOneInfo.data = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.modalOneInfo.data = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },
@@ -441,10 +453,14 @@ export default {
         }
         let param = Object.assign(this.modalOneParam, paramOnly)
         let res = await getAdviserdetail(param)
-        this.modalOneInfo.data = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.modalOneInfo.data = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },
@@ -457,10 +473,14 @@ export default {
         }
         let param = Object.assign(this.modalOneParam, paramOnly)
         let res = await getInfoByUserId(param)
-        this.modalOneInfo.data = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.modalOneInfo.data = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },
@@ -472,10 +492,14 @@ export default {
           bookType: this.type
         }
         let res = await getBookdetail(param)
-        this.modalTwoInfo.data = res.data
-      } catch (error) {
-        this.$notification.open({
-          message: error.msg
+        if (res.code === 200) {
+          this.modalTwoInfo.data = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message
         })
       }
     },

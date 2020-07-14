@@ -1,25 +1,23 @@
 <template>
 	<div class="insititutionCheckWrapper">
-		<h1>机构管理 - 机构审核详情</h1>
+		<h1>{{isAuth?'企业认证-认证详情':'机构管理 - 机构审核详情'}}</h1>
 		<a-card :bordered="false"
 			class="mainWrapper">
-			<h3 style="word-break:break-all;"
-				v-if="(Number($route.query.type) === 3||Number($route.query.type) === 8||Number($route.query.type) === 5)&&showrejectReason">审核未通过，驳回原因：{{showrejectReason}}</h3>
+			<h3 class="rejectReason"
+				v-if="isAuth&&Number($route.query.type) === 1">认证信息审核中</h3>
+			<h3 class="rejectReason"
+				v-if="(Number($route.query.type) === 3||Number($route.query.type) === 8||Number($route.query.type) === 5)&&showrejectReason&&!isAuth">审核未通过，驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
-				<a-form-item label="公司名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
+				<a-form-item label="公司名称：">
 					<p>{{institutionInfo.institutionName}}</p>
 				</a-form-item>
-				<a-form-item label="公司类型："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="公司类型：">
 					<p>{{institutionInfo.institutionType|companyTypeFilter}}</p>
 				</a-form-item>
-				<a-form-item label="营业执照编号："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="营业执照编号：">
 					<p>{{institutionInfo.institutionNo}}</p>
 					<div class="backImg">
 						<img @click="handlePreviewImg(institutionInfo.institutionUrl)"
@@ -27,9 +25,7 @@
 							alt="营业执照编号">
 					</div>
 				</a-form-item>
-				<a-form-item label="法定代表人："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="法定代表人：">
 					<p>{{institutionInfo.artificialPerson}}</p>
 					<div class="specUpWrapper">
 						<div class="backImg">
@@ -46,9 +42,7 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="合同上传："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="合同上传：">
 					<div class="muchUpWrapper">
 						<div class="backImg"
 							v-for="item in institutionInfo.contractList"
@@ -64,14 +58,10 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="机构账号管理人："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="机构账号管理人：">
 					<p>{{institutionInfo.manageUse}}</p>
 				</a-form-item>
-				<a-form-item label="身份证号："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="身份证号：">
 					<p>{{institutionInfo.managePno}}</p>
 					<div class="specUpWrapper">
 						<div class="backImg">
@@ -86,29 +76,19 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="联系电话："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="联系电话：">
 					<p>{{institutionInfo.phone}}</p>
 				</a-form-item>
-				<a-form-item label="职位名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="职位名称：">
 					<p>{{institutionInfo.occupation}}</p>
 				</a-form-item>
-				<a-form-item label="邮箱："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="邮箱：">
 					<p>{{institutionInfo.email}}</p>
 				</a-form-item>
-				<a-form-item label="权限设置："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="权限设置：">
 					<p>{{institutionInfo.powerSee}}</p>
 				</a-form-item>
 				<a-form-item label="服务期限："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="specRangeWrapper">
 					<p>{{_handlePtime(institutionInfo.startTime)}} - {{_handlePtime(institutionInfo.endTime)}}</p>
 				</a-form-item>
@@ -196,6 +176,7 @@ export default {
   },
   data () {
     return {
+      isAuth: false,
       certTypeList,
       institutionInfo: {},
       gengerateUserInfo: {},
@@ -214,7 +195,8 @@ export default {
     }
   },
   created () {
-    const { id, type } = this.$route.query
+    const { id, type, isAuth } = this.$route.query
+    this.isAuth = isAuth
     this.id = id
     this.userName = JSON.parse(Vue.ls.get('USERINFO')).username
     this.getCheckInfo()
@@ -427,6 +409,10 @@ export default {
           return '基金且银行'
         case 7:
           return '基金且保险'
+        case 8:
+          return '证券'
+        case 9:
+          return '基金且证券'
         default:
           return '基金'
       }
@@ -459,10 +445,13 @@ export default {
 		font-weight: bold;
 	}
 	.mainWrapper {
-		h3 {
-			color: red;
+		.rejectReason {
+			background: rgba(212, 48, 48, 0.24);
+			box-shadow: rgba(212, 48, 48, 0.74) solid 1px;
 			padding: 10px;
 			border: 1px solid red;
+			word-break: break-all;
+			font-weight: bold;
 		}
 		.backImg {
 			width: 180px;

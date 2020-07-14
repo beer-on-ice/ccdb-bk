@@ -134,9 +134,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -281,12 +281,6 @@ export default {
 				margin-right: 10px;
 			}
 		}
-	}
-}
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
 	}
 }
 </style>

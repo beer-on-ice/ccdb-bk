@@ -1,6 +1,6 @@
 <template>
 	<div class="addInsititutionWrapper">
-		<h1>机构管理 - 新增机构</h1>
+		<h1>{{isAuth?'企业认证-提交认证':'机构管理 - 新增机构'}}</h1>
 		<a-card :bordered="false"
 			class="mainWrapper">
 			<a-form layout="horizontal"
@@ -13,7 +13,8 @@
 				<a-form-item label="公司类型："
 					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 12 }">
-					<span>{{companyType | companyTypeFilter}}</span>
+					<span v-if="isAuth">{{companyType}}</span>
+					<span v-else>{{companyType | companyTypeFilter}}</span>
 				</a-form-item>
 				<a-form-item label="营业执照编号："
 					:label-col="{ span: 2 }"
@@ -242,6 +243,7 @@ import {
   getAutoDic,
   addInsPageSave
 } from '@/api/institution/addInstitution'
+import { submitButton } from '@/api/businessAuth'
 import { SingleImgUploadNew, PreviewImgModal } from '@/components/index'
 const certTypeList = [
   {
@@ -274,7 +276,7 @@ export default {
     return {
       certTypeList,
       plainOptions: [], // 权限
-      companyUrl: '',
+      isAuth: false,
       companyName: '',
       companyType: '',
       // 执照
@@ -341,13 +343,13 @@ export default {
   created () {
     const {
       $route: {
-        query: { companyName, companyUrl, companyType }
+        query: { companyName, companyType, isAuth }
       }
     } = this
     this.uploadUrl = uploadUrl
     this.companyName = companyName
-    this.companyUrl = companyUrl
     this.companyType = companyType
+    this.isAuth = isAuth
     this.getAutoDic()
   },
   methods: {
@@ -361,6 +363,29 @@ export default {
             plainOptions.push({ label: item.nodeName, value: item.id })
           })
           this.plainOptions = plainOptions
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '提交失败，请重试!'
+        })
+      }
+    },
+    async submitButton () {
+      const {
+        $route: {
+          query: { ticketId, companyUrl }
+        }
+      } = this
+      const param = {
+        id: ticketId,
+        companyUrl,
+        operatingPersonnel: JSON.parse(Vue.ls.get('USERINFO')).username
+      }
+      try {
+        const res = await submitButton(param)
+        if (res.code === 200) {
         } else {
           throw new Error(res.msg)
         }
@@ -540,21 +565,31 @@ export default {
       let manageBack = ''
       let contractList = []
 
-      pnoFront = uploadLawManFrontInfo.fileList.length
-        ? uploadLawManFrontInfo.fileList[0].response.data
-        : ''
-      pnoBack = uploadLawManBackInfo.fileList.length
-        ? uploadLawManBackInfo.fileList[0].response.data
-        : ''
-      institutionUrl = uploadLicenseInfo.fileList.length
-        ? uploadLicenseInfo.fileList[0].response.data
-        : ''
-      manageFront = uploadManagerFrontInfo.fileList.length
-        ? uploadManagerFrontInfo.fileList[0].response.data
-        : ''
-      manageBack = uploadManagerBackInfo.fileList.length
-        ? uploadManagerBackInfo.fileList[0].response.data
-        : ''
+      pnoFront =
+				uploadLawManFrontInfo.fileList.length &&
+				uploadLawManFrontInfo.fileList[0].response
+				  ? uploadLawManFrontInfo.fileList[0].response.data
+				  : ''
+      pnoBack =
+				uploadLawManBackInfo.fileList.length &&
+				uploadLawManBackInfo.fileList[0].response
+				  ? uploadLawManBackInfo.fileList[0].response.data
+				  : ''
+      institutionUrl =
+				uploadLicenseInfo.fileList.length &&
+				uploadLicenseInfo.fileList[0].response
+				  ? uploadLicenseInfo.fileList[0].response.data
+				  : ''
+      manageFront =
+				uploadManagerFrontInfo.fileList.length &&
+				uploadManagerFrontInfo.fileList[0].response
+				  ? uploadManagerFrontInfo.fileList[0].response.data
+				  : ''
+      manageBack =
+				uploadManagerBackInfo.fileList.length &&
+				uploadManagerBackInfo.fileList[0].response
+				  ? uploadManagerBackInfo.fileList[0].response.data
+				  : ''
 
       // 处理合同
       contractList = [
@@ -606,9 +641,13 @@ export default {
         form: { validateFields, getFieldsValue, setFieldsValue },
         serviceStartTime,
         serviceEndTime,
-        companyUrl,
         uploadLawManFrontInfo,
-        uploadLawManBackInfo
+        uploadLawManBackInfo,
+        isAuth,
+        submitButton,
+        $route: {
+          query: { companyUrl }
+        }
       } = this
       const {
         licenceNumber,
@@ -710,7 +749,6 @@ export default {
         contractList: contractList,
         insResourceMapList: this.handlePowerSee()
       }
-      console.log(param)
 
       validateFields(
         [
@@ -730,6 +768,8 @@ export default {
             try {
               const res = await addInsPageSave(param)
               if (res.code === 200) {
+                if (isAuth) submitButton()
+
                 this.$notification.success({
                   message: res.msg || '提交成功!'
                 })
@@ -748,9 +788,7 @@ export default {
     },
     // 返回
     handleBack () {
-      this.$router.push({
-        path: '/institutionsmanage/instituApplication'
-      })
+      this.$router.go(-1)
     }
   },
   filters: {
@@ -770,6 +808,10 @@ export default {
           return '基金且银行'
         case 7:
           return '基金且保险'
+        case 8:
+          return '证券'
+        case 9:
+          return '基金且证券'
         default:
           return '基金'
       }

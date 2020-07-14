@@ -1,6 +1,6 @@
 <template>
 	<div class="businessAuthWrapper">
-		<h2>企业认证申请</h2>
+		<h2>机构管理 - 企业认证申请</h2>
 		<a-card :bordered="false">
 			<div class="table-page-search-wrapper">
 				<a-form layout="inline"
@@ -13,15 +13,16 @@
 									placeholder="请输入" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="8">
+						<a-col :span="6">
 							<a-form-item label="申请时间：">
-								<a-range-picker @change="onDatePickChange" />
+								<a-range-picker @change="onDatePickChange"
+									v-decorator="['dateRange']" />
 							</a-form-item>
 						</a-col>
-						<a-col :span="4">
-							<a-form-item label="成交归属：">
-								<a-select v-model="queryParam.belongName">
-									<a-select-option v-for="item in belongNameList"
+						<a-col :span="2">
+							<a-form-item>
+								<a-select v-model="queryParam.sort">
+									<a-select-option v-for="item in sortList"
 										:value="item.id"
 										:key="item.id">
 										{{item.name}}
@@ -29,9 +30,20 @@
 								</a-select>
 							</a-form-item>
 						</a-col>
+						<a-col :span="4">
+							<a-form-item label="成交归属：">
+								<a-select v-model="queryParam.ownership">
+									<a-select-option v-for="item in belongNameList"
+										:value="item"
+										:key="item">
+										{{item}}
+									</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
 						<a-col :span="3">
 							<a-form-item label="企业状态： ">
-								<a-select v-model="queryParam.examineState">
+								<a-select v-model="queryParam.companyStatus">
 									<a-select-option v-for="item in actionList"
 										:value="item.id"
 										:key="item.id">
@@ -62,22 +74,10 @@
 					slot-scope="text, record, index">
 					{{ index + 1 }}
 				</span>
-				<span slot="type"
-					slot-scope="text">
-					{{text | typeFilter}}
-				</span>
-				<span slot="examineState"
+				<span slot="companyStatus"
 					slot-scope="text"
-					:style="{color: Number(text)===1?'#ff4956':'#3262f3'}">
-					{{Number(text)===1?'未处理':'已处理'}}
-				</span>
-				<span slot="createTime"
-					slot-scope="text">
-					{{_handlePtime(text)}}
-				</span>
-				<span slot="lastUpdateTime"
-					slot-scope="text">
-					{{_handlePtime(text)}}
+					:style="{color:Number(text)===0?'#000':Number(text)===1?'#000':Number(text)===2?'green':'red'}">
+					{{Number(text)===0?'未认证':Number(text)===1?'认证中':Number(text)===2?'已认证':'已过期'}}
 				</span>
 				<span slot="operate"
 					slot-scope="text,record"
@@ -92,44 +92,47 @@
 </template>
 
 <script>
-import moment from 'moment'
 import { STable } from '@/components'
-import { list } from '@/api/businessAuth'
+import {
+  companyCertificationMultipleConditional,
+  showOwnership
+} from '@/api/businessAuth'
 
 const actionList = [
   {
-    id: 0,
+    id: 9,
     name: '请选择'
   },
   {
-    id: 1,
+    id: 0,
     name: '未认证'
   },
   {
-    id: 2,
+    id: 1,
     name: '认证中'
   },
   {
-    id: 3,
+    id: 2,
     name: '已认证'
   },
   {
-    id: 4,
+    id: 3,
     name: '已过期'
   }
 ]
-const belongNameList = [
+const belongNameList = ['请选择', '未成交']
+const sortList = [
   {
-    id: 0,
-    name: '请选择'
+    id: 9,
+    name: '排序'
   },
   {
     id: 1,
-    name: '未成交'
+    name: '申请时间升序'
   },
   {
     id: 2,
-    name: '成交人'
+    name: '申请时间降序'
   }
 ]
 export default {
@@ -141,15 +144,17 @@ export default {
     return {
       actionList,
       belongNameList,
+      sortList,
       form: this.$form.createForm(this),
       queryParam: {
         startPage: 1,
         pageSize: 10,
-        start: undefined,
-        end: undefined,
-        examineState: 0,
-        belongName: 0,
-        companyName: ''
+        companyName: '',
+        queryTimeBegin: '',
+        queryTimeEnd: '',
+        sort: 9,
+        ownership: '请选择',
+        companyStatus: 9
       },
       columns: [
         {
@@ -164,31 +169,29 @@ export default {
         },
         {
           title: '企业类型',
-          dataIndex: 'type',
-          scopedSlots: { customRender: 'type' },
+          dataIndex: 'companyStyle',
           align: 'center'
         },
         {
           title: '成交归属',
-          dataIndex: 'name',
+          dataIndex: 'ownership',
           align: 'center'
         },
         {
           title: '企业状态',
-          dataIndex: 'occupation',
-          align: 'center'
+          dataIndex: 'companyStatus',
+          align: 'center',
+          scopedSlots: { customRender: 'companyStatus' }
         },
         {
           title: '申请时间',
           align: 'center',
-          dataIndex: 'createTime',
-          scopedSlots: { customRender: 'createTime' }
+          dataIndex: 'applicationTime'
         },
         {
           title: '最后更新时间',
           align: 'center',
-          dataIndex: 'lastUpdateTime',
-          scopedSlots: { customRender: 'lastUpdateTime' }
+          dataIndex: 'lastUpdateTime'
         },
         {
           title: '操作',
@@ -207,7 +210,14 @@ export default {
         showQuickJumper: true
       },
       loadData: () => {
-        return list(this.queryParam).then(res => {
+        let param = {
+          ...this.queryParam,
+          ownership:
+						this.queryParam.ownership === '请选择'
+						  ? ''
+						  : this.queryParam.ownership
+        }
+        return companyCertificationMultipleConditional(param).then(res => {
           if (res.code === 200 && res.data) {
             if (res.data.pageNum > res.data.navigateLastPage) {
               this.queryParam.startPage = res.data.navigateLastPage
@@ -235,70 +245,65 @@ export default {
       }
     }
   },
+  created () {
+    this.getCreateResources()
+  },
   methods: {
-    _handlePtime (value) {
-      if (!value) return
-      return moment(value).format('YYYY-MM-DD HH:MM:SS')
+    async getCreateResources () {
+      try {
+        const { code, data, msg } = await showOwnership()
+        if (code === 200) {
+          this.belongNameList = [...this.belongNameList, ...data]
+        } else {
+          throw new Error(msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '网络故障，请重试！'
+        })
+      }
     },
     // 重置搜索表单
     resetSearchForm () {
       this.queryParam = {
         startPage: 1,
         pageSize: 10,
-        examineState: 0,
-        belongName: 0,
         companyName: '',
-        start: undefined,
-        end: undefined
+        queryTimeBegin: '',
+        queryTimeEnd: '',
+        sort: 9,
+        ownership: '请选择',
+        companyStatus: 9
       }
-
+      this.resetDatePicker()
       this.$refs.table.refresh(true)
+    },
+    resetDatePicker () {
+      this.form.setFieldsValue({
+        dateRange: undefined
+      })
     },
     // 改变时间
     onDatePickChange (date, dateString) {
-      this.queryParam.start = dateString[0]
-      this.queryParam.end = dateString[1]
+      this.queryParam.queryTimeBegin = dateString[0]
+      this.queryParam.queryTimeEnd = dateString[1]
     },
     handleOperate (record) {
+      const { companyUrl, companyName, companyStatus, companyStyle } = record
       this.$router.push({
-        name: 'businessAuthBeg',
-        params: {
-          info: JSON.stringify(record)
+        name: 'businessAuthList',
+        query: {
+          companyUrl,
+          companyName,
+          companyStatus,
+          companyStyle
         }
       })
     },
-    // 去往详情
-    handleDetail (record) {
+    handleAdd () {
       this.$router.push({
-        name: 'businessAuthCheck',
-        params: {
-          info: JSON.stringify(record)
-        }
+        name: 'businessAuthTicket'
       })
-    },
-    handleAdd () {}
-  },
-  filters: {
-    // 类型
-    typeFilter (code) {
-      switch (Number(code)) {
-        case 1:
-          return '基金'
-        case 2:
-          return '信托'
-        case 3:
-          return '基金且信托'
-        case 4:
-          return '银行'
-        case 5:
-          return '保险'
-        case 6:
-          return '基金且银行'
-        case 7:
-          return '基金且保险'
-        default:
-          return '未知'
-      }
     }
   }
 }

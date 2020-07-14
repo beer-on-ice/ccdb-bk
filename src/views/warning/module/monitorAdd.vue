@@ -55,6 +55,16 @@
 							</a-form-item>
 						</a-col>
 					</a-row>
+					<a-form-item label="摘要："
+						:label-col="{span:1}"
+						:wrapper-col="{ span: 22 }">
+						<a-textarea placeholder="请输入摘要"
+							maxLength="200"
+							allowClear
+							v-decorator="['abstractContent',
+								{rules: [{required: true, message: '请输入摘要!', trigger: 'change',type:'string' }]}
+							]" />
+					</a-form-item>
 				</a-col>
 			</a-row>
 			<a-row style="margin:50px;">
@@ -72,6 +82,7 @@
 							<a-select-option value="3">私募基金</a-select-option>
 							<a-select-option value="4">保险</a-select-option>
 							<a-select-option value="5">理财</a-select-option>
+							<a-select-option value="6">证券</a-select-option>
 						</a-select>
 					</a-form-item>
 					<a-form-item label="内容分类："
@@ -136,6 +147,7 @@
 							style="max-width: 230px"
 							@select="handleTagsSelect"
 							@search="tagsQuerySearch"
+							v-model="searchkey"
 							placeholder="请输入内容"
 							optionLabelProp="text">
 							<template slot="dataSource">
@@ -274,7 +286,8 @@ export default {
       isBanner: '', // 是否生成查到快报
       newTags: [], // 新添加的标签
       oldTags: [], // 已存在的标签
-      tagsSearchResult: [] // 搜索到的标签列表
+      tagsSearchResult: [], // 搜索到的标签列表
+      searchkey: ''
     }
   },
   created () {
@@ -294,7 +307,7 @@ export default {
       let modalInfo = this.$route.params.info.modalInfo
       let type = this.$route.params.info.type
 
-      if (this.$route.params.info.type === 1) {
+      if (type === 1) {
         arr = [
           {
             keywordId: modalInfo.administratorId,
@@ -365,6 +378,7 @@ export default {
       }
       this.newTags.push(result)
       this.newTags = this.uniqueTag(this.newTags)
+      this.searchkey = ''
     },
     uniqueTag (arr) {
       const res = new Map()
@@ -399,7 +413,8 @@ export default {
         'danger',
         'showType',
         'topics',
-        'checkedList'
+        'checkedList',
+        'abstractContent'
       ])
 
       if (this.$refs.ue.content === '') {
@@ -426,6 +441,7 @@ export default {
           this.queryParam.content = this.$refs.ue.content || ''
           this.queryParam.tags = formObj.tags || ''
           this.queryParam.tagList = this.newTags.concat(this.oldTags)
+          this.queryParam.abstractContent = formObj.abstractContent || ''
 
           getNewsAdd(this.queryParam).then(res => {
             if (res.code === 200) {

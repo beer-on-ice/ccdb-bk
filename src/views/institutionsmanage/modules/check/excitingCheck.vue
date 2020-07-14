@@ -6,10 +6,10 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
 				<a-form-item label="背景图片："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="imgUploaderWrapper">
 					<div style="display:flex;justify-content:flex-start;">
 						<div class="avatarWrapper"
@@ -21,51 +21,34 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="活动名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="活动名称：">
 					<p>{{activityInfo.activityName}}</p>
 				</a-form-item>
-				<a-form-item label="活动时间："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="活动时间：">
 					<p v-if="activityInfo.activityTime !== activityInfo.activityClosingTime">{{activityInfo.activityTime}} 至 {{activityInfo.activityClosingTime}}</p>
 					<p v-else>{{activityInfo.activityTime}}</p>
 				</a-form-item>
-				<a-form-item label="活动地区："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="活动地区：">
 					<p>{{activityInfo.activityArea}}</p>
 				</a-form-item>
-				<a-form-item label="活动地址："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="活动地址：">
 					<p>{{activityInfo.activityAddress}}</p>
 				</a-form-item>
-				<a-form-item label="参与人数："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="参与人数：">
 					<p>{{activityInfo.numberOfParticipants}}</p>
 				</a-form-item>
-				<a-form-item label="截止日期："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="截止日期：">
 					<p>{{activityInfo.closingDate}}</p>
 				</a-form-item>
-				<a-form-item label="活动介绍："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="活动介绍：">
 					<div class="introduceWrapper">
 						<div v-html="activityInfo.activityIntroduce"></div>
 					</div>
 				</a-form-item>
-				<a-form-item label="官方声明："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="官方声明：">
 					<p>{{activityInfo.officialStatement}}</p>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<a-button @click="handleBack">返回</a-button>
@@ -83,7 +66,7 @@
 							cancelText="否">
 							<a-button>审核驳回</a-button>
 						</a-popconfirm>
-						<a-textarea v-if="Number($route.query.type) === 1"
+						<a-textarea v-if="Number($route.query.type)===1"
 							placeholder="* 请填写驳回理由或修改意见"
 							maxLength="200"
 							:autosize="{ minRows: 2, maxRows: 6 }"
@@ -91,7 +74,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>
@@ -161,9 +143,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -180,9 +162,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -218,9 +200,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -253,9 +235,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -373,12 +355,6 @@ export default {
 				margin-right: 10px;
 			}
 		}
-	}
-}
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
 	}
 }
 </style>

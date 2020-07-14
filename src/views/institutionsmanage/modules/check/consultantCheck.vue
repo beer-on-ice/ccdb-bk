@@ -6,10 +6,10 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
 				<a-form-item label="上传图片："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="imgUploaderWrapper">
 					<div style="display:flex;justify-content:flex-start;">
 						<div class="avatarWrapper"
@@ -28,29 +28,19 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="顾问姓名："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="顾问姓名：">
 					<p>{{consultantInfo.adviserName}}</p>
 				</a-form-item>
-				<a-form-item label="所属公司："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="所属公司：">
 					<p>{{consultantInfo.belongToCompany}}</p>
 				</a-form-item>
-				<a-form-item label="当前职位："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="当前职位：">
 					<p>{{consultantInfo.currentPosition}}</p>
 				</a-form-item>
-				<a-form-item label="从业年份："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="从业年份：">
 					<p>{{consultantInfo.yearOfEmployment}}</p>
 				</a-form-item>
-				<a-form-item label="顾问认证："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="顾问认证：">
 					<p>{{consultantInfo.adviserIdentification === '0' ?'未认证':'已认证'}}</p>
 				</a-form-item>
 				<a-form-item label="顾问电话："
@@ -59,14 +49,10 @@
 					<p v-for="(item,index) in consultantInfo.phone"
 						:key="index">{{item}}</p>
 				</a-form-item>
-				<a-form-item :label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
-					label="个人简介：">
+				<a-form-item label="个人简介：">
 					<p style="word-break:break-all;">{{consultantInfo.individualResume}}</p>
 				</a-form-item>
-				<a-form-item label="个人标签："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="个人标签：">
 					<p>{{consultantInfo.personalLabel}}</p>
 				</a-form-item>
 				<a-form-item label="资质证书："
@@ -325,9 +311,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -360,9 +346,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -470,12 +456,6 @@ export default {
 				margin-right: 10px;
 			}
 		}
-	}
-}
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
 	}
 }
 </style>

@@ -1,10 +1,12 @@
 <template>
 	<div class="editInsititutionWrapper">
-		<h1>机构管理 - 修改机构申请</h1>
+		<h1>{{isAuth?'企业认证-修改认证':'机构管理 - 修改机构申请'}}</h1>
 		<a-card :bordered="false"
 			class="mainWrapper">
-			<h3 style="word-break:break-all;"
-				v-if="Number($route.query.type) === 3&&showrejectReason">审核未通过,原因：{{showrejectReason}}</h3>
+			<h3 class="rejectReason"
+				v-if="!isAuth && Number($route.query.type) === 3 && showrejectReason">审核未通过,原因：{{showrejectReason}}</h3>
+			<h3 v-if="isAuth && (Number($route.query.type) === 2 || Number($route.query.type) === 3)"
+				:class="['rejectReason ',Number($route.query.type) === 2 ? 'passReason':'']">{{Number($route.query.type) === 2 ? "认证审核已通过":`认证审核未通过,原因：${showrejectReason}`}}</h3>
 			<a-form layout="horizontal"
 				:form="form">
 				<a-form-item label="公司名称："
@@ -268,6 +270,7 @@ import {
   deleteFile,
   modifyInsPage
 } from '@/api/institution/addInstitution'
+import { submitButton } from '@/api/businessAuth'
 import { SingleImgUploadNew, PreviewImgModal } from '@/components/index'
 import pdfJS from 'pdfjs-dist'
 
@@ -301,6 +304,7 @@ export default {
   },
   data () {
     return {
+      isAuth: false,
       certTypeList,
       companyName: '',
       companyType: '',
@@ -371,8 +375,14 @@ export default {
     }
   },
   created () {
+    const {
+      $route: {
+        query: { id, isAuth }
+      }
+    } = this
     this.uploadUrl = uploadUrl
-    this.id = this.$route.query.id
+    this.id = id
+    this.isAuth = isAuth
     this.getInfo()
     this.getAutoDic()
   },
@@ -472,6 +482,30 @@ export default {
             plainOptions.push({ label: item.nodeName, value: item.id })
           })
           this.plainOptions = plainOptions
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '提交失败，请重试!'
+        })
+      }
+    },
+    async submitButton () {
+      const {
+        $route: {
+          query: { ticketId, companyUrl }
+        }
+      } = this
+      console.log(ticketId)
+      const param = {
+        id: ticketId,
+        companyUrl: companyUrl,
+        operatingPersonnel: JSON.parse(Vue.ls.get('USERINFO')).username
+      }
+      try {
+        const res = await submitButton(param)
+        if (res.code === 200) {
         } else {
           throw new Error(res.msg)
         }
@@ -755,31 +789,41 @@ export default {
       let manageBack = ''
       let contractList = []
 
-      pnoFront = uploadLawManFrontInfo.fileList.length
-        ? uploadLawManFrontInfo.fileList[0].response.data
-        : uploadLawManFrontInfo.showOffList.winPath
-          ? `${uploadLawManFrontInfo.showOffList.winPath};${uploadLawManFrontInfo.showOffList.fileUrl}`
-          : ''
-      pnoBack = uploadLawManBackInfo.fileList.length
-        ? uploadLawManBackInfo.fileList[0].response.data
-        : uploadLawManBackInfo.showOffList.winPath
-          ? `${uploadLawManBackInfo.showOffList.winPath};${uploadLawManBackInfo.showOffList.fileUrl}`
-          : ''
-      institutionUrl = uploadLicenseInfo.fileList.length
-        ? uploadLicenseInfo.fileList[0].response.data
-        : uploadLicenseInfo.showOffList.winPath
-          ? `${uploadLicenseInfo.showOffList.winPath};${uploadLicenseInfo.showOffList.fileUrl}`
-          : ''
-      manageFront = uploadManagerFrontInfo.fileList.length
-        ? uploadManagerFrontInfo.fileList[0].response.data
-        : uploadManagerFrontInfo.showOffList.winPath
-          ? `${uploadManagerFrontInfo.showOffList.winPath};${uploadManagerFrontInfo.showOffList.fileUrl}`
-          : ''
-      manageBack = uploadManagerBackInfo.fileList.length
-        ? uploadManagerBackInfo.fileList[0].response.data
-        : uploadManagerBackInfo.showOffList.winPath
-          ? `${uploadManagerBackInfo.showOffList.winPath};${uploadManagerBackInfo.showOffList.fileUrl}`
-          : ''
+      pnoFront =
+				uploadLawManFrontInfo.fileList.length &&
+				uploadLawManFrontInfo.fileList[0].response
+				  ? uploadLawManFrontInfo.fileList[0].response.data
+				  : uploadLawManFrontInfo.showOffList.winPath
+				    ? `${uploadLawManFrontInfo.showOffList.winPath};${uploadLawManFrontInfo.showOffList.fileUrl}`
+				    : ''
+      pnoBack =
+				uploadLawManBackInfo.fileList.length &&
+				uploadLawManBackInfo.fileList[0].response
+				  ? uploadLawManBackInfo.fileList[0].response.data
+				  : uploadLawManBackInfo.showOffList.winPath
+				    ? `${uploadLawManBackInfo.showOffList.winPath};${uploadLawManBackInfo.showOffList.fileUrl}`
+				    : ''
+      institutionUrl =
+				uploadLicenseInfo.fileList.length &&
+				uploadLicenseInfo.fileList[0].response
+				  ? uploadLicenseInfo.fileList[0].response.data
+				  : uploadLicenseInfo.showOffList.winPath
+				    ? `${uploadLicenseInfo.showOffList.winPath};${uploadLicenseInfo.showOffList.fileUrl}`
+				    : ''
+      manageFront =
+				uploadManagerFrontInfo.fileList.length &&
+				uploadManagerFrontInfo.fileList[0].response
+				  ? uploadManagerFrontInfo.fileList[0].response.data
+				  : uploadManagerFrontInfo.showOffList.winPath
+				    ? `${uploadManagerFrontInfo.showOffList.winPath};${uploadManagerFrontInfo.showOffList.fileUrl}`
+				    : ''
+      manageBack =
+				uploadManagerBackInfo.fileList.length &&
+				uploadManagerBackInfo.fileList[0].response
+				  ? uploadManagerBackInfo.fileList[0].response.data
+				  : uploadManagerBackInfo.showOffList.winPath
+				    ? `${uploadManagerBackInfo.showOffList.winPath};${uploadManagerBackInfo.showOffList.fileUrl}`
+				    : ''
 
       // 处理合同
       contractList = [
@@ -843,7 +887,12 @@ export default {
         serviceStartTime,
         serviceEndTime,
         uploadLawManFrontInfo,
-        uploadLawManBackInfo
+        uploadLawManBackInfo,
+        isAuth,
+        submitButton,
+        $route: {
+          query: { companyUrl }
+        }
       } = this
       const {
         licenceNumber,
@@ -940,6 +989,7 @@ export default {
         email: email,
         startTime: serviceStartTime,
         endTime: serviceEndTime,
+        companyUrl: companyUrl,
         contractList: contractList,
         insResourceMapList: this.handlePowerSee()
       }
@@ -961,15 +1011,11 @@ export default {
             try {
               const res = await modifyInsPage(param)
               if (res.code === 200) {
+                if (isAuth) submitButton()
                 this.$notification.success({
                   message: res.msg || '提交成功!'
                 })
-                this.$router.push({
-                  path: '/institutionsmanage/instituApplication',
-                  query: {
-                    type: 1
-                  }
-                })
+                this.handleBack()
               } else {
                 throw new Error(res.msg)
               }
@@ -985,16 +1031,21 @@ export default {
     // 返回
     handleBack () {
       const {
+        isAuth,
         $route: {
           query: { type }
         }
       } = this
-      this.$router.push({
-        path: '/institutionsmanage/instituApplication',
-        query: {
-          type: Number(type)
-        }
-      })
+      if (isAuth) {
+        this.$router.go(-1)
+      } else {
+        this.$router.push({
+          path: '/institutionsmanage/instituApplication',
+          query: {
+            type: Number(type)
+          }
+        })
+      }
     }
   },
   filters: {
@@ -1014,6 +1065,10 @@ export default {
           return '基金且银行'
         case 7:
           return '基金且保险'
+        case 8:
+          return '证券'
+        case 9:
+          return '基金且证券'
         default:
           return '基金'
       }
@@ -1029,10 +1084,16 @@ export default {
 		font-weight: bold;
 	}
 	.mainWrapper {
-		h3 {
-			color: red;
+		.rejectReason {
+			background: rgba(212, 48, 48, 0.24);
+			box-shadow: rgba(212, 48, 48, 0.74) solid 1px;
 			padding: 10px;
-			border: 1px solid red;
+			word-break: break-all;
+			font-weight: bold;
+			&.passReason {
+				background: rgba(223, 246, 232, 1);
+				box-shadow: rgba(133, 238, 176, 1) solid 1px;
+			}
 		}
 		.ant-input {
 			width: 180px;

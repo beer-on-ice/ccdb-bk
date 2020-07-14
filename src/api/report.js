@@ -116,5 +116,8 @@ export let specialUrl = {
     : 'https://fundnew.aifound.cn/brandData/#/report/',
   upload: !isDev
     ? 'https://testapp.aifound.cn/backend/infoMgmt/coverImgUpload'
-    : 'https://app.aifound.cn/backend/infoMgmt/coverImgUpload'
+    : 'https://app.aifound.cn/backend/infoMgmt/coverImgUpload',
+  annexUrl: !isDev
+    ? 'https://testapp.aifound.cn/backend/upload/uploadFile'
+    : 'https://app.aifound.cn/backend/upload/uploadFile'
 }

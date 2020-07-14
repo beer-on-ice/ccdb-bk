@@ -195,6 +195,74 @@ export const constantRouterMap = [
         component: RouteView,
         children: [
           {
+            name: 'businessAuthList',
+            path: 'businessAuthList',
+            hidden: true,
+            component: () =>
+							import(
+							  '@/views/institutionsmanage/modules/auth/businessAuthList'
+							),
+            meta: {
+              title: '申请列表',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
+            name: 'businessAuthTicket',
+            path: 'businessAuthTicket',
+            hidden: true,
+            component: () =>
+							import(
+							  '@/views/institutionsmanage/modules/auth/businessAuthTicket'
+							),
+            meta: {
+              title: '企业认证申请',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
+            name: 'businessAuthHandle',
+            path: 'businessAuthHandle',
+            hidden: true,
+            component: () =>
+							import(
+							  '@/views/institutionsmanage/modules/auth/businessAuthHandle'
+							),
+            meta: {
+              title: '企业认证详情',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
+            name: 'businessAuthCheck',
+            path: 'businessAuthCheck',
+            hidden: true,
+            component: () =>
+							import(
+							  '@/views/institutionsmanage/modules/auth/businessAuthCheck'
+							),
+            meta: {
+              title: '企业认证详情',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
+            path: 'viewInstitution',
+            name: 'viewInstitution',
+            hidden: true,
+            component: () =>
+							import('@/views/institutionsmanage/modules/bd/viewInstitution'),
+            meta: {
+              title: '查看认证',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
             path: 'addInstitution',
             name: 'addInstitution',
             hidden: true,
@@ -202,7 +270,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/bd/addInstitution'),
             meta: {
               title: '新增机构',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -214,7 +282,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/bd/editInstitution'),
             meta: {
               title: '修改机构',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -226,7 +294,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/bd/addBrand'),
             meta: {
               title: '新增品牌',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -238,7 +306,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/bd/editBrand'),
             meta: {
               title: '修改品牌',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -250,7 +318,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/corporateCheck'),
             meta: {
               title: '企业信息审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -262,7 +330,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/businessBcheck'),
             meta: {
               title: '企业品牌',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -274,7 +342,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/projectBcheck'),
             meta: {
               title: '项目品牌审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -288,7 +356,7 @@ export const constantRouterMap = [
 							),
             meta: {
               title: '机构审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -300,7 +368,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/brandCheck'),
             meta: {
               title: '品牌审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -314,7 +382,7 @@ export const constantRouterMap = [
 							),
             meta: {
               title: '顾问审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -326,7 +394,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/branchCheck'),
             meta: {
               title: '分支机构审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -338,7 +406,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/sServiceCheck'),
             meta: {
               title: '特色服务审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -350,7 +418,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/quaCheck'),
             meta: {
               title: '企业资质审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -362,7 +430,7 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/honorCheck'),
             meta: {
               title: '企业荣誉审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           },
@@ -374,7 +442,34 @@ export const constantRouterMap = [
 							import('@/views/institutionsmanage/modules/check/excitingCheck'),
             meta: {
               title: '精彩活动审核',
-              dutyName: 'institutionsAction',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+          {
+            path: 'archivesCheck',
+            name: 'archivesCheck',
+            hidden: true,
+            component: () =>
+							import('@/views/institutionsmanage/modules/check/archivesCheck'),
+            meta: {
+              title: '机构档案审核',
+              dutyName: 'institutionsmanage',
+              keepAlive: false
+            }
+          },
+
+          {
+            path: 'institutionDetail',
+            name: 'institutionDetail',
+            hidden: true,
+            component: () =>
+							import(
+							  '@/views/institutionsmanage/modules/detail/institutionDetail'
+							),
+            meta: {
+              title: '精彩活动审核',
+              dutyName: 'institutionsmanage',
               keepAlive: false
             }
           }
@@ -394,112 +489,41 @@ export const constantRouterMap = [
             meta: {
               title: '用户详情',
               dutyName: 'userlist',
-              keepAlive: true
-            }
-          }
-        ]
-      },
-      // 客服管理
-      {
-        path: '/customer',
-        // name: 'userlist',
-        component: RouteView,
-        children: [
-          {
-            name: 'businessAuthList',
-            path: '/customeraction/businessAuthList',
-            hidden: true,
-            component: () =>
-							import('@/views/customer/modules/businessAuthList'),
-            meta: {
-              title: '申请列表',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            name: 'businessAuthAdd',
-            path: '/customeraction/businessAuthAdd',
-            hidden: true,
-            component: () => import('@/views/customer/modules/businessAuthAdd'),
-            meta: {
-              title: '提交认证信息',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            name: 'businessAuthEdit',
-            path: '/customeraction/businessAuthEdit',
-            hidden: true,
-            component: () =>
-							import('@/views/customer/modules/businessAuthEdit'),
-            meta: {
-              title: '修改认证信息',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            name: 'businessAuthTicket',
-            path: '/customeraction/businessAuthTicket',
-            hidden: true,
-            component: () =>
-							import('@/views/customer/modules/businessAuthTicket'),
-            meta: {
-              title: '企业认证申请',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            name: 'businessAuthHandle',
-            path: '/customeraction/businessAuthHandle',
-            hidden: true,
-            component: () =>
-							import('@/views/customer/modules/businessAuthHandle'),
-            meta: {
-              title: '企业认证详情',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            name: 'businessAuthCheck',
-            path: '/customeraction/businessAuthCheck',
-            hidden: true,
-            component: () =>
-							import('@/views/customer/modules/businessAuthCheck'),
-            meta: {
-              title: '企业认证详情',
-              dutyName: 'customer',
-              keepAlive: true
-            }
-          },
-          {
-            path: '/activityaction/addactivities',
-            name: 'addActivities',
-            hidden: true,
-            component: () => import('@/views/policy/modules/AddActivities'),
-            meta: {
-              title: '精彩活动管理-新增活动',
-              dutyName: 'activities',
-              keepAlive: false
-            }
-          },
-          {
-            path: '/activityaction/editactivities',
-            name: 'editActivities',
-            hidden: true,
-            component: () => import('@/views/policy/modules/EditActivities'),
-            meta: {
-              title: '精彩活动管理-编辑活动',
-              dutyName: 'activities',
               keepAlive: false
             }
           }
         ]
       }
+      // 客服管理
+      // {
+      //   path: '/customer',
+      //   // name: 'userlist',
+      //   component: RouteView,
+      //   children: [
+      //     {
+      //       path: '/activityaction/addactivities',
+      //       name: 'addActivities',
+      //       hidden: true,
+      //       component: () => import('@/views/policy/modules/AddActivities'),
+      //       meta: {
+      //         title: '精彩活动管理-新增活动',
+      //         dutyName: 'activities',
+      //         keepAlive: false
+      //       }
+      //     },
+      //     {
+      //       path: '/activityaction/editactivities',
+      //       name: 'editActivities',
+      //       hidden: true,
+      //       component: () => import('@/views/policy/modules/EditActivities'),
+      //       meta: {
+      //         title: '精彩活动管理-编辑活动',
+      //         dutyName: 'activities',
+      //         keepAlive: false
+      //       }
+      //     }
+      //   ]
+      // }
     ]
   },
   {

@@ -88,19 +88,23 @@ export default {
         })
       }
 
-      this.collapsed ? (this.cachedOpenKeys = openKeys) : (this.openKeys = openKeys)
+      this.collapsed
+        ? (this.cachedOpenKeys = openKeys)
+        : (this.openKeys = openKeys)
     },
 
     // render
     renderItem (menu) {
       if (!menu.hidden) {
-        return menu.children && !menu.hideChildrenInMenu ? this.renderSubMenu(menu) : this.renderMenuItem(menu)
+        return menu.children && !menu.hideChildrenInMenu
+          ? this.renderSubMenu(menu)
+          : this.renderMenuItem(menu)
       }
       return null
     },
     renderMenuItem (menu) {
       const target = menu.meta.target || null
-      const tag = target && 'a' || 'router-link'
+      const tag = (target && 'a') || 'router-link'
       const props = { to: { name: menu.name } }
       const attrs = { href: menu.path, target: menu.meta.target }
 
@@ -112,7 +116,6 @@ export default {
           item.meta = Object.assign(item.meta, { hidden: true })
         })
       }
-
       return (
         <Item {...{ key: menu.path }}>
           <tag {...{ props, attrs }}>
@@ -129,7 +132,7 @@ export default {
       }
       return (
         <SubMenu {...{ key: menu.path }}>
-          <span slot="title">
+          <span slot='title'>
             {this.renderIcon(menu.meta.icon)}
             <span>{menu.meta.title}</span>
           </span>
@@ -141,11 +144,18 @@ export default {
       if (icon === 'none' || icon === undefined) {
         return null
       }
+      if (icon && icon.startsWith('https://')) {
+        return (
+          <img
+            class='anticon'
+            src={icon}
+            style='width:20px;margin-right:10px;vertical-align:middle;'
+          />
+        )
+      }
       const props = {}
-      typeof (icon) === 'object' ? props.component = icon : props.type = icon
-      return (
-        <Icon {... { props } }/>
-      )
+      typeof icon === 'object' ? (props.component = icon) : (props.type = icon)
+      return <Icon {...{ props }} />
     }
   },
 

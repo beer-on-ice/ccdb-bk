@@ -6,19 +6,16 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
-				<a-form-item label="企业名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
+				<a-form-item label="企业名称：">
 					<p>{{companyName}}</p>
 				</a-form-item>
-				<a-form-item label="特色服务："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="特色服务：">
 					<p>{{serviceInfo.join('、')}}</p>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<a-button @click="handleBack">返回</a-button>
@@ -44,7 +41,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>
@@ -104,9 +100,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -118,9 +114,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -158,9 +154,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -194,9 +190,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },

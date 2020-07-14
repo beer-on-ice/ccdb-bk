@@ -25,24 +25,26 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 import { getBussiness } from '@/api/institution/addBrand'
 export default {
   props: ['belongCompanyAble'],
   data () {
+    this.handleSearch = debounce(this.handleSearch, 800)
     return {
       searchData: []
     }
   },
   methods: {
-    // async getSearch (val) {
-    //   let res = await getBussiness({ name: val })
-    //   this.searchData = res.data
-    // },
-    handleSearch (value) {
-      this.fnThrottle(async () => {
-        let res = await getBussiness({ name: value })
+    async handleSearch (value) {
+      try {
+        const res = await getBussiness({ name: value })
         this.searchData = res.data
-      }, 1000)
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '网络故障，请重试！'
+        })
+      }
     },
     handleChange (value) {
       this.fnThrottle(async () => {

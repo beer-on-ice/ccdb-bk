@@ -12,8 +12,8 @@
 							:action="uploadUrl"
 							:fileList="fileList"
 							@preview="handlePreviewImg"
-							@change="handleUploadChange"
-							:remove="handleRemoveUpload"
+							@change="files=>handleUploadChange(files,'cover')"
+							:remove="files=>handleRemoveUpload(files,'cover')"
 							name="multipartFile">
 							<div v-if="fileList.length<1">
 								<a-icon type="plus"></a-icon>
@@ -24,9 +24,9 @@
 							<img :src="covePicturePath"
 								style="width:100px;margin-right:20px;">
 							<a-button type="danger"
-								@click="handleRemoveUpload">删除图片</a-button>
+								@click="()=>handleRemoveUpload(null,'cover')">删除图片</a-button>
 						</div>
-						<p style="color:red;margin:0;">图片尺寸：202*202(推荐)</p>
+						<p style="color:red;margin:0;">图片尺寸：202*268(推荐)</p>
 					</a-form-item>
 				</a-col>
 				<a-col :span="18">
@@ -66,6 +66,7 @@
 							<a-select-option value="2">信托</a-select-option>
 							<a-select-option value="3">银行</a-select-option>
 							<a-select-option value="4">保险</a-select-option>
+							<a-select-option value="5">证券</a-select-option>
 						</a-select>
 					</a-form-item>
 					<a-form-item label="分类："
@@ -85,9 +86,9 @@
 						<a-select style="max-width:250px;"
 							placeholder="请选择"
 							v-decorator="[
-          'categoryType',
-          {rules: [{ required: true, message: '请选择资讯性质！', trigger: 'change' }]}
-        ]">
+							'categoryType',
+							{rules: [{ required: true, message: '请选择资讯性质！', trigger: 'change' }]}
+						]">
 							<a-select-option value="2126">正面</a-select-option>
 							<a-select-option value="2127">负面</a-select-option>
 							<a-select-option value="2128">中性</a-select-option>
@@ -98,10 +99,23 @@
 						<a-input placeholder="请输入"
 							style="max-width:250px;"
 							v-decorator="[
-          'sourceFrom',
-          {rules: [{ required: true, message: '请输入来源网站！', trigger: 'change' }]}
-        ]" />
+							'sourceFrom',
+							{rules: [{ required: true, message: '请输入来源网站！', trigger: 'change' }]}
+						]" />
 					</a-form-item>
+					<!-- <a-form-item label="附件上传："
+						:label-col="{ span: 5 }"
+						:wrapper-col="{ span: 19 }">
+						<upload-annex title="上传附件"
+							:actionUrl="`${annexUrl}?dic=1`"
+							:uploadInfo="uploadAnnexInfo"
+							@handleUploadChange="files=>handleUploadChange(files,'annex')"
+							@handleRemoveUpload="files=>handleRemoveUpload(files,'annex')"
+							@handleDeleteUpload="file=>handleDeleteUpload(file,'annex')">
+						</upload-annex>
+						<p style="color:red;margin:0;font-size:12px;">支持PDF和PPT文件格式，单个文件大小不超过2M</p>
+						<a-checkbox :checked="isReplace">附件内容替代正文展示</a-checkbox>
+					</a-form-item> -->
 				</a-col>
 				<a-col :span="18">
 					<Ue ref="ue" />
@@ -144,24 +158,35 @@
 import Vue from 'vue'
 import moment from 'moment'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { Ue } from '@/components'
+import { Ue, UploadAnnex } from '@/components'
 import {
+  annexUrl,
   getReportById,
   specialUrl,
   getRemoveUpload,
-  getNewsAddBanner,
   getFastCode,
   forbidReportById,
   updateReportById
 } from '@/api/report'
 
+import { deleteFile } from '@/api/institution/addBrand' // 待删
+
 export default {
-  components: { Ue },
+  components: {
+    Ue
+    // UploadAnnex
+  },
   data () {
     return {
       myHeaders: { Authorization: Vue.ls.get(ACCESS_TOKEN) }, // 上传图片用到
       form: this.$form.createForm(this),
       covePicturePath: '',
+      annexUrl: '',
+      isReplace: false,
+      uploadAnnexInfo: {
+        fileList: [],
+        showOffList: {}
+      },
       queryParam: {
         id: '',
         title: '',
@@ -183,6 +208,7 @@ export default {
   },
   created () {
     this.uploadUrl = specialUrl.upload
+    this.annexUrl = specialUrl.annexUrl
     this.id = this.$route.query.id
     this.getCurrentPageInfo()
   },
@@ -202,7 +228,21 @@ export default {
         })
         this.$refs.ue.content = data.content
         this.handleCoverImg(data)
+        this.uploadAnnexInfo.showOffList = this.backupAnnexInfo(data)
       })
+    },
+    backupAnnexInfo ({ annexUrl }) {
+      if (!annexUrl) {
+        return {
+          winPath: '',
+          fileUrl: ''
+        }
+      }
+      let arr = annexUrl.split(';')
+      return {
+        winPath: arr[0],
+        fileUrl: arr[1]
+      }
     },
     // 反向回绑图片
     handleCoverImg ({ covePicturePath }) {
@@ -220,29 +260,68 @@ export default {
       if (!value) return
       return moment(value).format('YYYY-MM-DD HH:mm:ss')
     },
-    handleUploadChange ({ fileList }) {
-      this.fileList = fileList
-      if (
-        fileList[0] &&
-				fileList[0].response &&
-				fileList[0].response.code === 200
-      ) {
-        this.fileName = fileList[0].response.data
+    handleUploadChange ({ fileList }, type) {
+      if (type === 'cover') {
+        this.fileList = fileList
+        if (
+          fileList[0] &&
+					fileList[0].response &&
+					fileList[0].response.code === 200
+        ) {
+          this.fileName = fileList[0].response.data
+        }
+      } else {
+        this.uploadAnnexInfo.fileList = fileList
       }
     },
     // 移除上传的图片
-    handleRemoveUpload () {
-      getRemoveUpload({
-        fileName: this.fileName
-      }).then(res => {
-        if (res.code === 200) {
-          this.fileName = ''
-          this.covePicturePath = ''
+    async handleRemoveUpload (files, type) {
+      if (type === 'cover') {
+        getRemoveUpload({
+          fileName: this.fileName
+        }).then(res => {
+          if (res.code === 200) {
+            this.fileName = ''
+            this.covePicturePath = ''
+          }
+        })
+      } else {
+        const {
+          response: { data }
+        } = files
+        const fileUrl = data.split(';')[1]
+        const res = await deleteFile({
+          url: fileUrl
+        })
+        if (res && res.code === 200) {
+          this.uploadAnnexInfo.fileList = []
+          this.$notification.success({
+            message: res.msg || '删除成功！'
+          })
         }
+      }
+    },
+    async handleDeleteUpload (item, type) {
+      const res = await await deleteFile({
+        url: item
       })
+      if (res && res.code === 200) {
+        this.uploadAnnexInfo.showOffList = {}
+      }
     },
     handleSave (isPub) {
-      let formObj = this.form.getFieldsValue([
+      const {
+        form: { getFieldsValue, validateFields },
+        $notification: { warning, success, error },
+        $refs: {
+          ue: { content }
+        },
+        fileName,
+        handlePtime,
+        handlePub,
+        id
+      } = this
+      let formObj = getFieldsValue([
         'title',
         'inforDomain',
         'category',
@@ -250,50 +329,47 @@ export default {
         'sourceFrom',
         'pTime'
       ])
-      if (this.fileName === '') {
-        this.$notification.warning({
+      if (fileName === '') {
+        warning({
           message: '请上传封面图片'
         })
         return
       }
       if (this.$refs.ue.content === '') {
-        this.$notification.warning({
+        warning({
           message: '请在编辑器中输入内容'
         })
       }
 
-      this.form.validateFields(err => {
+      this.queryParam.id = id
+      this.queryParam.title = formObj.title || ''
+      this.queryParam.inforDomain = formObj.inforDomain || ''
+      this.queryParam.category = formObj.category || ''
+      this.queryParam.categoryType = formObj.categoryType || ''
+      this.queryParam.releaseDate = handlePtime(formObj.pTime) || ''
+      this.queryParam.sourceFrom = formObj.sourceFrom || ''
+      this.queryParam.imgName = fileName || ''
+      this.queryParam.content = content || ''
+
+      validateFields(err => {
         if (!err) {
-          let pTime = this.handlePtime(formObj.pTime)
-
-          this.queryParam.title = formObj.title || ''
-          this.queryParam.inforDomain = formObj.inforDomain || ''
-          this.queryParam.category = formObj.category || ''
-          this.queryParam.categoryType = formObj.categoryType || ''
-          this.queryParam.releaseDate = pTime || ''
-          this.queryParam.sourceFrom = formObj.sourceFrom || ''
-          this.queryParam.imgName = this.fileName || ''
-          this.queryParam.content = this.$refs.ue.content || ''
-          this.queryParam.id = this.id
-
           updateReportById(this.queryParam).then(res => {
             if (res.code === 200) {
               const params = {
                 bannerFlag: 1,
-                informationId: this.id,
+                informationId: id,
                 title: this.queryParam.title,
-                infomationUrl: specialUrl.code + this.id
+                infomationUrl: specialUrl.code + id
               }
-              getNewsAddBanner(params)
               if (isPub) {
-                this.handlePub()
+                handlePub()
               } else {
-                this.$notification.success({
+                success({
                   message: res.msg || '变更成功，可扫码预览'
                 })
               }
             } else {
-              this.$notification.error({
+              error({
                 message: res.msg || '更新失败，请重试'
               })
             }

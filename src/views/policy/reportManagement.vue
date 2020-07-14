@@ -29,6 +29,7 @@
 									<a-select-option value="2">信托</a-select-option>
 									<a-select-option value="3">银行</a-select-option>
 									<a-select-option value="4">保险</a-select-option>
+									<a-select-option value="5">证券</a-select-option>
 								</a-select>
 							</a-form-item>
 						</a-col>
@@ -313,6 +314,8 @@ export default {
           return '银行'
         case 4:
           return '保险'
+        case 5:
+          return '证券'
       }
     }
   },
@@ -469,7 +472,6 @@ export default {
 
 <style lang="less">
 .reportWrapper {
-	min-width: 1200px;
 	h1 {
 		font-size: 20px;
 		font-weight: bold;

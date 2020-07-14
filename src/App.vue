@@ -19,9 +19,15 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="less">
 #app {
 	height: 100%;
+	.ant-col-1 {
+		min-width: 50px !important;
+	}
+	.ant-col-2 {
+		min-width: 100px !important;
+	}
 }
 .ant-table-tbody > tr > td {
 	word-break: break-all;

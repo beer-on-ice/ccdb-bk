@@ -1,175 +1,184 @@
 <template>
-	<a-card class="slideManagementWrapper">
-		<div class="table-page-search-wrapper">
-			<a-form layout="inline"
-				:form="form">
-				<a-row>
-					<a-col :span="8">
-						<a-form-item label="标题：">
-							<a-input v-model="queryParam.title"
-								placeholder="请输入标题" />
-						</a-form-item>
-					</a-col>
-					<a-col :span="8"
-						:offset="4">
-						<a-form-item label="发布时间: ">
-							<a-range-picker @change="onDateChange"
-								v-decorator="['dateRange']" />
-						</a-form-item>
-					</a-col>
-				</a-row>
-				<a-row>
-					<a-col :span="8">
-						<a-form-item label="分类">
-							<a-select v-model="queryParam.bannerType"
-								placeholder="请选择类型">
-								<a-select-option :value="item.code"
-									v-for="item in inforDomainList"
-									:key="item.code">{{item.msg}}</a-select-option>
-							</a-select>
-						</a-form-item>
-					</a-col>
-					<a-col :span="8"
-						:offset="4">
-						<a-form-item label="发布账号">
-							<a-select v-model="queryParam.backendUserName"
-								placeholder="请选择账号">
-								<a-select-option v-for="item in nameList"
-									:value="item"
-									:key="item">{{item}}</a-select-option>
-							</a-select>
-						</a-form-item>
-					</a-col>
-				</a-row>
-				<a-row>
-					<a-col :span="12">
-						<a-form-item label="操作状态：">
-							<a-button-group>
-								<a-button @click="handleTypeChose(allBtn)"
-									type="primary"
-									:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
-								<a-button v-for="item in btnGroups"
-									:key="item.id"
-									@click="handleTypeChose(item)"
-									type="primary"
-									:ghost="!item.isChosen">{{item.name}}</a-button>
-							</a-button-group>
-						</a-form-item>
-					</a-col>
-					<a-col :span="12">
-						<a-form-item label="排序：">
-							<a-select v-model="queryParam.order"
-								placeholder="请选择"
-								style="width:150px;">
-								<a-select-option value="1">升序</a-select-option>
-								<a-select-option value="2">降序</a-select-option>
-							</a-select>
-						</a-form-item>
-					</a-col>
-					<a-col :span="20">
-						<a-button type="primary"
-							@click="$refs.table.refresh(true)">查询</a-button>
-						<a-button style="margin-left: 8px"
-							@click="resetSearchForm">重置</a-button>
-					</a-col>
-					<a-col :span="4">
-						<a-button style="margin-left: 8px"
-							@click="handleAddNew"
-							v-auth="$route.meta.dutyName">新增</a-button>
-					</a-col>
-				</a-row>
-			</a-form>
-		</div>
-		<s-table ref="table"
-			style="margin-top:30px;"
-			size="default"
-			rowKey="id"
-			:columns="columns"
-			:data="loadData"
-			:pagination="pagination">
-			<span slot="serial"
-				slot-scope="text, record, index">
-				{{ index + 1 }}
-			</span>
-			<span slot="state"
-				slot-scope="text,record">
-				{{record.state?'启用':'禁用'}}
-			</span>
-			<span slot="bannerType"
-				slot-scope="text">
-				{{text | bannerTypeFilter}}
-			</span>
-			<span slot="action"
-				slot-scope="text, record"
-				v-auth="$route.meta.dutyName">
-				<template>
-					<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
-						@confirm="confirmForbidden(record)"
-						okText="确定"
-						cancelText="取消">
-						<a>{{record.state?'禁用':'启用'}}</a>
-					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a @click="handleEdit(record)">编辑</a>
-				</template>
-			</span>
-		</s-table>
-		<a-modal title="添加/编辑轮播图"
-			:visible="slideVisible"
-			@cancel="handleCancel"
-			:footer="null"
-			:maskClosable="false"
-			:destroyOnClose="true"
-			class="slideOperateModal"
-			style="width:960px">
-			<a-form layout="horizontal"
-				:form="forms">
-				<a-form-item label="分类："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
-					<a-select style="width: 180px"
-						v-model="subParam.type">
-						<a-select-option :value="item.code"
-							v-for="item in inforDomainList"
-							:key="item.code">{{item.msg}}</a-select-option>
-					</a-select>
-				</a-form-item>
-				<a-form-item label="图片："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
-					<single-img-upload :actionUrl="`${uploadUrl}`"
-						:uploadInfo="uploadInfo"
-						@handleUploadChange="handleUploadChange"
-						@handleRemoveUpload="handleRemoveUpload"
-						@handleDeleteUpload="handleDeleteUpload"></single-img-upload>
-					<p style="color:red;margin:0;">图片尺寸：{{subParam.type === 2620?'706*204':'678*228'}}</p>
-				</a-form-item>
-				<a-form-item label="顺序："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
-					<a-input-number :min="0"
-						v-model="subParam.order"></a-input-number>
-				</a-form-item>
-				<a-form-item label="标题："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
-					<a-input maxLength="50"
-						v-model="subParam.title"></a-input>
-				</a-form-item>
-				<a-form-item label="链接："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
-					<a-input maxLength="200"
-						v-model="subParam.web"></a-input>
-				</a-form-item>
-			</a-form>
-			<div class="btnWrapper">
-				<a-button @click="handleCancel">关闭</a-button>
-				<a-button @click="handleReset">重置</a-button>
-				<a-button @click="handleSubmit">提交</a-button>
+	<div class="slideManagementWrapper">
+		<h1>轮播图管理</h1>
+		<a-card>
+			<div class="table-page-search-wrapper">
+				<a-form layout="inline"
+					:form="form">
+					<a-row>
+						<a-col :span="8">
+							<a-form-item label="标题：">
+								<a-input v-model="queryParam.title"
+									placeholder="请输入标题" />
+							</a-form-item>
+						</a-col>
+						<a-col :span="8"
+							:offset="4">
+							<a-form-item label="发布时间: ">
+								<a-range-picker @change="onDateChange"
+									v-decorator="['dateRange']" />
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col :span="8">
+							<a-form-item label="分类">
+								<a-select v-model="queryParam.bannerType"
+									placeholder="请选择类型">
+									<a-select-option :value="item.code"
+										v-for="item in inforDomainList"
+										:key="item.code">{{item.msg}}</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
+						<a-col :span="8"
+							:offset="4">
+							<a-form-item label="发布账号">
+								<a-select v-model="queryParam.backendUserName"
+									placeholder="请选择账号">
+									<a-select-option v-for="item in nameList"
+										:value="item"
+										:key="item">{{item}}</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
+						<a-col :span="12">
+							<a-form-item label="操作状态：">
+								<a-button-group>
+									<a-button @click="handleTypeChose(allBtn)"
+										type="primary"
+										:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
+									<a-button v-for="item in btnGroups"
+										:key="item.id"
+										@click="handleTypeChose(item)"
+										type="primary"
+										:ghost="!item.isChosen">{{item.name}}</a-button>
+								</a-button-group>
+							</a-form-item>
+						</a-col>
+						<a-col :span="12">
+							<a-form-item label="排序：">
+								<a-select v-model="queryParam.order"
+									placeholder="请选择"
+									style="width:150px;">
+									<a-select-option value="1">升序</a-select-option>
+									<a-select-option value="2">降序</a-select-option>
+								</a-select>
+							</a-form-item>
+						</a-col>
+						<a-col :span="20">
+							<a-button type="primary"
+								@click="$refs.table.refresh(true)">查询</a-button>
+							<a-button style="margin-left: 8px"
+								@click="resetSearchForm">重置</a-button>
+						</a-col>
+						<a-col :span="4">
+							<a-button style="margin-left: 8px"
+								@click="handleAddNew">新增</a-button>
+						</a-col>
+					</a-row>
+				</a-form>
 			</div>
-		</a-modal>
-	</a-card>
+			<s-table ref="table"
+				style="margin-top:30px;"
+				size="default"
+				rowKey="id"
+				:columns="columns"
+				:data="loadData"
+				:pagination="pagination">
+				<span slot="serial"
+					slot-scope="text, record, index">
+					{{ index + 1 }}
+				</span>
+				<span slot="state"
+					slot-scope="text,record">
+					{{record.state?'启用':'禁用'}}
+				</span>
+				<span slot="bannerType"
+					slot-scope="text">
+					{{text | bannerTypeFilter}}
+				</span>
+				<span slot="action"
+					slot-scope="text, record">
+					<template>
+						<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
+							@confirm="confirmForbidden(record)"
+							okText="确定"
+							cancelText="取消">
+							<a>{{record.state?'禁用':'启用'}}</a>
+						</a-popconfirm>
+						<a-divider type="vertical" />
+						<a @click="handleEdit(record)">编辑</a>
+					</template>
+				</span>
+			</s-table>
+			<a-modal title="添加/编辑广告图"
+				:visible="slideVisible"
+				@cancel="handleCancel"
+				:footer="null"
+				:maskClosable="false"
+				:destroyOnClose="true"
+				class="slideOperateModal"
+				style="width:960px">
+				<a-form layout="horizontal"
+					:form="forms">
+					<a-form-item label="分类："
+						:label-col="{ span: 3 }"
+						:wrapper-col="{ span: 12 }">
+						<a-select style="width: 180px"
+							v-decorator="['subParamType',
+								{rules: [{ required: true, message: '请选择广告分类!', trigger: 'change',type: 'number' }]}
+							]"
+							@change="handleTypeChange">
+							<a-select-option :value="item.code"
+								v-for="item in inforDomainList"
+								:key="item.code">{{item.msg}}</a-select-option>
+						</a-select>
+					</a-form-item>
+					<a-form-item :label-col="{ span: 3 }"
+						:wrapper-col="{ span: 12 }">
+						<span slot="label"><em style="color:red;">*</em> 图片</span>
+						<p style="color:red;margin:0;">{{tip}}</p>
+						<single-img-upload :actionUrl="`${uploadUrl}`"
+							:uploadInfo="uploadInfo"
+							@handleUploadChange="handleUploadChange"
+							@handleRemoveUpload="handleRemoveUpload"
+							@handleDeleteUpload="handleDeleteUpload"></single-img-upload>
+					</a-form-item>
+					<a-form-item label="顺序："
+						:label-col="{ span: 3 }"
+						:wrapper-col="{ span: 12 }">
+						<a-input-number :min="1"
+							v-decorator="['subParamOrder']"></a-input-number>
+					</a-form-item>
+					<a-form-item label="标题："
+						:label-col="{ span: 3 }"
+						:wrapper-col="{ span: 12 }">
+						<a-input maxLength="50"
+							placeholder="请填写广告标题"
+							v-decorator="['subParamTitle',
+								{rules: [{ required: true, message: '请填写广告标题!', trigger: 'change' }]}
+							]"></a-input>
+					</a-form-item>
+					<a-form-item label="链接："
+						:label-col="{ span: 3 }"
+						:wrapper-col="{ span: 12 }">
+						<a-input maxLength="200"
+							placeholder="请填写跳转的链接地址"
+							v-decorator="['subParamWeb']"></a-input>
+					</a-form-item>
+				</a-form>
+				<div class="btnWrapper">
+					<a-button @click="handleCancel">关闭</a-button>
+					<a-button @click="handleReset">重置</a-button>
+					<a-button @click="handleSubmit">提交</a-button>
+				</div>
+			</a-modal>
+		</a-card>
+	</div>
+
 </template>
 
 <script>
@@ -200,6 +209,7 @@ export default {
       id: '',
       rowId: '',
       slideVisible: false,
+      tip: '',
       uploadUrl: '',
       uploadInfo: {
         fileList: [],
@@ -308,12 +318,6 @@ export default {
             return res.data
           }
         })
-      },
-      subParam: {
-        type: '',
-        title: '',
-        order: '',
-        web: ''
       }
     }
   },
@@ -323,15 +327,95 @@ export default {
     this.getBannerType()
   },
   methods: {
-    getNameList () {
-      getUserNameList().then(res => {
-        this.nameList = res.data
-      })
+    async getNameList () {
+      try {
+        const res = await getUserNameList()
+        if (res.code === 200) {
+          this.nameList = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '获取失败，请重试！'
+        })
+      }
     },
-    getBannerType () {
-      getBannerType().then(res => {
-        this.inforDomainList = res.data
-      })
+    async getBannerType () {
+      try {
+        const res = await getBannerType()
+        if (res.code === 200) {
+          this.inforDomainList = res.data
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '获取失败，请重试！'
+        })
+      }
+    },
+    // 删除上传的图片
+    async handleRemoveImg (fileUrl) {
+      try {
+        const res = await removeBannerImg({
+          fileName: fileUrl
+        })
+        if (res.code === 200) {
+          this.$notification.success({
+            message: res.msg || '删除成功！'
+          })
+          return res
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '删除失败，请重试！'
+        })
+      }
+    },
+    // 移除待上传
+    async handleRemoveUpload ({ response: { data } }) {
+      const fileUrl = data
+      const res = await this.handleRemoveImg(fileUrl)
+      if (res && res.code === 200) {
+        this.uploadInfo.fileList = []
+      }
+    },
+    // 删除已上传图片
+    async handleDeleteUpload (item) {
+      if (!item) return
+      const res = await this.handleRemoveImg(item)
+      if (res && res.code === 200) {
+        this.uploadInfo.showOffList = {}
+      }
+    },
+    async handleEdit (record) {
+      this.rowId = record.id
+      try {
+        let res = await getBannerById({ id: record.id })
+        if (res.code === 200) {
+          this.slideVisible = true
+
+          this.uploadInfo.showOffList.winPath = res.data.imageUrl
+          this.uploadInfo.showOffList.fileUrl = res.data.imgName
+          this.$nextTick(() => {
+            this.forms.setFieldsValue({
+              subParamType: res.data.bannerType,
+              subParamTitle: res.data.title,
+              subParamWeb: res.data.activityUrl,
+              subParamOrder: res.data.bannerOrder
+            })
+          })
+        } else {
+          throw new Error(res.msg)
+        }
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '获取失败，请重试！'
+        })
+      }
     },
     // 重置
     resetSearchForm () {
@@ -407,81 +491,22 @@ export default {
     handleUploadChange ({ fileList }, type) {
       this.uploadInfo.fileList = fileList
     },
-    // 删除上传的图片
-    async handleRemoveImg (fileUrl) {
-      try {
-        const res = await removeBannerImg({
-          fileName: fileUrl
-        })
-        if (res.code === 200) {
-          this.$notification.success({
-            message: res.msg || '删除成功！'
-          })
-          return res
-        } else {
-          throw new Error(res.msg)
-        }
-      } catch ({ message }) {
-        this.$notification.error({
-          message: message || '删除失败，请重试！'
-        })
+    handleTypeChange (value) {
+      if (value === 2620) {
+        this.tip = '个人中心轮播图尺寸：706*204'
+      } else if (value === 2621) {
+        this.tip = '首页轮播图尺寸：678*228'
+      } else {
+        this.tip = '证券频道尺寸：678*188'
       }
-    },
-    // 移除待上传
-    async handleRemoveUpload ({ response: { data } }) {
-      const fileUrl = data
-      const res = await this.handleRemoveImg(fileUrl)
-      if (res && res.code === 200) {
-        this.uploadInfo.fileList = []
-      }
-    },
-    // 删除已上传图片
-    async handleDeleteUpload (item) {
-      if (!item) return
-      const res = await this.handleRemoveImg(item)
-      if (res && res.code === 200) {
-        this.uploadInfo.showOffList = {}
-      }
-    },
-    async handleEdit (record) {
-      this.rowId = record.id
-      try {
-        let res = await getBannerById({ id: record.id })
-        if (res.code === 200) {
-          this.subParam = {
-            type: res.data.bannerType,
-            title: res.data.title,
-            web: res.data.activityUrl,
-            order: res.data.bannerOrder
-          }
-          this.uploadInfo.showOffList.winPath = res.data.imageUrl
-          this.uploadInfo.showOffList.fileUrl = res.data.imgName
-
-          this.slideVisible = true
-        } else {
-          throw new Error(res.msg)
-        }
-      } catch ({ message }) {
-        this.$notification.error({
-          message: message || '获取失败，请重试！'
-        })
-      }
-    },
-    // 新增->跳转到编辑页
-    handleAddNew () {
-      this.slideVisible = true
-    },
-    handleCancel () {
-      this.slideVisible = false
-      this.handleReset()
     },
     handleReset () {
-      this.subParam = {
-        type: '',
-        title: '',
-        web: '',
-        order: ''
-      }
+      this.forms.setFieldsValue({
+        subParamType: '',
+        subParamTitle: '',
+        subParamWeb: '',
+        subParamOrder: ''
+      })
       this.rowId = ''
       if (this.uploadInfo.fileList) {
         this.uploadInfo.fileList = []
@@ -493,58 +518,78 @@ export default {
       //   this.handleRemoveUpload(this.uploadInfo.fileList[0])
       // }
     },
-    async handleSubmit () {
+    handleSubmit () {
       const {
-        subParam,
-        uploadInfo: { fileList, showOffList }
+        forms: { getFieldsValue, validateFields },
+        uploadInfo: { fileList, showOffList },
+        $notification: { success, error },
+        rowId,
+        $refs: { table },
+        handleCancel
       } = this
       if (!fileList.length && !showOffList.winPath) {
-        this.$notification.error({
-          message: '请补全'
+        error({
+          message: '请上传广告图'
         })
         return
       }
-      if (subParam.title === '' || subParam.type === '') {
-        this.$notification.error({
-          message: '请补全'
-        })
-        return
-      }
-      let param = {
-        title: subParam.title,
+      const {
+        subParamTitle,
+        subParamType,
+        subParamOrder,
+        subParamWeb
+      } = getFieldsValue([
+        'subParamOrder',
+        'subParamWeb',
+        'subParamTitle',
+        'subParamType'
+      ])
+
+      const param = {
         imgName: fileList.length
           ? fileList[0].response.data
           : showOffList.fileUrl,
         backendUserName: JSON.parse(Vue.ls.get('USERINFO')).username,
-        bannerType: subParam.type,
-        bannerOrder: subParam.order,
-        activityUrl: subParam.web,
+        title: subParamTitle,
+        bannerType: subParamType,
+        bannerOrder: subParamOrder,
+        activityUrl: subParamWeb,
         state: 1
       }
-      console.log(param)
-
-      try {
-        let res = {}
-        if (!this.rowId) {
-          res = await addBanner(param)
-        } else {
-          param.id = this.rowId
-          res = await updateBanner(param)
+      validateFields(['subParamTitle', 'subParamType'], async err => {
+        if (!err) {
+          try {
+            let res = {}
+            if (!rowId) {
+              res = await addBanner(param)
+            } else {
+              param.id = rowId
+              res = await updateBanner(param)
+            }
+            if (res.code === 200) {
+              success({
+                message: res.msg || '提交成功！'
+              })
+              table.refresh(false)
+              handleCancel()
+            } else {
+              throw new Error(res.msg)
+            }
+          } catch ({ message }) {
+            error({
+              message: message || '提交失败，请重试！'
+            })
+          }
         }
-        if (res.code === 200) {
-          this.$notification.success({
-            message: res.msg || '提交成功！'
-          })
-          this.$refs.table.refresh(false)
-          this.handleCancel()
-        } else {
-          throw new Error(res.msg)
-        }
-      } catch ({ message }) {
-        this.$notification.error({
-          message: message || '提交失败，请重试！'
-        })
-      }
+      })
+    },
+    // 新增->跳转到编辑页
+    handleAddNew () {
+      this.slideVisible = true
+    },
+    handleCancel () {
+      this.slideVisible = false
+      this.handleReset()
     }
   },
   filters: {
@@ -555,8 +600,10 @@ export default {
           return '个人中心轮播图'
         case 2621:
           return '首页轮播图'
+        case 2622:
+          return '证券频道'
         default:
-          return '首页轮播图'
+          return ''
       }
     }
   }
@@ -564,6 +611,12 @@ export default {
 </script>
 
 <style lang="less">
+.slideManagementWrapper {
+	h1 {
+		font-size: 20px;
+		font-weight: bold;
+	}
+}
 .slideOperateModal {
 	.btnWrapper {
 		.ant-btn {

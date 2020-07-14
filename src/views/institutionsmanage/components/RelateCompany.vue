@@ -54,28 +54,39 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 import { getBussiness } from '@/api/institution/addBrand'
 export default {
   props: ['companyNum', 'companyNumArr'],
   data () {
+    this.handleSearch2 = debounce(this.handleSearch2, 800)
+    this.handleSearch3 = debounce(this.handleSearch3, 800)
     return {
       searchData2: [],
       searchData3: []
     }
   },
   methods: {
-    handleSearch2 (value) {
-      this.fnThrottle(async () => {
-        let res2 = await getBussiness({ name: value })
+    async handleSearch2 (value) {
+      try {
+        const res2 = await getBussiness({ name: value })
         this.searchData2 = res2.data
-      }, 1000)
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '网络故障，请重试！'
+        })
+      }
     },
     handleChange2 (value) {},
-    handleSearch3 (value) {
-      this.fnThrottle(async () => {
-        let res3 = await getBussiness({ name: value })
+    async handleSearch3 (value) {
+      try {
+        const res3 = await getBussiness({ name: value })
         this.searchData3 = res3.data
-      }, 1000)
+      } catch ({ message }) {
+        this.$notification.error({
+          message: message || '网络故障，请重试！'
+        })
+      }
     },
     handleChange3 (name) {
       let companyArr = this.searchData3.filter(item => {

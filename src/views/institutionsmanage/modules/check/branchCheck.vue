@@ -6,15 +6,13 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
-				<a-form-item label="机构名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
+				<a-form-item label="机构名称：">
 					<p>{{branchInfo.organizationName}}</p>
 				</a-form-item>
 				<a-form-item label="企业LOGO"
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="imgUploaderWrapper">
 					<div style="display:flex;justify-content:flex-start;">
 						<div class="avatarWrapper"
@@ -26,29 +24,19 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="地区："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="地区：">
 					<p>{{branchInfo.area}}</p>
 				</a-form-item>
-				<a-form-item label="详细地址："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="详细地址：">
 					<p>{{branchInfo.detailedArea}}</p>
 				</a-form-item>
-				<a-form-item label="联系电话："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="联系电话：">
 					<p>{{branchInfo.phone}}</p>
 				</a-form-item>
-				<a-form-item label="传真："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="传真：">
 					<p>{{branchInfo.faxNum}}</p>
 				</a-form-item>
-				<a-form-item label="Email："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="Email：">
 					<p>{{branchInfo.email}}</p>
 				</a-form-item>
 				<a-form-item label="分支属性"
@@ -57,7 +45,6 @@
 					<p>{{branchInfo.branchType}}</p>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<!-- <a-button @click="handlePreviewAll">预览</a-button> -->
@@ -85,7 +72,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>
@@ -155,9 +141,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -181,9 +167,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -221,9 +207,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -257,9 +243,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -369,10 +355,5 @@ export default {
 		}
 	}
 }
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
-	}
-}
+
 </style>

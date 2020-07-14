@@ -27,7 +27,8 @@
 								<a-select-option value="2">房产</a-select-option>
 								<a-select-option value="3">私募基金</a-select-option>
 								<a-select-option value="4">保险</a-select-option>
-								<a-select-option value="5 ">理财</a-select-option>
+								<a-select-option value="5">理财</a-select-option>
+								<a-select-option value="6">证券</a-select-option>
 							</a-select>
 						</a-form-item>
 					</a-col>
@@ -83,8 +84,7 @@
 					</a-col>
 					<a-col :span="4">
 						<a-button style="margin-left: 8px"
-							@click="handleAddNew"
-							v-auth="$route.meta.dutyName">新增</a-button>
+							@click="handleAddNew">新增</a-button>
 					</a-col>
 				</a-row>
 			</a-form>
@@ -109,6 +109,10 @@
 				slot-scope="text">
 				{{text | inforDomainFilter}}
 			</span>
+			<span slot="type"
+				slot-scope="text">
+				{{text | typeFilter}}
+			</span>
 			<span slot="isTop"
 				slot-scope="text">
 				{{text == 0?'否':'是'}}
@@ -122,40 +126,51 @@
 				<span @click="handleEditScannCount(record)">{{text}}</span>
 			</span>
 			<span slot="action"
-				slot-scope="text, record"
-				v-auth="$route.meta.dutyName">
+				slot-scope="text, record">
 				<template>
-					<a-popconfirm :title="`是否确定要${Number(record.isTop)?'取消置顶':'置顶'}？`"
+					<a-popconfirm v-auth="$route.meta.dutyName"
+						:title="`是否确定要${Number(record.isTop)?'取消置顶':'置顶'}？`"
 						@confirm="confirmTop(record)"
 						okText="确定"
 						cancelText="取消">
 						<a>{{Number(record.isTop)?'取消置顶':'置顶'}}</a>
 					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a-popconfirm :title="`是否确定要${Number(record.isHot)?'取消热门':'热门'}？`"
+					<a-divider v-auth="$route.meta.dutyName"
+						type="vertical" />
+					<a-popconfirm v-auth="$route.meta.dutyName"
+						:title="`是否确定要${Number(record.isHot)?'取消热门':'热门'}？`"
 						@confirm="confirmHot(record)"
 						okText="确定"
 						cancelText="取消">
 						<a>{{Number(record.isHot)?'取消热门':'热门'}}</a>
 					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a-popconfirm :title="`是否确定要${record.state?'禁用':'启用'}？`"
+					<a-divider v-auth="$route.meta.dutyName"
+						type="vertical" />
+					<a-popconfirm v-auth="$route.meta.dutyName"
+						:title="`是否确定要${record.state?'禁用':'启用'}？`"
 						@confirm="confirmForbidden(record)"
 						okText="确定"
 						cancelText="取消">
 						<a>{{record.state?'禁用':'启用'}}</a>
 					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a v-if="record.isNotified">{{record.isNotified?'已推送':'推送'}}</a>
-					<a-popconfirm v-if="!record.isNotified"
+					<a-divider v-auth="$route.meta.dutyName"
+						type="vertical" />
+					<a v-auth="$route.meta.dutyName"
+						v-if="record.isNotified">{{record.isNotified?'已推送':'推送'}}</a>
+					<a-popconfirm v-auth="$route.meta.dutyName"
+						v-if="!record.isNotified"
 						title="是否确定要推送？"
 						@confirm="confirmPushNew(record)"
 						okText="确定"
 						cancelText="取消">
 						<a>{{record.isNotified?'已推送':'推送'}}</a>
 					</a-popconfirm>
-					<a-divider type="vertical" />
-					<a @click="handleEdit(record)">编辑</a>
+					<a-divider v-auth="$route.meta.dutyName"
+						type="vertical" />
+					<a v-auth="$route.meta.dutyName"
+						@click="handleEdit(record,false)">编辑</a>
+					<a v-nuth="$route.meta.dutyName"
+						@click="handleEdit(record,true)">{{record.state?'查看':'编辑'}}</a>
 				</template>
 			</span>
 		</s-table>
@@ -184,6 +199,72 @@ import {
   getUserNameList,
   getUpdateScannCount
 } from '@/api/newsManage'
+
+const columns = [
+  {
+    title: '序号',
+    scopedSlots: { customRender: 'serial' }
+  },
+  {
+    title: '标题',
+    dataIndex: 'title'
+  },
+  {
+    title: '类型',
+    dataIndex: 'inforDomain',
+    scopedSlots: { customRender: 'inforDomain' }
+  },
+  {
+    title: '分类',
+    dataIndex: 'type',
+    scopedSlots: { customRender: 'type' }
+  },
+  {
+    title: '热门',
+    dataIndex: 'isHot',
+    scopedSlots: { customRender: 'isHot' }
+  },
+  {
+    title: '置顶',
+    dataIndex: 'isTop',
+    scopedSlots: { customRender: 'isTop' }
+  },
+  {
+    title: '发布时间',
+    dataIndex: 'release'
+  },
+  {
+    title: '发布账号',
+    dataIndex: 'backendUserName'
+  },
+  {
+    title: '阅读数',
+    dataIndex: 'readCount'
+  },
+  {
+    title: '关注数',
+    dataIndex: 'attentionCount'
+  },
+  {
+    title: '转发数',
+    dataIndex: 'resendCount'
+  },
+  {
+    title: '编辑浏览量',
+    dataIndex: 'scannCount',
+    scopedSlots: { customRender: 'scannCount' }
+  },
+  {
+    title: '状态',
+    dataIndex: 'state',
+    scopedSlots: { customRender: 'state' }
+  },
+  {
+    title: '操作',
+    dataIndex: 'action',
+    scopedSlots: { customRender: 'action' }
+  }
+]
 
 export default {
   name: 'newsManagement',
@@ -241,66 +322,7 @@ export default {
         backendUserName: '' // 账号用户名
       },
       // 表头
-      columns: [
-        {
-          title: '序号',
-          scopedSlots: { customRender: 'serial' }
-        },
-        {
-          title: '标题',
-          dataIndex: 'title'
-        },
-        {
-          title: '类型',
-          dataIndex: 'inforDomain',
-          scopedSlots: { customRender: 'inforDomain' }
-        },
-        {
-          title: '热门',
-          dataIndex: 'isHot',
-          scopedSlots: { customRender: 'isHot' }
-        },
-        {
-          title: '置顶',
-          dataIndex: 'isTop',
-          scopedSlots: { customRender: 'isTop' }
-        },
-        {
-          title: '发布时间',
-          dataIndex: 'release'
-        },
-        {
-          title: '发布账号',
-          dataIndex: 'backendUserName'
-        },
-        {
-          title: '阅读数',
-          dataIndex: 'readCount'
-        },
-        {
-          title: '关注数',
-          dataIndex: 'attentionCount'
-        },
-        {
-          title: '转发数',
-          dataIndex: 'resendCount'
-        },
-        {
-          title: '编辑浏览量',
-          dataIndex: 'scannCount',
-          scopedSlots: { customRender: 'scannCount' }
-        },
-        {
-          title: '状态',
-          dataIndex: 'state',
-          scopedSlots: { customRender: 'state' }
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          scopedSlots: { customRender: 'action' }
-        }
-      ],
+      columns,
       pagination: {
         defaultPageSize: 10,
         showTotal: total => `共 ${total} 条数据`,
@@ -336,7 +358,6 @@ export default {
             return res.data
           } else {
             res.data = {}
-            console.log('走了else', res.data)
             res.data.data = []
             res.data.pageNo = 0
             res.data.totalPage = 0
@@ -364,6 +385,26 @@ export default {
           return '保险'
         case 5:
           return '理财'
+        case 6:
+          return '证券'
+      }
+    },
+    typeFilter (val) {
+      switch (Number(val)) {
+        case 0:
+          return ''
+        case 2:
+          return '看看'
+        case 3:
+          return '推荐'
+        case 4:
+          return '看看+快报'
+        case 5:
+          return '推荐+快报'
+        case 6:
+          return '快报'
+        default:
+          return ''
       }
     }
   },
@@ -471,7 +512,7 @@ export default {
       })
     },
     // 表格行-编辑
-    handleEdit (record) {
+    handleEdit (record, type) {
       // this.$router.push({
       //   path: '/news/newsedit',
       //   query: {
@@ -481,11 +522,14 @@ export default {
       let newpage = this.$router.resolve({
         name: 'newsEdit',
         query: {
-          id: record.id
+          id: record.id,
+          type,
+          state: type ? record.state : 0
         }
       })
       window.open(newpage.href, '_blank')
     },
+    handleCheck () {},
     // 表格行-编辑浏览量
     handleEditScannCount (record) {
       this.scannValue = record.scannCount

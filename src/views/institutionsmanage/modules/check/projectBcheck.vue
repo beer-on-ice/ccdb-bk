@@ -6,10 +6,10 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
 				<a-form-item label="品牌LOGO"
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="imgUploaderWrapper">
 					<div style="display:flex;justify-content:flex-start;">
 						<div class="avatarWrapper"
@@ -28,45 +28,29 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="项目品牌："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="项目品牌：">
 					<p>{{projectBInfo.brandName}}</p>
 				</a-form-item>
-				<a-form-item label="所属公司："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="所属公司：">
 					<p>{{projectBInfo.belongCompany}}</p>
 				</a-form-item>
-				<a-form-item label="联系地址："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="联系地址：">
 					<p>{{projectBInfo.address}}</p>
 				</a-form-item>
-				<a-form-item label="企业网址："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="企业网址：">
 					<p>{{projectBInfo.net}}</p>
 				</a-form-item>
-				<a-form-item label="联系电话："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="联系电话：">
 					<p>{{projectBInfo.contact.split(';').join('、')}}</p>
 				</a-form-item>
-				<a-form-item label="品牌介绍："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="品牌介绍：">
 					<p>{{projectBInfo.description}}</p>
 				</a-form-item>
-				<a-form-item label="关联公司："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="关联公司：">
 					<p v-for="item in projectBInfo.companyList"
 						:key="item.companyUrl">{{item.companyName}}</p>
 				</a-form-item>
-				<a-form-item label="公司环境："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="公司环境：">
 					<div v-if="projectBInfo.environment !== ''">
 						<div class="avatarWrapper"
 							@click="handlePreviewImg(item)"
@@ -79,12 +63,10 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="大事记："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 24 }">
 					<huge-event-list :recordList="projectBInfo.eventList.descList"></huge-event-list>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<!-- <a-button @click="handlePreviewAll">预览</a-button> -->
@@ -111,7 +93,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>
@@ -197,9 +178,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -243,9 +224,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -277,9 +258,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -387,12 +368,6 @@ export default {
 				margin-right: 10px;
 			}
 		}
-	}
-}
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
 	}
 }
 </style>

@@ -13,14 +13,13 @@
 		</div>
 		<a-upload class="uploadBtn"
 			v-else
-			:fileList="uploadInfo.fileList"
-			:beforeUpload="beforeUpload"
-			:disabled="uploadInfo.fileList.length !== 0"
+			:file-list="uploadInfo.fileList"
+			:before-upload="beforeUpload"
 			:remove="handleRemoveUpload">
 			<div class="wrapper"
-				v-if="uploadInfo.fileList.length<1">
+				v-if="this.uploadInfo.fileList.length<1">
 				<a-icon type="plus"></a-icon>
-				<p className="ant-upload-text">{{uploadTitle}}</p>
+				<div className="ant-upload-text">{{uploadTitle}}</div>
 			</div>
 		</a-upload>
 	</div>
@@ -50,7 +49,6 @@ export default {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-top: 10px;
 		.wrapper {
 			i {
 				font-size: 30px;

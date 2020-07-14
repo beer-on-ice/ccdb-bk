@@ -36,7 +36,11 @@
 						@change="e => handleIntroduceInput(e)" />
 					<p class="tip">已填写{{hasInput}} / 500 字</p>
 				</a-form-item>
-				<search-company :belongCompanyAble="belongCompanyAble"></search-company>
+				<a-form-item :label-col="{ span: 2 }"
+					:wrapper-col="{ span: 9 }">
+					<span slot='label'><em style="color:red;">*</em> 所属公司：</span>
+					<dropdown-search ref="dropdownSearch"></dropdown-search>
+				</a-form-item>
 				<a-form-item label="营业执照编号："
 					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 12 }">
@@ -255,8 +259,8 @@ import {
   SingleImgUploadNew,
   SingleImgUpload,
   PreviewImgModal
-} from '@/components/index'
-import { RelateCompany, SearchCompany } from './../../components/index'
+} from '@/components'
+import { RelateCompany, DropdownSearch } from './../../components/index'
 
 const certTypeList = [
   {
@@ -294,14 +298,13 @@ export default {
     SingleImgUpload,
     PreviewImgModal,
     RelateCompany,
-    SearchCompany
+    DropdownSearch
   },
   data () {
     return {
       form: this.$form.createForm(this),
       id: '',
       brandName: '',
-      belongCompanyAble: false,
       brandInfo: {},
       certTypeList,
       hasInput: 0,
@@ -387,12 +390,10 @@ export default {
         const res = await addBrandPageView({ brandId: this.id })
         if (res.code === 200) {
           this.brandInfo = res.data
-          if (res.data.belongCompany !== '') this.belongCompanyAble = true
-          else this.belongCompanyAble = false
           this.form.setFieldsValue({
-            belongCompany: res.data.belongCompany,
             brandIntroduce: res.data.description
           })
+          this.$refs.dropdownSearch.inputText = res.data.belongCompany
           this.hasInput = res.data.description.length
           this.uploadLogoInfo.showOffList = this.backupImgInfo(res.data.logoUrl)
         } else {
@@ -628,24 +629,24 @@ export default {
       let manageBack = ''
       let contractList = []
 
-      logoUrl = uploadLogoInfo.fileList.length
+      logoUrl = uploadLogoInfo.fileList.length && uploadLogoInfo.fileList[0].response
         ? uploadLogoInfo.fileList[0].response.data
         : uploadLogoInfo.showOffList.winPath
           ? `${uploadLogoInfo.showOffList.winPath};${uploadLogoInfo.showOffList.fileUrl}`
           : ''
-      pnoFront = uploadLawManFrontInfo.fileList.length
+      pnoFront = uploadLawManFrontInfo.fileList.length && uploadLawManFrontInfo.fileList[0].response
         ? uploadLawManFrontInfo.fileList[0].response.data
         : ''
-      pnoBack = uploadLawManBackInfo.fileList.length
+      pnoBack = uploadLawManBackInfo.fileList.length && uploadLawManBackInfo.fileList[0].response
         ? uploadLawManBackInfo.fileList[0].response.data
         : ''
-      licenseUrl = uploadLicenseInfo.fileList.length
+      licenseUrl = uploadLicenseInfo.fileList.length && uploadLicenseInfo.fileList[0].response
         ? uploadLicenseInfo.fileList[0].response.data
         : ''
-      manageFront = uploadManagerFrontInfo.fileList.length
+      manageFront = uploadManagerFrontInfo.fileList.length && uploadManagerFrontInfo.fileList[0].response
         ? uploadManagerFrontInfo.fileList[0].response.data
         : ''
-      manageBack = uploadManagerBackInfo.fileList.length
+      manageBack = uploadManagerBackInfo.fileList.length && uploadManagerBackInfo.fileList[0].response
         ? uploadManagerBackInfo.fileList[0].response.data
         : ''
 
@@ -708,6 +709,7 @@ export default {
     handleSubmit () {
       const {
         form: { validateFields, getFieldsValue, setFieldsValue },
+        $notification: { success, error },
         id,
         brandInfo,
         brandName,
@@ -739,7 +741,6 @@ export default {
         phone,
         email,
         position,
-        belongCompany,
         relateCompany
       } = getFieldsValue([
         'brandIntroduce',
@@ -755,7 +756,6 @@ export default {
         'phone',
         'email',
         'position',
-        'belongCompany',
         'relateCompany'
       ])
 
@@ -779,12 +779,17 @@ export default {
       // 上传了但未选择协议
       const len = contractList.filter(item => item.ctype === undefined).length
       if (!logoUrl) {
-        this.$notification.error({
+        error({
           message: '请上传品牌LOGO！'
         })
         return
+      } else if (this.$refs.dropdownSearch.inputText === '') {
+        error({
+          message: '请输入所属公司'
+        })
+        return
       } else if (len) {
-        this.$notification.error({
+        error({
           message: '请为合同照片选择协议！'
         })
         return
@@ -800,7 +805,7 @@ export default {
         logoUrl,
         brandName: id ? brandInfo.brandName : brandName,
         description: brandIntroduce,
-        belongCompany: belongCompany,
+        belongCompany: this.$refs.dropdownSearch.inputText,
         licenseNo: licenceNumber,
         licenseUrl: licenseUrl,
         artificialPerson: lawMan,

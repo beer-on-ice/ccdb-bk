@@ -38,7 +38,12 @@
 						@change="e => handleIntroduceInput(e)" />
 					<p class="tip">已填写{{hasInput}} / 500 字</p>
 				</a-form-item>
-				<search-company :belongCompanyAble="belongCompanyAble"></search-company>
+				<a-form-item :label-col="{ span: 2 }"
+					:wrapper-col="{ span: 9 }">
+					<span slot='label'><em style="color:red;">*</em> 所属公司：</span>
+					<dropdown-search ref="dropdownSearch"
+						:belongCompanyAble="belongCompanyAble"></dropdown-search>
+				</a-form-item>
 				<a-form-item label="营业执照编号："
 					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 12 }">
@@ -272,7 +277,7 @@ import {
   SingleImgUploadNew,
   PreviewImgModal
 } from '@/components/index'
-import { RelateCompany, SearchCompany } from './../../components/index'
+import { RelateCompany, DropdownSearch } from './../../components/index'
 const certTypeList = [
   {
     id: '0',
@@ -307,17 +312,17 @@ export default {
   name: 'editBrand',
   components: {
     RelateCompany,
-    SearchCompany,
     SingleImgUpload,
     SingleImgUploadNew,
-    PreviewImgModal
+    PreviewImgModal,
+    DropdownSearch
   },
   data () {
     return {
       certTypeList,
       hasInput: 0,
       brandName: '',
-      belongCompanyAble: false,
+      belongCompanyAble: true,
       showrejectReason: '',
       rejectReason: [],
       serviceExp: [],
@@ -433,11 +438,10 @@ export default {
             historyList,
             companyList
           } = data
-          if (belongCompany !== '') this.belongCompanyAble = true
-          else this.belongCompanyAble = false
+          this.$refs.dropdownSearch.inputText = belongCompany
+
           this.form.setFieldsValue({
             brandIntroduce: description,
-            belongCompany: belongCompany,
             licenceNumber: licenseNo,
             lawMan: artificialPerson,
             licenceTypeOne:
@@ -818,36 +822,47 @@ export default {
       let manageBack = ''
       let contractList = []
 
-      logoUrl = uploadLogoInfo.fileList.length
-        ? uploadLogoInfo.fileList[0].response.data
-        : uploadLogoInfo.showOffList.winPath
-          ? `${uploadLogoInfo.showOffList.winPath};${uploadLogoInfo.showOffList.fileUrl}`
-          : ''
-      pnoFront = uploadLawManFrontInfo.fileList.length
-        ? uploadLawManFrontInfo.fileList[0].response.data
-        : uploadLawManFrontInfo.showOffList.winPath
-          ? `${uploadLawManFrontInfo.showOffList.winPath};${uploadLawManFrontInfo.showOffList.fileUrl}`
-          : ''
-      pnoBack = uploadLawManBackInfo.fileList.length
-        ? uploadLawManBackInfo.fileList[0].response.data
-        : uploadLawManBackInfo.showOffList.winPath
-          ? `${uploadLawManBackInfo.showOffList.winPath};${uploadLawManBackInfo.showOffList.fileUrl}`
-          : ''
-      licenseUrl = uploadLicenseInfo.fileList.length
-        ? uploadLicenseInfo.fileList[0].response.data
-        : uploadLicenseInfo.showOffList.winPath
-          ? `${uploadLicenseInfo.showOffList.winPath};${uploadLicenseInfo.showOffList.fileUrl}`
-          : ''
-      manageFront = uploadManagerFrontInfo.fileList.length
-        ? uploadManagerFrontInfo.fileList[0].response.data
-        : uploadManagerFrontInfo.showOffList.winPath
-          ? `${uploadManagerFrontInfo.showOffList.winPath};${uploadManagerFrontInfo.showOffList.fileUrl}`
-          : ''
-      manageBack = uploadManagerBackInfo.fileList.length
-        ? uploadManagerBackInfo.fileList[0].response.data
-        : uploadManagerBackInfo.showOffList.winPath
-          ? `${uploadManagerBackInfo.showOffList.winPath};${uploadManagerBackInfo.showOffList.fileUrl}`
-          : ''
+      logoUrl =
+				uploadLogoInfo.fileList.length && uploadLogoInfo.fileList[0].response
+				  ? uploadLogoInfo.fileList[0].response.data
+				  : uploadLogoInfo.showOffList.winPath
+				    ? `${uploadLogoInfo.showOffList.winPath};${uploadLogoInfo.showOffList.fileUrl}`
+				    : ''
+      pnoFront =
+				uploadLawManFrontInfo.fileList.length &&
+				uploadLawManFrontInfo.fileList[0].response
+				  ? uploadLawManFrontInfo.fileList[0].response.data
+				  : uploadLawManFrontInfo.showOffList.winPath
+				    ? `${uploadLawManFrontInfo.showOffList.winPath};${uploadLawManFrontInfo.showOffList.fileUrl}`
+				    : ''
+      pnoBack =
+				uploadLawManBackInfo.fileList.length &&
+				uploadLawManBackInfo.fileList[0].response
+				  ? uploadLawManBackInfo.fileList[0].response.data
+				  : uploadLawManBackInfo.showOffList.winPath
+				    ? `${uploadLawManBackInfo.showOffList.winPath};${uploadLawManBackInfo.showOffList.fileUrl}`
+				    : ''
+      licenseUrl =
+				uploadLicenseInfo.fileList.length &&
+				uploadLicenseInfo.fileList[0].response
+				  ? uploadLicenseInfo.fileList[0].response.data
+				  : uploadLicenseInfo.showOffList.winPath
+				    ? `${uploadLicenseInfo.showOffList.winPath};${uploadLicenseInfo.showOffList.fileUrl}`
+				    : ''
+      manageFront =
+				uploadManagerFrontInfo.fileList.length &&
+				uploadManagerFrontInfo.fileList[0].response
+				  ? uploadManagerFrontInfo.fileList[0].response.data
+				  : uploadManagerFrontInfo.showOffList.winPath
+				    ? `${uploadManagerFrontInfo.showOffList.winPath};${uploadManagerFrontInfo.showOffList.fileUrl}`
+				    : ''
+      manageBack =
+				uploadManagerBackInfo.fileList.length &&
+				uploadManagerBackInfo.fileList[0].response
+				  ? uploadManagerBackInfo.fileList[0].response.data
+				  : uploadManagerBackInfo.showOffList.winPath
+				    ? `${uploadManagerBackInfo.showOffList.winPath};${uploadManagerBackInfo.showOffList.fileUrl}`
+				    : ''
 
       // 处理合同
       contractList = [
@@ -927,7 +942,6 @@ export default {
       } = this
       const {
         brandIntroduce,
-        belongCompany,
         licenceNumber,
         lawMan,
         licenceTypeOne,
@@ -943,7 +957,6 @@ export default {
         relateCompany
       } = getFieldsValue([
         'brandIntroduce',
-        'belongCompany',
         'licenceNumber',
         'lawMan',
         'licenceTypeOne',
@@ -1014,7 +1027,7 @@ export default {
         logoUrl,
         brandName,
         description: brandIntroduce,
-        belongCompany,
+        belongCompany: this.$refs.dropdownSearch.inputText,
         licenseNo: licenceNumber,
         licenseUrl,
         artificialPerson: lawMan,

@@ -10,6 +10,14 @@ import VueUeditorWrap from 'vue-ueditor-wrap'
 export default {
   name: 'Ueditor',
   components: { VueUeditorWrap },
+  props: {
+    selfConf: {
+      type: Object,
+      default () {
+        return {}
+      }
+    }
+  },
   data () {
     return {
       myConfig: {
@@ -31,6 +39,9 @@ export default {
       },
       content: ''
     }
+  },
+  created () {
+    this.myConfig = { ...this.myConfig, ...this.selfConf }
   }
 }
 </script>

@@ -310,8 +310,8 @@ export default {
               })
               this.isSave = false
             }
-          } catch (error) {
-            console.log(error)
+          } catch ({ message }) {
+            console.log(message)
           }
         }
       })

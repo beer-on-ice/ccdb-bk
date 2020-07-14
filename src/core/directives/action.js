@@ -1,35 +1,31 @@
 import Vue from 'vue'
-import store from '@/store'
+import store from './../../store'
 
-/**
- * Action 权限指令
- * 指令用法：
- *  - 在需要控制 action 级别权限的组件上使用 v-action:[method] , 如下：
- *    <i-button v-action:add >添加用户</a-button>
- *    <a-button v-action:delete>删除用户</a-button>
- *    <a v-action:edit @click="edit(record)">修改</a>
- *
- *  - 当前用户没有权限时，组件上使用了该指令则会被隐藏
- *  - 当后台权限跟 pro 提供的模式不同时，只需要针对这里的权限过滤进行修改即可
- *
- *  @see https://github.com/sendya/ant-design-pro-vue/pull/53
- */
-const action = Vue.directive('action', {
+/** 权限指令**/
+// 是否是管理员（即有权限）
+const directive = Vue.directive('auth', {
   inserted: function (el, binding, vnode) {
-    const actionName = binding.arg
-    const roles = store.getters.roles
-    const elVal = vnode.context.$route.meta.permission
-    const permissionId = (elVal instanceof String && [elVal]) || elVal
-    roles.permissions.forEach(p => {
-      if (!permissionId.includes(p.permissionId)) {
-        return
-      }
-      if (p.actionList && !p.actionList.includes(actionName)) {
-        ;(el.parentNode && el.parentNode.removeChild(el)) ||
-					(el.style.display = 'none')
-      }
-    })
+    if (!Vue.prototype.$_has(binding.value)) {
+      el.parentNode.removeChild(el)
+    }
   }
 })
-
-export default action
+// 是否是员工（即无权限）
+const directive2 = Vue.directive('nuth', {
+  inserted: function (el, binding, vnode) {
+    if (Vue.prototype.$_has(binding.value)) {
+      el.parentNode.removeChild(el)
+    }
+  }
+})
+// 权限检查方法
+Vue.prototype.$_has = function (value) {
+  let isExist = false
+  let authList = store.getters.auth
+  if (authList) {
+    let duty = authList.filter(item => item.dutyName === value)
+    if (duty.length) return !duty[0].duty // 0:有权限 1：无权限
+  }
+  return isExist
+}
+export { directive, directive2 }

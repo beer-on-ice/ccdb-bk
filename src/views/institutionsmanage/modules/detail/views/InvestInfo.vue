@@ -1,0 +1,175 @@
+<template>
+	<div class="InvestInfoWrapper">
+		<a-card title="对外投资"
+			:hoverable="false">
+			<a slot="extra"
+				href="#">数据更新时间： xxxxxxxx</a>
+			<s-table ref="table"
+				rowKey="id"
+				:columns="columns"
+				:data="loadData"
+				:pagination="pagination"
+				bordered
+				style="margin-top:20px;">
+				<span slot="serial"
+					slot-scope="text, record, index">
+					{{ index + 1 }}
+				</span>
+			</s-table>
+			<a-button @click="$router.go(-1)">返回</a-button>
+		</a-card>
+	</div>
+</template>
+
+<script>
+import { STable } from '@/components'
+import { investmentAbroad } from '@/api/institution/institutionArchives'
+const columns = [
+  {
+    title: '序号',
+    scopedSlots: { customRender: 'serial' },
+    align: 'center'
+  },
+  {
+    title: '被投资企业名称',
+    dataIndex: 'investedEnterprise',
+    align: 'center'
+  },
+  {
+    title: '法定代表人',
+    dataIndex: 'legalRepresentative',
+    align: 'center'
+  },
+  {
+    title: '成立日期',
+    dataIndex: 'establishmentDate',
+    align: 'center'
+  },
+  {
+    title: '投资数额',
+    dataIndex: 'investAmount',
+    align: 'center'
+  },
+  {
+    title: '投资比例',
+    dataIndex: 'investProportion',
+    align: 'center'
+  },
+  {
+    title: '经营状态',
+    dataIndex: 'operatingState',
+    align: 'center'
+  },
+  {
+    title: '关联产品',
+    dataIndex: 'associatedProducts',
+    align: 'center'
+  },
+  {
+    title: '关联机构',
+    dataIndex: 'affiliates',
+    align: 'center'
+  }
+]
+export default {
+  name: 'InvestInfo',
+  props: ['companyUrl'],
+  components: {
+    STable
+  },
+  data () {
+    return {
+      columns,
+      list: [],
+      queryParam: {
+        startPage: 1,
+        pageSize: 10,
+        companyUrl: ''
+      },
+      pagination: {
+        defaultPageSize: 10,
+        showTotal: total => `共 ${total} 条数据`,
+        showSizeChanger: true,
+        pageSizeOptions: ['5', '10', '15', '20'],
+        onShowSizeChange: (current, pageSize) =>
+          (this.queryParam.pageSize = pageSize),
+        onChange: page => (this.queryParam.startPage = page),
+        showQuickJumper: true
+      },
+      loadData: () => {
+        return investmentAbroad(this.queryParam).then(res => {
+          if (res.code === 200 && res.data) {
+            if (res.data.pageNum > res.data.navigateLastPage) {
+              // 解决当点击的页码超过实际页数重复请求bug
+              this.queryParam.startPage = res.data.navigateLastPage
+            }
+            res.data.data = res.data.list
+            res.data.pageNo = res.data.pageNum
+            res.data.totalPage = res.data.pages
+            res.data.totalCount = res.data.total
+
+            delete res.data.list
+            delete res.data.pageNum
+            delete res.data.pages
+            delete res.data.total
+
+            return res.data
+          } else {
+            res.data = {}
+            res.data.data = []
+            res.data.pageNo = 0
+            res.data.totalPage = 0
+            res.data.totalCount = 0
+            return res.data
+          }
+        })
+      }
+    }
+  },
+  created () {
+    this.queryParam.companyUrl = this.$route.query.companyUrl
+  }
+}
+</script>
+
+<style lang="less">
+.InvestInfoWrapper {
+	margin-top: 50px;
+	.ant-card-grid {
+		width: 100%;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		> div {
+			margin-left: 10px;
+		}
+
+		&.special-h-2 {
+			height: 140px;
+		}
+		&.special-w-5 {
+			width: 50%;
+		}
+		&.special-w-1 {
+			width: 100%;
+		}
+	}
+	.both {
+		.ant-card-grid {
+			padding-left: 1px;
+			padding-top: 1px;
+			padding-bottom: 0px;
+			p {
+				margin: 0;
+				text-align: center;
+				&:nth-of-type(odd) {
+					width: 186px;
+					height: 69px;
+					line-height: 69px;
+					background: rgb(236, 243, 253);
+				}
+			}
+		}
+	}
+}
+</style>

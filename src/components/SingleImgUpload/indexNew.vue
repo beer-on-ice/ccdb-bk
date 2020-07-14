@@ -59,11 +59,15 @@ export default {
 				file.type === 'image/jpg' ||
 				file.type === 'application/pdf'
       if (!isJPG) {
-        this.$message.error('只能上传 jpg/jpeg/png/gif/pdf 格式的文件')
+        this.$notification.error({
+          message: '只能上传 jpg/jpeg/png/gif/pdf 格式的图片'
+        })
       }
       const isLt1M = file.size / 1024 / 1024 < 1
       if (!isLt1M) {
-        this.$message.error('文件必须小于1M!')
+        this.$notification.error({
+          message: '文件必须小于1M'
+        })
       }
       return isJPG && isLt1M
     },

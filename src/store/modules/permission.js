@@ -60,6 +60,38 @@ function filterAsyncRouter (routerMap, roles) {
   return accessedRouters
 }
 
+function tmpHandleIcon (el) {
+  switch (el.url) {
+    case 'policy':
+      el.meta.icon = `https://i.postimg.cc/K8DNDMBG/2x.png`
+      break
+    case 'news':
+      el.meta.icon = `https://i.postimg.cc/W1NrjfqV/2x.png`
+      break
+    case 'customer':
+      el.meta.icon = `https://i.postimg.cc/90x4fc7j/2x.png`
+      break
+    case 'userlist':
+      el.meta.icon = `https://i.postimg.cc/nczjP9yV/2x.png`
+      break
+    case 'warning':
+      el.meta.icon = `https://i.postimg.cc/pdNmrGpy/2x.png`
+      break
+    case 'datawatching':
+      el.meta.icon = `https://i.postimg.cc/76wbM51k/2x.png`
+      break
+    case 'institutionsmanage':
+      el.meta.icon = `https://i.postimg.cc/Y0LGnJPN/2x.png`
+      break
+    case 'rights':
+      el.meta.icon = `https://i.postimg.cc/RhqSXKNj/2x.png`
+      break
+    default:
+      el.meta.icon = `table`
+      break
+  }
+}
+
 // 生成请求动态返回的路由
 function generateAllRoutes (roles) {
   let flatRoles = flatten(roles)
@@ -69,8 +101,8 @@ function generateAllRoutes (roles) {
     item.meta.title = item.nodeName
     item.meta.dutyName = item.url
     item.meta.keepAlive = true
-    item.meta.icon = `table`
     item.path = `/${item.url}`
+    tmpHandleIcon(item)
   })
 
   flatRoles = unFlatten(flatRoles)

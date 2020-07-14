@@ -6,20 +6,16 @@
 			<h3 style="word-break:break-all;"
 				v-if="Number($route.query.type) === 3&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
-				<a-form-item label="企业名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
+				<a-form-item label="企业名称：">
 					<p>{{quaInfo.companyName}}</p>
 				</a-form-item>
-				<a-form-item label="资质类型："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="资质类型：">
 					<p>{{quaInfo.aptitudeName}}</p>
 				</a-form-item>
 				<a-form-item label="图片审核："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="imgUploaderWrapper">
 					<div style="display:flex;justify-content:flex-start;">
 						<div class="avatarWrapper"
@@ -32,7 +28,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<!-- <a-button @click="handlePreviewAll">预览</a-button> -->
@@ -59,7 +54,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>
@@ -128,9 +122,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -147,9 +141,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -194,9 +188,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -229,9 +223,9 @@ export default {
         } else {
           throw new Error(res.msg)
         }
-      } catch (error) {
+      } catch ({ message }) {
         this.$notification.error({
-          message: error || '网络故障，请重试！'
+          message: message || '网络故障，请重试！'
         })
       }
     },
@@ -339,12 +333,6 @@ export default {
 				margin-right: 10px;
 			}
 		}
-	}
-}
-.consultantPreviewModal {
-	.ant-modal-body {
-		text-align: center;
-		padding: 35px;
 	}
 }
 </style>

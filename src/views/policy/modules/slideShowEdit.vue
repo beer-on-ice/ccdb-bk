@@ -318,8 +318,8 @@ export default {
                 message: res.msg || '失败，请重试'
               })
             }
-          } catch (error) {
-            console.log(error)
+          } catch ({ message }) {
+            console.log(message)
           }
         }
       })

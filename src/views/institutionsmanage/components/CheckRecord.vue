@@ -11,7 +11,7 @@
 
 			<span slot="auditStatus"
 				slot-scope="text">
-				{{ +text === 2?'审核通过':+text===3?'审核驳回':'待审核' }}
+				{{ +text === 2?'审核通过':+text===3?'审核驳回':+text===4?'重置':'待审核' }}
 			</span>
 
 			<span slot="rejectDescribe"

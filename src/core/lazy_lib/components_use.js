@@ -1,4 +1,3 @@
-
 /**
  * 该文件是为了按需加载，剔除掉了一些不需要的框架组件。
  * 减少了编译支持库包大小
@@ -7,45 +6,46 @@
  */
 import Vue from 'vue'
 import {
-  LocaleProvider,
-  Layout,
-  Input,
-  InputNumber,
-  Button,
-  Switch,
-  Radio,
-  Checkbox,
-  Select,
-  Card,
-  Form,
-  Row,
-  Col,
-  Modal,
-  Table,
-  Tabs,
-  Icon,
-  Badge,
-  Popover,
-  Dropdown,
-  List,
-  Avatar,
-  Breadcrumb,
-  Steps,
-  Spin,
-  Menu,
-  Drawer,
-  Tooltip,
-  Alert,
-  Tag,
-  Divider,
-  DatePicker,
-  TimePicker,
-  Upload,
-  Progress,
-  Skeleton,
-  Popconfirm,
-  message,
-  notification
+	LocaleProvider,
+	Layout,
+	Input,
+	InputNumber,
+	Button,
+	Switch,
+	Radio,
+	Checkbox,
+	Select,
+	Card,
+	Form,
+	Row,
+	Col,
+	Modal,
+	Table,
+	Tabs,
+	Icon,
+	Badge,
+	Popover,
+	Dropdown,
+	List,
+	Avatar,
+	Breadcrumb,
+	Steps,
+	Spin,
+	Menu,
+	Drawer,
+	Tooltip,
+	Alert,
+	Tag,
+	Divider,
+	DatePicker,
+	TimePicker,
+	Descriptions,
+	Upload,
+	Progress,
+	Skeleton,
+	Popconfirm,
+	message,
+	notification
 } from 'ant-design-vue'
 // import VueCropper from 'vue-cropper'
 
@@ -86,6 +86,7 @@ Vue.use(Upload)
 Vue.use(Progress)
 Vue.use(Skeleton)
 Vue.use(Popconfirm)
+Vue.use(Descriptions)
 // Vue.use(VueCropper)
 Vue.use(notification)
 

@@ -6,34 +6,26 @@
 			<h3 style="word-break:break-all;"
 				v-if="(Number($route.query.type) === 3||Number($route.query.type) === 8||Number($route.query.type) === 5)&&showrejectReason">驳回原因：{{showrejectReason}}</h3>
 			<a-form layout="horizontal"
-				:form="form">
-				<a-form-item label="品牌LOGO："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				:form="form"
+				:label-col="{ span: 2 }"
+				:wrapper-col="{ span: 12 }">
+				<a-form-item label="品牌LOGO：">
 					<div class="backImg">
 						<img @click="handlePreviewImg(brandInfo.logoUrl)"
 							:src="brandInfo.logoUrl"
 							alt="营业执照编号">
 					</div>
 				</a-form-item>
-				<a-form-item label="品牌名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="品牌名称：">
 					<p>{{brandInfo.brandName}}</p>
 				</a-form-item>
-				<a-form-item label="品牌介绍："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="品牌介绍：">
 					<p style="word-break: break-all;">{{brandInfo.description}}</p>
 				</a-form-item>
-				<a-form-item label="所属公司："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="所属公司：">
 					<p>{{brandInfo.belongCompany}}</p>
 				</a-form-item>
-				<a-form-item label="营业执照编号："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="营业执照编号：">
 					<p>{{brandInfo.licenseNo}}</p>
 					<div class="backImg"
 						v-if="brandInfo.licenseUrl">
@@ -42,9 +34,7 @@
 							alt="营业执照编号">
 					</div>
 				</a-form-item>
-				<a-form-item label="法定代表人："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="法定代表人：">
 					<p>{{brandInfo.artificialPerson}}</p>
 					<div class="specUpWrapper">
 						<div class="backImg">
@@ -61,9 +51,7 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="合同上传："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="合同上传：">
 					<div class="muchUpWrapper">
 						<div class="backImg"
 							v-for="item in brandInfo.contractList"
@@ -79,14 +67,10 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="品牌账号管理人："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="品牌账号管理人：">
 					<p>{{brandInfo.manageUse}}</p>
 				</a-form-item>
-				<a-form-item label="身份证号："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="身份证号：">
 					<p>{{brandInfo.pno}}</p>
 					<div class="specUpWrapper">
 						<div class="backImg"
@@ -103,35 +87,24 @@
 						</div>
 					</div>
 				</a-form-item>
-				<a-form-item label="联系电话："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="联系电话：">
 					<p>{{brandInfo.phone}}</p>
 				</a-form-item>
-				<a-form-item label="职位名称："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="职位名称：">
 					<p>{{brandInfo.occupation}}</p>
 				</a-form-item>
-				<a-form-item label="邮箱："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="邮箱：">
 					<p>{{brandInfo.email}}</p>
 				</a-form-item>
-				<a-form-item label="关联公司："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }">
+				<a-form-item label="关联公司：">
 					<p v-for="item in brandInfo.companyList"
 						:key="item.companyUrl">{{item.companyName}}</p>
 				</a-form-item>
 				<a-form-item label="服务期限："
-					:label-col="{ span: 2 }"
-					:wrapper-col="{ span: 12 }"
 					class="specRangeWrapper">
 					<p>{{_handlePtime(brandInfo.startTime)}} - {{_handlePtime(brandInfo.endTime)}}</p>
 				</a-form-item>
 				<a-form-item label="操作："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }">
 					<div class="btnWrapper">
 						<a-button @click="handleBack">返回</a-button>
@@ -157,7 +130,6 @@
 					</div>
 				</a-form-item>
 				<a-form-item label="审核记录："
-					:label-col="{ span: 2 }"
 					:wrapper-col="{ span: 22 }"
 					v-if="checkRecord.recordVisible">
 					<check-record :recordList="checkRecord.recordList"></check-record>

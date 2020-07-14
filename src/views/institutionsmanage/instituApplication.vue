@@ -7,7 +7,7 @@
 				<a-row>
 					<a-col :span="12">
 						<a-form-item label="搜索机构："
-							:label-col="{ span: 2 }"
+							:label-col="{ span: 3 }"
 							:wrapper-col="{ span: 12 }">
 							<a-input-search placeholder="请填写机构名称"
 								@search="handleSearchInstitution"
@@ -36,7 +36,7 @@
 					</a-col>
 					<a-col :span="12">
 						<a-form-item label="搜索品牌："
-							:label-col="{ span: 2 }"
+							:label-col="{ span: 3 }"
 							:wrapper-col="{ span: 12 }">
 							<a-input placeholder="请填写品牌名称"
 								maxLength="50"
@@ -132,6 +132,7 @@
 								style="margin-right:10px;">
 								修改
 							</a-button>
+
 						</template>
 					</span>
 				</s-table>
@@ -142,6 +143,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { STable } from '@/components'
 import moment from 'moment'
 
@@ -470,6 +472,7 @@ export default {
       if (!this.brandSearchKey.trim()) return
       this.validateBrand(this.brandSearchKey.trim(), type)
     },
+
     goAddInstitution (record) {
       const { companyName, companyUrl, type } = record
       this.$router.push({
@@ -518,8 +521,12 @@ export default {
           return '基金且银行'
         case 7:
           return '基金且保险'
+        case 8:
+          return '证券'
+        case 9:
+          return '基金且证券'
         default:
-          return '基金'
+          return '暂无'
       }
     },
     brandTypeFilter (val) {
@@ -544,7 +551,6 @@ export default {
 
 <style lang="less">
 .instituManagementWrapper {
-	min-width: 1200px;
 	h1 {
 		font-size: 20px;
 		font-weight: bold;

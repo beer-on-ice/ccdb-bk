@@ -26,6 +26,9 @@ export default {
 
 <style lang="less">
 .consultantPreviewModal {
+	.ant-modal {
+		width: 60% !important;
+	}
 	.pdfWrapper {
 		width: 100%;
 		overflow-y: scroll;
