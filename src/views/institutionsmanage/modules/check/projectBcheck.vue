@@ -218,7 +218,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/projectBManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

@@ -250,7 +250,7 @@ export default {
           this.$router.push({
             name: 'archivesManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
           this.$notification.success({

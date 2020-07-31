@@ -135,6 +135,7 @@ const sortList = [
     name: '申请时间降序'
   }
 ]
+
 export default {
   name: 'businessAuth',
   components: {
@@ -142,10 +143,10 @@ export default {
   },
   data () {
     return {
+      form: this.$form.createForm(this),
       actionList,
       belongNameList,
       sortList,
-      form: this.$form.createForm(this),
       queryParam: {
         startPage: 1,
         pageSize: 10,

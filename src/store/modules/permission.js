@@ -87,7 +87,7 @@ function tmpHandleIcon (el) {
       el.meta.icon = `https://i.postimg.cc/RhqSXKNj/2x.png`
       break
     default:
-      el.meta.icon = `table`
+      el.meta.icon = ``
       break
   }
 }
@@ -100,7 +100,7 @@ function generateAllRoutes (roles) {
     item.meta = {}
     item.meta.title = item.nodeName
     item.meta.dutyName = item.url
-    item.meta.keepAlive = true
+    item.meta.keepAlive = false
     item.path = `/${item.url}`
     tmpHandleIcon(item)
   })

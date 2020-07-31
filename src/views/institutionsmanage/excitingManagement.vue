@@ -19,25 +19,41 @@
 					</a-button-group>
 				</a-form>
 			</div>
-			<a-button-group class="btnWrapper">
-				<a-button :type="queryParam.approve===1?'primary':'default'"
-					@click="handleSwitch(1)">
-					待审核({{nowStatus.toBeReviewed}})
-				</a-button>
-				<a-button :type="queryParam.approve===2?'primary':'default'"
-					@click="handleSwitch(2)">
-					审核通过({{nowStatus.passTheAudit}})
-				</a-button>
-				<a-button :type="queryParam.approve===3?'primary':'default'"
-					@click="handleSwitch(3)">
-					审核驳回({{nowStatus.rejectedAudit}})
-				</a-button>
-			</a-button-group>
+			<a-row class="btnWrapper">
+				<a-col :span="20">
+					<a-button-group>
+						<a-button :type="queryParam.approve===1?'primary':'default'"
+							@click="handleSwitch(1)">
+							待审核({{nowStatus.toBeReviewed}})
+						</a-button>
+						<a-button :type="queryParam.approve===2?'primary':'default'"
+							@click="handleSwitch(2)">
+							审核通过({{nowStatus.passTheAudit}})
+						</a-button>
+						<a-button :type="queryParam.approve===3?'primary':'default'"
+							@click="handleSwitch(3)">
+							审核驳回({{nowStatus.rejectedAudit}})
+						</a-button>
+					</a-button-group>
+				</a-col>
+				<!-- <a-col :span="4">
+					<a-popconfirm title="是否确认操作？"
+						ok-text="确认"
+						cancel-text="取消"
+						@confirm="batchOperate"
+						@cancel="cancel">
+						<a-button>
+							批量审核
+						</a-button>
+					</a-popconfirm>
+				</a-col> -->
+			</a-row>
 			<s-table ref="table"
 				rowKey="id"
 				:columns="currentColumns"
 				:data="loadData"
 				:pagination="pagination"
+				:row-selection="rowSelection"
 				bordered
 				style="margin-top:20px;">
 				<span slot="serial"
@@ -70,6 +86,21 @@ import {
   showActivityInformationAuditCount,
   multipleScreeningActivityInformation
 } from '@/api/institution/excitingActivities'
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(
+      `selectedRowKeys: ${selectedRowKeys}`,
+      'selectedRows: ',
+      selectedRows
+    )
+  },
+  onSelect: (record, selected, selectedRows) => {
+    console.log(record, selected, selectedRows)
+  },
+  onSelectAll: (selected, selectedRows, changeRows) => {
+    console.log(selected, selectedRows, changeRows)
+  }
+}
 export default {
   name: 'ExcitingManagement',
   components: {
@@ -78,6 +109,7 @@ export default {
   data () {
     return {
       form: this.$form.createForm(this),
+      rowSelection,
       nowStatus: { toBeReviewed: 0, rejectedAudit: 0, passTheAudit: 0 },
       queryParam: {
         startPage: 1,
@@ -237,7 +269,8 @@ export default {
         name: 'excitingCheck',
         query: { id: record.id, type }
       })
-    }
+    },
+    batchOperate () {}
   }
 }
 </script>

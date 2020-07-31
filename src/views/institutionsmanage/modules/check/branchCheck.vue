@@ -201,7 +201,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/branchManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

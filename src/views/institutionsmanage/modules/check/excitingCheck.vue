@@ -194,7 +194,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/excitingManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

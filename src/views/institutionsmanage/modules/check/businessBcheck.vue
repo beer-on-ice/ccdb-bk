@@ -229,7 +229,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/businessBManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

@@ -314,7 +314,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/instituManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

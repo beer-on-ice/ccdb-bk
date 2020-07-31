@@ -148,7 +148,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/sServiceManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

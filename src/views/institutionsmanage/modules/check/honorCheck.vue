@@ -182,7 +182,7 @@ export default {
           this.$router.push({
             path: '/institutionsmanage/honorManagement',
             query: {
-              type: 2
+              type: 1
             }
           })
         } else {

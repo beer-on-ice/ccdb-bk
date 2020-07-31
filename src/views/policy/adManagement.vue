@@ -45,17 +45,15 @@
 					</a-row>
 					<a-row>
 						<a-col :span="12">
-							<a-form-item label="操作状态：">
-								<a-button-group>
-									<a-button @click="handleTypeChose(allBtn)"
-										type="primary"
-										:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
-									<a-button v-for="item in btnGroups"
-										:key="item.id"
-										@click="handleTypeChose(item)"
-										type="primary"
-										:ghost="!item.isChosen">{{item.name}}</a-button>
-								</a-button-group>
+							<a-form-item label="推广状态：">
+								<a-select v-model="queryParam.promotionState"
+									placeholder="请选择"
+									style="width:150px;">
+									<a-select-option :value="0">请选择</a-select-option>
+									<a-select-option :value="1">推广中</a-select-option>
+									<a-select-option :value="2">等待推广</a-select-option>
+									<a-select-option :value="3">已下线</a-select-option>
+								</a-select>
 							</a-form-item>
 						</a-col>
 						<a-col :span="12">
@@ -69,6 +67,24 @@
 								</a-select>
 							</a-form-item>
 						</a-col>
+					</a-row>
+					<a-row>
+						<a-col :span="24">
+							<a-form-item label="操作状态：">
+								<a-button-group>
+									<a-button @click="handleTypeChose(allBtn)"
+										type="primary"
+										:ghost="!allBtn.isChosen">{{allBtn.name}}</a-button>
+									<a-button v-for="item in btnGroups"
+										:key="item.id"
+										@click="handleTypeChose(item)"
+										type="primary"
+										:ghost="!item.isChosen">{{item.name}}</a-button>
+								</a-button-group>
+							</a-form-item>
+						</a-col>
+					</a-row>
+					<a-row>
 						<a-col :span="20">
 							<a-button type="primary"
 								@click="$refs.table.refresh(true)">查询</a-button>
@@ -100,6 +116,14 @@
 				<span slot="classify"
 					slot-scope="text">
 					{{text | classifyFilter}}
+				</span>
+				<span slot="promotionTime"
+					slot-scope="text,record">
+					{{record.promotionTimeStart}} 至 {{record.promotionTimeEnd}}
+				</span>
+				<span slot="promotionState"
+					slot-scope="text">
+					<span :style="{color: text===1?'green':text===3?'red':'#000'}">{{text===1?'推广中':text===3?'已下线':text===2?'等待推广':''}}</span>
 				</span>
 				<span slot="action"
 					slot-scope="text, record">
@@ -139,7 +163,7 @@
 						</a-select>
 					</a-form-item>
 					<a-form-item :label-col="{ span: 3 }"
-						:wrapper-col="{ span: 12 }">
+						:wrapper-col="{ span: 20 }">
 						<span slot="label"><em style="color:red;">*</em> 图片</span>
 						<p style="color:red;margin:0;">{{tip}}</p>
 						<single-img-upload :actionUrl="`${uploadUrl}?id=${isEdit?rowId:id}`"
@@ -158,8 +182,8 @@
 					</a-form-item> -->
 					<a-form-item label="标题："
 						:label-col="{ span: 3 }"
-						:wrapper-col="{ span: 12 }">
-						<a-input maxLength="50"
+						:wrapper-col="{ span: 20 }">
+						<a-input :maxLength="50"
 							placeholder="请填写广告标题"
 							v-decorator="['subParamTitle',
 								{rules: [{ required: true, message: '请填写广告标题!', trigger: 'change' }]}
@@ -170,6 +194,13 @@
 						:wrapper-col="{ span: 12 }">
 						<a-input placeholder="请填写跳转的链接地址"
 							v-decorator="['subParamWeb']"></a-input>
+					</a-form-item>
+					<a-form-item label="推广日期："
+						:label-col="{ span: 4 }"
+						:wrapper-col="{ span: 12 }">
+						<a-range-picker show-time
+							@change="onDatePickChange"
+							v-decorator="['dateRanges', { initialValue: dateRanges,rules: [{ required: true, message: '请选择时间!', trigger: 'change',type:'array' }] }]" />
 					</a-form-item>
 				</a-form>
 				<div class="btnWrapper">
@@ -184,6 +215,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import qs from 'qs'
 import Vue from 'vue'
 import { STable, SingleImgUpload } from '@/components'
@@ -235,13 +267,16 @@ export default {
       rowId: '',
       isEdit: false,
       slideVisible: false,
-      tip: '闪屏广告图片尺寸：375*812',
+      tip: '闪屏广告图片尺寸：375*812,图片大小不能超过1M',
       uploadUrl: '',
       uploadInfo: {
         fileList: [],
         showOffList: {}
       },
       inforDomainList,
+      dateRanges: [],
+      promotionTimeStart: '',
+      promotionTimeEnd: '',
       nameList: [], // 发布人账号列表
       allBtn: {
         name: '全部',
@@ -264,7 +299,8 @@ export default {
         classify: 0,
         issuer: '', // 账号用户名
         clickRate: 0, // 排序
-        operatingStatus: 0 // 启用
+        operatingStatus: 0, // 启用
+        promotionState: 0
       },
       // 表头
       columns: [
@@ -282,8 +318,18 @@ export default {
           scopedSlots: { customRender: 'classify' }
         },
         {
-          title: '创建时间',
+          title: '发布时间',
           dataIndex: 'updateTime'
+        },
+        {
+          title: '推广时间',
+          dataIndex: 'promotionTime',
+          scopedSlots: { customRender: 'promotionTime' }
+        },
+        {
+          title: '推广状态',
+          dataIndex: 'promotionState',
+          scopedSlots: { customRender: 'promotionState' }
         },
         {
           title: '发布账号',
@@ -385,32 +431,56 @@ export default {
       this.rowId = record.id
       this.isEdit = true
       try {
-        let res = await showAdvertisement({ id: record.id })
-        if (res.code === 200) {
+        const {
+          code,
+          data: {
+            picUrl,
+            classify,
+            title,
+            link,
+            bannerOrder,
+            promotionTimeStart,
+            promotionTimeEnd
+          },
+          msg
+        } = await showAdvertisement({ id: record.id })
+        if (code === 200) {
           this.slideVisible = true
-          this.uploadInfo.showOffList.winPath = res.data.picUrl
-          this.uploadInfo.showOffList.fileUrl = res.data.picUrl
-          if (res.data.classify === 1 || res.data.classify === 2) {
-            this.tip = '闪屏广告图片尺寸：375*812'
+          this.uploadInfo.showOffList.winPath = picUrl
+          this.uploadInfo.showOffList.fileUrl = picUrl
+          if (classify === 1 || classify === 2) {
+            this.tip = '闪屏广告图片尺寸：375*812,图片大小不能超过1M'
           } else {
-            this.tip = '插屏广告图片尺寸：316*406'
+            this.tip = '插屏广告图片尺寸：316*406,图片大小不能超过1M'
           }
           this.$nextTick(() => {
+            this.dateRanges = this.backupServiceExp(
+              promotionTimeStart,
+              promotionTimeEnd
+            )
             this.forms.setFieldsValue({
-              subParamType: res.data.classify,
-              subParamTitle: res.data.title,
-              subParamWeb: res.data.link,
-              subParamOrder: res.data.bannerOrder
+              subParamType: classify,
+              subParamTitle: title,
+              subParamWeb: link,
+              subParamOrder: bannerOrder
             })
           })
         } else {
-          throw new Error(res.msg)
+          throw new Error(msg)
         }
       } catch ({ message }) {
         this.$notification.error({
           message: message || '获取失败，请重试！'
         })
       }
+    },
+    backupServiceExp (startTime, endTime) {
+      if (startTime) {
+        this.promotionTimeStart = startTime
+        this.promotionTimeEnd = endTime
+        return [moment(startTime), moment(endTime)]
+      }
+      return [undefined, undefined]
     },
     // 移除待上传
     handleRemoveUpload ({ response: { data } }) {
@@ -420,6 +490,7 @@ export default {
     handleDeleteUpload (item) {
       this.uploadInfo.showOffList = {}
     },
+
     // 重置
     resetSearchForm () {
       this.queryParam = {
@@ -431,11 +502,17 @@ export default {
         classify: 0,
         issuer: '', // 账号用户名
         clickRate: 0, // 排序
-        operatingStatus: 0 // 启用
+        operatingStatus: 0, // 启用
+        promotionState: 0
       }
       this.resetDatePicker()
       this.resetBtnGroups()
       this.$refs.table.refresh(true)
+    },
+    resetDatePickers () {
+      this.forms.setFieldsValue({
+        dateRanges: undefined
+      })
     },
     resetDatePicker () {
       this.form.setFieldsValue({
@@ -501,10 +578,15 @@ export default {
     },
     handleTypeChange (value) {
       if (value === 1 || value === 2) {
-        this.tip = '闪屏广告图片尺寸：375*812'
+        this.tip = '闪屏广告图片尺寸：375*812,图片大小不能超过1M'
       } else {
-        this.tip = '插屏广告图片尺寸：316*406'
+        this.tip = '插屏广告图片尺寸：316*406,图片大小不能超过1M'
       }
+    },
+    // 改变时间
+    onDatePickChange (date, dateString) {
+      this.promotionTimeStart = dateString[0]
+      this.promotionTimeEnd = dateString[1]
     },
     handleReset () {
       this.forms.setFieldsValue({
@@ -513,6 +595,7 @@ export default {
         subParamWeb: '',
         subParamOrder: ''
       })
+      this.resetDatePickers()
       if (this.uploadInfo.fileList) {
         this.uploadInfo.fileList = []
       }
@@ -529,7 +612,9 @@ export default {
         rowId,
         $refs: { table },
         handleCancel,
-        isEdit
+        isEdit,
+        promotionTimeStart,
+        promotionTimeEnd
       } = this
       if (!fileList.length && !showOffList.winPath) {
         error({
@@ -554,7 +639,9 @@ export default {
         title: subParamTitle,
         classify: subParamType,
         bannerOrder: subParamOrder,
-        link: subParamWeb
+        link: subParamWeb,
+        promotionTimeStart,
+        promotionTimeEnd
       }
       validateFields(['subParamTitle', 'subParamType'], async err => {
         if (!err) {

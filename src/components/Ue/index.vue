@@ -35,7 +35,8 @@ export default {
         // 初始容器宽度
         initialFrameWidth: '100%',
         // 关闭自动保存
-        enableAutoSave: true
+        enableAutoSave: true,
+        scaleEnabled: true
       },
       content: ''
     }

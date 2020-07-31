@@ -203,6 +203,14 @@ export default {
     this.theChannelList()
   },
   methods: {
+    async getToDoTask () {
+      this.$notification.open({
+        message: `Notification`,
+        description:
+					'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+        placement: 'bottomRight'
+      })
+    },
     async theChannelList (name) {
       try {
         let res = await theChannelList()
